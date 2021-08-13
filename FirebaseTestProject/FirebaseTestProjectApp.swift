@@ -15,8 +15,21 @@ struct FirebaseTestProjectApp: App {
     }
     
     var body: some Scene {
-        WindowGroup {
-            MainTabView()
-        }
+      let signInViewModel = SignInViewModel()
+      WindowGroup {
+        MainTabView()
+          .environmentObject(signInViewModel)
+      }
     }
+}
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+
+  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+
+    FirebaseApp.configure()
+    return true
+
+  }
+
 }

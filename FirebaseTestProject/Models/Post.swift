@@ -58,4 +58,8 @@ struct PostService {
     static func upload(_ post: Post) async throws {
         try await postsReference.document(post.id.uuidString).setData(post.jsonDict)
     }
+  
+  static func delete(_ post: Post) async throws {
+    try await postsReference.document(post.id.uuidString).delete()
+  }
 }
