@@ -43,7 +43,6 @@ struct SignUpView: View {
       .padding()
       Spacer()
     }
-    
   }
 }
 

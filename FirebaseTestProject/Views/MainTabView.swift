@@ -27,13 +27,9 @@ struct MainTabView: View {
                         Label("Profile", systemImage: "gear")
                     }
             }
-            .onAppear {
-                signInViewModel.signedIn = signInViewModel.isSignedIn
-            }
         } else {
             SignInView()
         }
-
     }
 }
 
