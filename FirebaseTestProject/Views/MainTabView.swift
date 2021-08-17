@@ -9,10 +9,10 @@ import SwiftUI
 
 struct MainTabView: View {
     
-    @EnvironmentObject var signInViewModel: SignInViewModel
+    @EnvironmentObject var authViewModel: AuthViewModel
     
     var body: some View {
-        if signInViewModel.signedIn {
+      if authViewModel.userSignedIn {
             TabView{
                 PostsList()
                     .tabItem {
@@ -36,6 +36,6 @@ struct MainTabView: View {
 struct MainTabView_Previews: PreviewProvider {
     static var previews: some View {
         MainTabView()
-            .environmentObject(SignInViewModel())
+            .environmentObject(AuthViewModel())
     }
 }

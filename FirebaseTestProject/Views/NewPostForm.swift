@@ -11,7 +11,7 @@ struct NewPostForm: View {
     @State var postContent = ""
     @State var title = ""
     @FocusState private var submittedPost: Bool
-    @EnvironmentObject var signInViewModel: SignInViewModel
+    @EnvironmentObject var authViewModel: AuthViewModel
     
     var body: some View {
         Form {
@@ -23,7 +23,7 @@ struct NewPostForm: View {
                 submittedPost = false
                 Task {
                     do {
-                        try await PostService.upload(Post(title: title, text: postContent, author: signInViewModel.getUser()))
+                        try await PostService.upload(Post(title: title, text: postContent, author: authViewModel.getUser()))
                     }
                     catch {
                         print(error)

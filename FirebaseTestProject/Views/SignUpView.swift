@@ -12,7 +12,7 @@ struct SignUpView: View {
   
   @State var email = ""
   @State var password = ""
-  @EnvironmentObject var signInViewModel: SignInViewModel
+  @EnvironmentObject var authViewModel: AuthViewModel
   
   var body: some View {
     
@@ -30,15 +30,17 @@ struct SignUpView: View {
           .padding()
           .background(Color.secondary)
           .cornerRadius(15)
-          Button {
-            signInViewModel.signUp(email: email, password: password)
-          } label: {
-            Text("Create Account")
-              .foregroundColor(Color.white)
-              .frame(width: 150, height: 50)
-              .background(Color.blue)
-              .cornerRadius(15)
+        Button {
+          Task {
+            await authViewModel.signUp(email: email, password: password)
           }
+        } label: {
+          Text("Create Account")
+            .foregroundColor(Color.white)
+            .frame(width: 150, height: 50)
+            .background(Color.blue)
+            .cornerRadius(15)
+        }
       }
       .padding()
       Spacer()

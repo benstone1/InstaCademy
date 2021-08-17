@@ -9,7 +9,7 @@ import SwiftUI
 
 struct PostRow: View {
     let post: Post
-    @EnvironmentObject var signInViewModel: SignInViewModel
+    @EnvironmentObject var authViewModel: AuthViewModel
     @ObservedObject var postData: PostData
     
     var body: some View {
@@ -22,7 +22,7 @@ struct PostRow: View {
                 .padding(.bottom, 8)
             HStack {
                 Text(post.author)
-                if post.author == signInViewModel.getUser() {
+                if post.author == authViewModel.getUser() {
                     Spacer()
                     Button {
                         Task {

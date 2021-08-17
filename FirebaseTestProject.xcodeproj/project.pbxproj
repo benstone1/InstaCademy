@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		412DBA5A26C6FB2B0048FDC9 /* SignInViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 412DBA5926C6FB2B0048FDC9 /* SignInViewModel.swift */; };
+		412DBA5A26C6FB2B0048FDC9 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 412DBA5926C6FB2B0048FDC9 /* AuthViewModel.swift */; };
 		412DBA5E26C704BF0048FDC9 /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 412DBA5B26C704BF0048FDC9 /* SignUpView.swift */; };
 		412DBA5F26C704BF0048FDC9 /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 412DBA5C26C704BF0048FDC9 /* SignInView.swift */; };
 		412DBA6026C704BF0048FDC9 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 412DBA5D26C704BF0048FDC9 /* ProfileView.swift */; };
@@ -57,7 +57,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		412DBA5926C6FB2B0048FDC9 /* SignInViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignInViewModel.swift; sourceTree = "<group>"; };
+		412DBA5926C6FB2B0048FDC9 /* AuthViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
 		412DBA5B26C704BF0048FDC9 /* SignUpView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
 		412DBA5C26C704BF0048FDC9 /* SignInView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
 		412DBA5D26C704BF0048FDC9 /* ProfileView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
@@ -167,7 +167,7 @@
 			isa = PBXGroup;
 			children = (
 				F2576EDE26C19ED000D3F344 /* PostData.swift */,
-				412DBA5926C6FB2B0048FDC9 /* SignInViewModel.swift */,
+				412DBA5926C6FB2B0048FDC9 /* AuthViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -340,7 +340,7 @@
 				F2576EDF26C19ED000D3F344 /* PostData.swift in Sources */,
 				F2576EAC26C18A1700D3F344 /* PostsList.swift in Sources */,
 				412DBA5F26C704BF0048FDC9 /* SignInView.swift in Sources */,
-				412DBA5A26C6FB2B0048FDC9 /* SignInViewModel.swift in Sources */,
+				412DBA5A26C6FB2B0048FDC9 /* AuthViewModel.swift in Sources */,
 				F2576EAA26C18A1700D3F344 /* FirebaseTestProjectApp.swift in Sources */,
 				F2576EEA26C1A2FA00D3F344 /* NewPostForm.swift in Sources */,
 				412DBA5E26C704BF0048FDC9 /* SignUpView.swift in Sources */,
