@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct MainTabView: View {
+    @StateObject var postData: PostData = PostData()
+    
     var body: some View {
         TabView {
             PostsList(viewStyle: .all)
@@ -20,6 +22,7 @@ struct MainTabView: View {
                     systemImage: "heart.fill")
                 }
         }
+        .environmentObject(postData)
     }
 }
 
