@@ -122,3 +122,11 @@ struct PostService {
         try await postsReference.document(post.id.uuidString).delete()
     }
 }
+
+extension DateFormatter {
+    static func postFormat(date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d MMM y"
+        return formatter.string(from: date)
+    }
+}
