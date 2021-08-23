@@ -10,7 +10,7 @@ import SwiftUI
 struct MainTabView: View {
     var body: some View {
         TabView {
-            PostsList()
+            PostsList(viewStyle: .all)
                 .tabItem {
                     Label("Posts", systemImage: "list.dash")
                 }
