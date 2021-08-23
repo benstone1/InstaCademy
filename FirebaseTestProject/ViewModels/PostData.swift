@@ -46,6 +46,15 @@ import Foundation
         }
     }
     
+    func index(of post: Post) -> Int? {
+        for i in posts.indices {
+            if posts[i].id == post.id {
+                return i
+            }
+        }
+        return nil
+    }
+    
     func remove(post: Post) {
         Task {
             try await PostService.delete(post: post)
