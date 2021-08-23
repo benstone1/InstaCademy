@@ -13,6 +13,7 @@ struct Post: FirebaseConvertable {
     let author: String
     let text: String
     let id: UUID
+    let authorid: UUID
     let timestamp: Date
     var isFavorite: Bool = false
     
@@ -22,12 +23,15 @@ struct Post: FirebaseConvertable {
         self.text = text
         self.id = UUID()
         self.timestamp = Date()
+        let userid = UserDefaults.standard.value(forKey: "userid") != nil ? UUID(uuidString: UserDefaults.standard.value(forKey: "userid") as! String) : UUID(uuidString: "00854E9E-8468-421D-8AA2-605D8E6C61D9")
+        self.authorid = userid!
     }
     
     private enum CodingKeys: String, CodingKey {
         case title
         case author
         case text
+        case authorid
         case id
         case timestamp
     }
@@ -39,6 +43,7 @@ struct Post: FirebaseConvertable {
         author = try container.decode(String.self, forKey: .author)
         text = try container.decode(String.self, forKey: .text)
         id = try container.decode(UUID.self, forKey: .id)
+        authorid = try container.decode(UUID.self, forKey: .authorid)
         timestamp = try container.decode(Date.self, forKey: .timestamp)
     }
     
