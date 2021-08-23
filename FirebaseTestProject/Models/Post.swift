@@ -112,4 +112,8 @@ struct PostService {
     static func delete(favorite: Post) async throws {
         try await favoritesReference.document(favorite.id.uuidString).delete()
     }
+    
+    static func delete(post: Post) async throws {
+        try await postsReference.document(post.id.uuidString).delete()
+    }
 }
