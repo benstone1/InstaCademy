@@ -47,10 +47,8 @@ import Foundation
     }
     
     func remove(post: Post) {
-        // Will the task stop if we exit the function, prior to deletion?
         Task {
             try await PostService.delete(post: post)
-            try await PostService.
         }
         
         guard let index = posts.firstIndex(where: { $0.id == post.id }) else { return }
