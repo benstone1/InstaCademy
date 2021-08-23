@@ -9,6 +9,7 @@ import SwiftUI
 
 struct PostsList: View {
     @EnvironmentObject private var postData: PostData
+    @State private var isPresenting: Bool = false
     let viewStyle: ViewStyle
     
     var body: some View {
