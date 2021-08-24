@@ -12,13 +12,13 @@ struct PostsList: View {
     @State private var searchText = ""
     
     var body: some View {
-        SearchBar(text: $searchText)
         NavigationView {
             List(postData.posts, id: \.text) { post in
                 if searchText.isEmpty || post.contains(searchText) {
                     PostRow(post: post)
                 }
             }
+            .searchable(text: $searchText)
             .refreshable {
                 await postData.loadPosts()
             }
