@@ -28,6 +28,6 @@ struct PostRow: View {
 
 struct PostRow_Previews: PreviewProvider {
     static var previews: some View {
-        PostRow(post: Post.testPost)
+         PostRow(post: Post.testPost)
     }
 }

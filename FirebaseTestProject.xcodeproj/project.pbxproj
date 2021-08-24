@@ -28,20 +28,10 @@
 		F2576ED726C1978F00D3F344 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = F2576ED626C1978F00D3F344 /* FirebaseAuth */; };
 		F2576ED926C1978F00D3F344 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = F2576ED826C1978F00D3F344 /* FirebaseFirestore */; };
 		F2576EDB26C19A3C00D3F344 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EDA26C19A3C00D3F344 /* Post.swift */; };
-		F2576EDC26C19A3C00D3F344 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EDA26C19A3C00D3F344 /* Post.swift */; };
-		F2576EDD26C19A3C00D3F344 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EDA26C19A3C00D3F344 /* Post.swift */; };
 		F2576EDF26C19ED000D3F344 /* PostData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EDE26C19ED000D3F344 /* PostData.swift */; };
-		F2576EE026C19ED000D3F344 /* PostData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EDE26C19ED000D3F344 /* PostData.swift */; };
-		F2576EE126C19ED000D3F344 /* PostData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EDE26C19ED000D3F344 /* PostData.swift */; };
 		F2576EE326C1A1A600D3F344 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EE226C1A1A600D3F344 /* MainTabView.swift */; };
-		F2576EE426C1A1A600D3F344 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EE226C1A1A600D3F344 /* MainTabView.swift */; };
-		F2576EE526C1A1A600D3F344 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EE226C1A1A600D3F344 /* MainTabView.swift */; };
 		F2576EEA26C1A2FA00D3F344 /* NewPostForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EE926C1A2FA00D3F344 /* NewPostForm.swift */; };
-		F2576EEB26C1A2FA00D3F344 /* NewPostForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EE926C1A2FA00D3F344 /* NewPostForm.swift */; };
-		F2576EEC26C1A2FA00D3F344 /* NewPostForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EE926C1A2FA00D3F344 /* NewPostForm.swift */; };
 		F2576EEE26C1B67E00D3F344 /* PostRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EED26C1B67E00D3F344 /* PostRow.swift */; };
-		F2576EEF26C1B67E00D3F344 /* PostRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EED26C1B67E00D3F344 /* PostRow.swift */; };
-		F2576EF026C1B67E00D3F344 /* PostRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EED26C1B67E00D3F344 /* PostRow.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -389,11 +379,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F2576EBB26C18A1B00D3F344 /* FirebaseTestProjectTests.swift in Sources */,
-				F2576EE026C19ED000D3F344 /* PostData.swift in Sources */,
-				F2576EDC26C19A3C00D3F344 /* Post.swift in Sources */,
-				F2576EE426C1A1A600D3F344 /* MainTabView.swift in Sources */,
-				F2576EEF26C1B67E00D3F344 /* PostRow.swift in Sources */,
-				F2576EEB26C1A2FA00D3F344 /* NewPostForm.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -402,11 +387,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F2576EC526C18A1B00D3F344 /* FirebaseTestProjectUITests.swift in Sources */,
-				F2576EE126C19ED000D3F344 /* PostData.swift in Sources */,
-				F2576EDD26C19A3C00D3F344 /* Post.swift in Sources */,
-				F2576EE526C1A1A600D3F344 /* MainTabView.swift in Sources */,
-				F2576EF026C1B67E00D3F344 /* PostRow.swift in Sources */,
-				F2576EEC26C1A2FA00D3F344 /* NewPostForm.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -611,7 +591,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 76LC8AC986;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -636,7 +616,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 76LC8AC986;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
