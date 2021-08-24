@@ -9,16 +9,15 @@ import SwiftUI
 
 struct PostsList: View {
     @StateObject var postData = PostData()
-    @State private var searchText: String = ""
+    @State private var searchText = ""
     
     var body: some View {
-        //Searchable Posts
         SearchBar(text: $searchText)
-        let posts = searchText == "" ? postData.posts : postData.posts.filter({ $0.contains(searchText) })
-        
         NavigationView {
-            List(posts, id: \.text) { post in
-                PostRow(post: post)
+            List(postData.posts, id: \.text) { post in
+                if searchText.isEmpty || post.contains(searchText) {
+                    PostRow(post: post)
+                }
             }
             .refreshable {
                 await postData.loadPosts()
