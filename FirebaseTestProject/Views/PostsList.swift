@@ -1,6 +1,6 @@
 //
-//  ContentView.swift
-//  FirebaseTestProject
+//  PostsList.swift
+//  PostsList
 //
 //  Created by Ben Stone on 8/9/21.
 //
@@ -33,7 +33,7 @@ struct PostsList: View {
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
+struct PostsList_Previews: PreviewProvider {
     static var previews: some View {
         PostsList()
     }

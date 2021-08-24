@@ -1,6 +1,6 @@
 //
-//  SwiftUIView.swift
-//  SwiftUIView
+//  SearchBar.swift
+//  SearchBar
 //
 //  Created by Bradley French on 8/15/21.
 //
@@ -53,7 +53,7 @@ struct SearchBar: View {
     }
 }
 
-struct SwiftUIView_Previews: PreviewProvider {
+struct SearchBar_Previews: PreviewProvider {
     @State static var text: String = ""
     static var previews: some View {
         SearchBar(text: $text)
