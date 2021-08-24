@@ -9,6 +9,9 @@ import SwiftUI
 
 struct CommentRow: View {
     let comment: Comment
+    let deleteAction: DeleteAction?
+    
+    typealias DeleteAction = () async -> Void
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -16,6 +19,11 @@ struct CommentRow: View {
             content
         }
         .padding(5)
+        .swipeActions {
+            if let deleteAction = deleteAction {
+                deleteButton(with: deleteAction)
+            }
+        }
     }
     
     private var metadata: some View {
@@ -35,6 +43,17 @@ struct CommentRow: View {
             .font(.headline)
             .fontWeight(.regular)
     }
+    
+    private func deleteButton(with deleteAction: @escaping DeleteAction) -> some View {
+        Button(role: .destructive) {
+            Task {
+                await deleteAction()
+            }
+        } label: {
+            Label("Delete", systemImage: "trash")
+                .labelStyle(IconOnlyLabelStyle())
+        }
+    }
 }
 
 private extension Comment {
@@ -48,6 +67,6 @@ private extension Comment {
 
 struct CommentRow_Previews: PreviewProvider {
     static var previews: some View {
-        CommentRow(comment: .preview)
+        CommentRow(comment: .preview, deleteAction: {})
     }
 }

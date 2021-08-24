@@ -13,14 +13,12 @@ struct CommentsList: View {
     @ObservedObject var viewModel: CommentsViewModel
     
     @State private var commentsDidLoad = false
-    @State private var hasError = false
     @State private var error: PostService.CommentError? {
         didSet {
-            if error != nil {
-                hasError = true
-            }
+            hasError = error != nil
         }
     }
+    @State private var hasError = false
     
     var body: some View {
         Group {
@@ -68,15 +66,12 @@ private extension CommentsList {
     }
     
     var commentsList: some View {
-        List {
-            ForEach(viewModel.comments) {
-                CommentRow(comment: $0)
-            }
-            .onDelete { indexSet in
-                performTask {
-                    try await viewModel.deleteComments(at: indexSet)
+        List(viewModel.comments) { comment in
+            CommentRow(comment: comment, deleteAction: viewModel.canDelete(comment) ? {
+                await perform {
+                    try await viewModel.deleteComment(comment)
                 }
-            }
+            } : nil)
         }
     }
     

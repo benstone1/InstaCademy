@@ -28,11 +28,15 @@ import Foundation
         comments.append(comment)
     }
     
-    func deleteComments(at indexSet: IndexSet) async throws {
-        for i in indexSet {
-            let comment = comments[i]
-            try await PostService.removeComment(comment, from: post, user: user)
-            comments.removeAll { $0 == comment }
+    func canDelete(_ comment: Comment) -> Bool {
+        [comment.author.id, post.author.id].contains(user.id)
+    }
+    
+    func deleteComment(_ comment: Comment) async throws {
+        guard canDelete(comment) else {
+            preconditionFailure("User is not permitted to delete comment")
         }
+        try await PostService.removeComment(comment, from: post)
+        comments.removeAll { $0 == comment }
     }
 }
