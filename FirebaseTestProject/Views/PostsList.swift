@@ -15,6 +15,9 @@ struct PostsList: View {
             List(postData.posts, id: \.text) { post in
                 PostRow(post: post)
             }
+            .refreshable {
+                await postData.loadPosts()
+            }
             .navigationTitle("Posts")
             .onAppear {
                 Task {
