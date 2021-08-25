@@ -23,6 +23,19 @@ struct Post: FirebaseConvertable {
         self.timestamp = Date()
     }
     static let testPost = Post(title: "Title", text: "Content", author: "First Last")
+    
+    func contains(_ string: String) -> Bool {
+        let strings = jsonDict.values.compactMap { value -> String? in
+            if let value = value as? String {
+                return value.lowercased()
+            } else if let value = value as? Date {
+                return DateFormatter.postFormat(date: value).lowercased()
+            }
+            return nil
+        }
+        let matches = strings.filter { $0.contains(string.lowercased()) }
+        return matches.count > 0
+    }
 }
 
 protocol FirebaseConvertable: Codable {
@@ -57,5 +70,14 @@ struct PostService {
     
     static func upload(_ post: Post) async throws {
         try await postsReference.document(post.id.uuidString).setData(post.jsonDict)
+    }
+}
+
+
+extension DateFormatter {
+    static func postFormat(date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d MMM y"
+        return formatter.string(from: date)
     }
 }
