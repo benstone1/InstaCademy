@@ -25,13 +25,8 @@ struct PostsList: View {
                                 PostRow(post: binding(for: post), deletePostAction: { post in
                                     postData.remove(post: post)
                                 }, isFavoriteAction: { post in
-                                    if post.isFavorite {
-                                        postData.favorites.append(post)
-                                    }
-                                    else {
-                                        guard let index = postData.favorites.firstIndex(where: { $0.id == post.id }) else { return }
-                                        postData.favorites.remove(at: index)
-                                    }
+                                    post.isFavorite ? postData.favorite(post) : postData.unfavorite(post)
+                                        postData.favorite(post)
                                 })
                             }
                         }
@@ -87,7 +82,9 @@ extension PostsList {
         case .all:
             return postData.posts
         case .favorites:
-            return postData.favorites
+            let favoritesID = postData.favorites.map({ $0.postid })
+            let posts = postData.posts.filter({ favoritesID.contains($0.id) })
+            return posts
         case let .singleAuthor(author):
             return postData.posts.filter({ $0.author == author })
         }
