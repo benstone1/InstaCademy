@@ -34,12 +34,8 @@ struct NewCommentForm: View {
     
     private func handleSubmit() {
         submitTask.run {
-            do {
-                try await submitAction(comment)
-                comment = ""
-            } catch {
-                throw error
-            }
+            try await submitAction(comment)
+            comment = ""
         }
     }
 }
