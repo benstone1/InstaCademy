@@ -11,10 +11,7 @@ struct ProfileView: View {
     let user: User
     let signOutAction: () async throws -> Void
     
-    @State private var error: Error? {
-        didSet { hasError = error != nil }
-    }
-    @State private var hasError = false
+    @StateObject private var signOutTask = TaskViewModel()
     
     var body: some View {
         VStack{
@@ -40,25 +37,18 @@ struct ProfileView: View {
                     .background(Color.blue)
                     .cornerRadius(15)
             }
+            .disabled(signOutTask.isInProgress)
             Spacer()
         }
-        .alert("Cannot Sign Out", isPresented: $hasError, presenting: error, actions: { _ in }) { error in
+        .alert("Cannot Sign Out", isPresented: $signOutTask.isError, presenting: signOutTask.error, actions: { _ in }) { error in
             Text(error.localizedDescription)
         }
     }
     
     private func signOut() {
-        Task {
-            do {
-                try await signOutAction()
-            } catch {
-                print("[ProfileView] Cannot sign out: \(error.localizedDescription)")
-                self.error = error
-            }
-        }
+        signOutTask.run(action: signOutAction)
     }
 }
-
 
 struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {

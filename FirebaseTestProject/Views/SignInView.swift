@@ -13,10 +13,7 @@ struct SignInView<CreateAccountView: View>: View {
     
     @State private var email = ""
     @State private var password = ""
-    @State private var error: Error? {
-        didSet { hasError = error != nil }
-    }
-    @State private var hasError = false
+    @StateObject private var signInTask = TaskViewModel()
     
     var body: some View {
         NavigationView {
@@ -55,20 +52,16 @@ struct SignInView<CreateAccountView: View>: View {
                 Spacer()
             }
             .onSubmit(signIn)
-        }
-        .alert("Cannot Sign In", isPresented: $hasError, presenting: error, actions: { _ in }) { error in
-            Text(error.localizedDescription)
+            .disabled(signInTask.isInProgress)
+            .alert("Cannot Sign In", isPresented: $signInTask.isError, presenting: signInTask.error, actions: { _ in }) { error in
+                Text(error.localizedDescription)
+            }
         }
     }
     
     private func signIn() {
-        Task {
-            do {
-                try await action(email, password)
-            } catch {
-                print("[SignInView] Cannot sign in: \(error.localizedDescription)")
-                self.error = error
-            }
+        signInTask.run {
+            try await action(email, password)
         }
     }
 }

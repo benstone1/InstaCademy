@@ -13,10 +13,7 @@ struct SignUpView: View {
     @State private var name = ""
     @State private var email = ""
     @State private var password = ""
-    @State private var error: Error? {
-        didSet { hasError = error != nil }
-    }
-    @State private var hasError = false
+    @StateObject private var createAccountTask = TaskViewModel()
     
     var body: some View {
         VStack {
@@ -52,19 +49,15 @@ struct SignUpView: View {
             Spacer()
         }
         .onSubmit(createAccount)
-        .alert("Cannot Create Account", isPresented: $hasError, presenting: error, actions: { _ in }) { error in
+        .disabled(createAccountTask.isInProgress)
+        .alert("Cannot Create Account", isPresented: $createAccountTask.isError, presenting: createAccountTask.error, actions: { _ in }) { error in
             Text(error.localizedDescription)
         }
     }
     
     private func createAccount() {
-        Task {
-            do {
-                try await action(name, email, password)
-            } catch {
-                print("[SignUpView] Cannot create account: \(error.localizedDescription)")
-                self.error = error
-            }
+        createAccountTask.run {
+            try await action(name, email, password)
         }
     }
 }

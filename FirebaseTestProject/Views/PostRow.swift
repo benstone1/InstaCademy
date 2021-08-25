@@ -11,9 +11,9 @@ struct PostRow: View {
     let post: Post
     let deleteAction: DeleteAction?
     
-    @State private var showConfirmDelete = false
-    
     typealias DeleteAction = () async throws -> Void
+    
+    @StateObject private var deleteTask = DeleteTaskViewModel()
     
     var body: some View {
         VStack {
@@ -35,22 +35,21 @@ struct PostRow: View {
             }
             .padding(.bottom, 8)
         }
+        .alert("Are you sure you want to delete this comment?", isPresented: $deleteTask.isPending, presenting: deleteTask.confirmAction) {
+            Button("Delete", role: .destructive, action: $0)
+        }
+        .alert("Cannot Delete Comment", isPresented: $deleteTask.isError, presenting: deleteTask.error) { error in
+            Text(error.localizedDescription)
+        }
     }
     
     private func deleteButton(with deleteAction: @escaping DeleteAction) -> some View {
         Button {
-            showConfirmDelete = true
+            deleteTask.request(with: deleteAction)
         } label: {
             Label("Delete", systemImage: "trash")
                 .foregroundColor(Color.red)
                 .labelStyle(IconOnlyLabelStyle())
-        }
-        .alert("Are you sure you want to delete this post?", isPresented: $showConfirmDelete) {
-            Button("Delete", role: .destructive, action: {
-                Task {
-                    try! await deleteAction()
-                }
-            })
         }
     }
 }
