@@ -35,8 +35,6 @@ struct PostRow: View {
                     })
                     .buttonStyle(PlainButtonStyle())
                 }
-                .padding()
-                .buttonStyle(PlainButtonStyle())
             }
             .alert(isPresented: $showAlert) {
                 Alert(title: Text("Do you want to delete this post?"),
@@ -71,7 +69,7 @@ struct PostRow: View {
                 // the horizontal component
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .background(Color.blue.opacity(0.5))
+        .background(Color.orange.opacity(0.5))
         .cornerRadius(10)
     }
 }
