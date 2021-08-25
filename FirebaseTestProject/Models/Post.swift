@@ -12,8 +12,8 @@ struct Post: FirebaseConvertable {
     let title: String
     let author: String
     let text: String
-    let id: UUID
     let authorid: UUID
+    let id: UUID
     let timestamp: Date
     var isFavorite: Bool = false
     
@@ -51,10 +51,12 @@ struct Post: FirebaseConvertable {
 }
 
 struct Favorite: FirebaseConvertable {
-    let postid: UUID //Primary Key, so to speak
+    let id: UUID
+    let postid: UUID
     let userid: UUID
     
     init(postid: String, userid: String) {
+        self.id = UUID()
         self.postid = UUID(uuidString: postid)!
         self.userid = UUID(uuidString: userid)!
     }
@@ -67,6 +69,8 @@ protocol FirebaseConvertable: Codable {
 
 extension FirebaseConvertable {
     init(from jsonDict: [String: Any]) {
+        print(jsonDict)
+        
         let data = try! JSONSerialization.data(withJSONObject: jsonDict)
         let newInstance = try! JSONDecoder().decode(Self.self, from: data)
         self = newInstance
@@ -95,12 +99,11 @@ struct PostService {
         return posts
     }
     
-    static func getFavorites() async throws -> [Post] {
+    static func getFavorites() async throws -> [Favorite] {
         let userid = UserDefaults.standard.value(forKey: "userid") != nil ?  UserDefaults.standard.value(forKey: "userid") as! String : "00854E9E-8468-421D-8AA2-605D8E6C61D9"
         let favoritesQuery = favoritesReference.whereField("userid", isEqualTo: userid)
         let favoritesSnapshots = try await favoritesQuery.getDocuments()
-        let favorites = favoritesSnapshots.documents.map { Post(from: $0.data()) }
-        
+        let favorites = favoritesSnapshots.documents.map { Favorite(from: $0.data()) }
         return favorites
     }
     
@@ -108,18 +111,17 @@ struct PostService {
         try await postsReference.document(post.id.uuidString).setData(post.jsonDict)
     }
     
-    static func favorite(_ post: Post) async throws {
-        let userid = UserDefaults.standard.value(forKey: "userid") as? String ?? "00854E9E-8468-421D-8AA2-605D8E6C61D9"
-        try await favoritesReference.document(post.id.uuidString).setData(Favorite(postid: post.id.uuidString, userid: userid).jsonDict)
+    static func delete(_ post: Post) async throws {
+        try await postsReference.document(post.id.uuidString).delete()
+    }
+    
+    static func favorite(_ favorite: Favorite) async throws {
+        try await favoritesReference.document(favorite.id.uuidString).setData(favorite.jsonDict)
     }
     
     // Added for the Delete functionality in the other branch
-    static func delete(favorite: Post) async throws {
+    static func unfavorite(_ favorite: Favorite) async throws {
         try await favoritesReference.document(favorite.id.uuidString).delete()
-    }
-    
-    static func delete(post: Post) async throws {
-        try await postsReference.document(post.id.uuidString).delete()
     }
 }
 
