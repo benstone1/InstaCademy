@@ -11,7 +11,9 @@ struct CommentRow: View {
     let comment: Comment
     let deleteAction: DeleteAction?
     
-    typealias DeleteAction = () async -> Void
+    typealias DeleteAction = () async throws -> Void
+    
+    @StateObject private var deleteTask = DeleteTaskViewModel()
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -23,6 +25,12 @@ struct CommentRow: View {
             if let deleteAction = deleteAction {
                 deleteButton(with: deleteAction)
             }
+        }
+        .alert("Are you sure you want to delete this comment?", isPresented: $deleteTask.isPending, presenting: deleteTask.confirmAction) {
+            Button("Delete", role: .destructive, action: $0)
+        }
+        .alert("Cannot Delete Comment", isPresented: $deleteTask.isError, presenting: deleteTask.error) { error in
+            Text(error.localizedDescription)
         }
     }
     
@@ -46,9 +54,7 @@ struct CommentRow: View {
     
     private func deleteButton(with deleteAction: @escaping DeleteAction) -> some View {
         Button(role: .destructive) {
-            Task {
-                await deleteAction()
-            }
+            deleteTask.request(with: deleteAction)
         } label: {
             Label("Delete", systemImage: "trash")
                 .labelStyle(IconOnlyLabelStyle())

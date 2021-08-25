@@ -12,29 +12,19 @@ import SwiftUI
 struct CommentsList: View {
     @ObservedObject var viewModel: CommentsViewModel
     
-    @State private var commentsDidLoad = false
-    @State private var error: PostService.CommentError? {
-        didSet {
-            hasError = error != nil
-        }
-    }
-    @State private var hasError = false
-    
     var body: some View {
         Group {
-            if !commentsDidLoad {
+            switch viewModel.state {
+            case .loading:
                 loadingScreen
-            } else if viewModel.comments.isEmpty {
-                emptyState
-            } else {
-                commentsList
+            case .loaded where viewModel.comments.isEmpty:
+                emptyScreen
+            case .loaded:
+                commentsScreen
             }
         }
         .navigationTitle("Comments")
         .navigationBarTitleDisplayMode(.inline)
-        .alert(isPresented: $hasError, error: error, actions: { _ in }) { error in
-            Text(error.failureReason ?? "Sorry, something went wrong.")
-        }
         .toolbar {
             newCommentForm
         }
@@ -47,14 +37,11 @@ private extension CommentsList {
     var loadingScreen: some View {
         ProgressView()
             .onAppear {
-                performTask {
-                    try await viewModel.loadComments()
-                    commentsDidLoad = true
-                }
+                viewModel.loadComments()
             }
     }
     
-    var emptyState: some View {
+    var emptyScreen: some View {
         VStack(alignment: .center, spacing: 10) {
             Text("No Comments")
                 .font(.title2)
@@ -65,44 +52,15 @@ private extension CommentsList {
         }
     }
     
-    var commentsList: some View {
+    var commentsScreen: some View {
         List(viewModel.comments) { comment in
-            CommentRow(comment: comment, deleteAction: viewModel.canDelete(comment) ? {
-                await perform {
-                    try await viewModel.deleteComment(comment)
-                }
-            } : nil)
+            CommentRow(comment: comment, deleteAction: viewModel.deleteAction(for: comment))
         }
     }
     
     var newCommentForm: ToolbarItem<Void, NewCommentForm> {
         ToolbarItem(placement: .bottomBar) {
-            NewCommentForm(submitAction: { content in
-                await perform {
-                    try await viewModel.submitComment(content: content)
-                }
-            })
-        }
-    }
-}
-
-// MARK: - Utilities
-
-private extension CommentsList {
-    @discardableResult
-    func perform(action: @escaping () async throws -> Void) async -> Bool {
-        do {
-            try await action()
-            return true
-        } catch {
-            self.error = (error as? PostService.CommentError) ?? .unknown
-            return false
-        }
-    }
-    
-    func performTask(action: @escaping () async throws -> Void) {
-        Task {
-            await perform(action: action)
+            NewCommentForm(submitAction: viewModel.submitComment(content:))
         }
     }
 }

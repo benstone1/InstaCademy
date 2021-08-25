@@ -16,6 +16,7 @@
 		52917CD126D185530061E69F /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52917CD026D185530061E69F /* Comment.swift */; };
 		52917CD526D18D9E0061E69F /* CommentsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52917CD426D18D9E0061E69F /* CommentsList.swift */; };
 		52917CD726D198DC0061E69F /* CommentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52917CD626D198DC0061E69F /* CommentRow.swift */; };
+		529271FB26D6F2F200A35315 /* TaskViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529271FA26D6F2F200A35315 /* TaskViewModel.swift */; };
 		F2576EAA26C18A1700D3F344 /* FirebaseTestProjectApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EA926C18A1700D3F344 /* FirebaseTestProjectApp.swift */; };
 		F2576EAC26C18A1700D3F344 /* PostsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EAB26C18A1700D3F344 /* PostsList.swift */; };
 		F2576EAE26C18A1A00D3F344 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F2576EAD26C18A1A00D3F344 /* Assets.xcassets */; };
@@ -61,6 +62,7 @@
 		52917CD026D185530061E69F /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		52917CD426D18D9E0061E69F /* CommentsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsList.swift; sourceTree = "<group>"; };
 		52917CD626D198DC0061E69F /* CommentRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentRow.swift; sourceTree = "<group>"; };
+		529271FA26D6F2F200A35315 /* TaskViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskViewModel.swift; sourceTree = "<group>"; };
 		F2576EA626C18A1700D3F344 /* FirebaseTestProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FirebaseTestProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2576EA926C18A1700D3F344 /* FirebaseTestProjectApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseTestProjectApp.swift; sourceTree = "<group>"; };
 		F2576EAB26C18A1700D3F344 /* PostsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostsList.swift; sourceTree = "<group>"; };
@@ -187,6 +189,7 @@
 			children = (
 				F2576EDE26C19ED000D3F344 /* PostData.swift */,
 				52424B8A26D1E1BE009F91C3 /* CommentsViewModel.swift */,
+				529271FA26D6F2F200A35315 /* TaskViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -362,6 +365,7 @@
 				52917CC226D162B20061E69F /* FirebaseConvertable.swift in Sources */,
 				F2576EDF26C19ED000D3F344 /* PostData.swift in Sources */,
 				F2576EAC26C18A1700D3F344 /* PostsList.swift in Sources */,
+				529271FB26D6F2F200A35315 /* TaskViewModel.swift in Sources */,
 				F2576EAA26C18A1700D3F344 /* FirebaseTestProjectApp.swift in Sources */,
 				52917CCB26D16AE60061E69F /* UserService.swift in Sources */,
 				52917CD126D185530061E69F /* Comment.swift in Sources */,

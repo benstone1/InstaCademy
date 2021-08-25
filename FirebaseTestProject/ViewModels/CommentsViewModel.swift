@@ -9,6 +9,12 @@ import Foundation
 
 @MainActor class CommentsViewModel: ObservableObject {
     @Published var comments: [Comment] = []
+    @Published var state: State = .loading
+    
+    enum State {
+        case loading
+        case loaded
+    }
     
     private let post: Post
     private let user: User
@@ -18,8 +24,16 @@ import Foundation
         self.user = user
     }
     
-    func loadComments() async throws {
-        comments = try await PostService.fetchComments(for: post)
+    func loadComments() {
+        Task {
+            do {
+                state = .loading
+                comments = try await PostService.fetchComments(for: post)
+                state = .loaded
+            } catch {
+                print("[CommentsViewModel] Cannot load comments: \(error.localizedDescription)")
+            }
+        }
     }
     
     func submitComment(content: String) async throws {
@@ -28,15 +42,14 @@ import Foundation
         comments.append(comment)
     }
     
-    func canDelete(_ comment: Comment) -> Bool {
-        [comment.author.id, post.author.id].contains(user.id)
-    }
-    
-    func deleteComment(_ comment: Comment) async throws {
-        guard canDelete(comment) else {
-            preconditionFailure("User is not permitted to delete comment")
+    func deleteAction(for comment: Comment) -> (() async throws -> Void)? {
+        guard [comment.author.id, post.author.id].contains(user.id) else {
+            return nil
         }
-        try await PostService.removeComment(comment, from: post)
-        comments.removeAll { $0 == comment }
+        return { [weak self] in
+            guard let self = self else { return }
+            try await PostService.removeComment(comment, from: self.post)
+            self.comments.removeAll { $0 == comment }
+        }
     }
 }

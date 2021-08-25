@@ -8,15 +8,15 @@
 import SwiftUI
 
 struct NewCommentForm: View {
-    let submitAction: (String) async -> Bool
+    let submitAction: (String) async throws -> Void
     
     @State private var comment = ""
-    @State private var isLoading = false
+    @StateObject private var submitTask = TaskViewModel()
     
     var body: some View {
         HStack {
             TextField("Comment", text: $comment)
-            if isLoading {
+            if submitTask.isInProgress {
                 ProgressView()
             } else {
                 Button(action: handleSubmit) {
@@ -25,18 +25,21 @@ struct NewCommentForm: View {
                 .disabled(comment.isEmpty)
             }
         }
-        .disabled(isLoading)
+        .disabled(submitTask.isInProgress)
         .onSubmit(handleSubmit)
+        .alert("Cannot Post Comment", isPresented: $submitTask.isError, presenting: submitTask.error) { error in
+            Text(error.localizedDescription)
+        }
     }
     
     private func handleSubmit() {
-        Task {
-            isLoading = true
-            let isSuccess = await submitAction(comment)
-            if isSuccess {
+        submitTask.run {
+            do {
+                try await submitAction(comment)
                 comment = ""
+            } catch {
+                throw error
             }
-            isLoading = false
         }
     }
 }
@@ -47,7 +50,7 @@ struct NewCommentForm_Previews: PreviewProvider {
             Text("Preview")
                 .toolbar {
                     ToolbarItem(placement: .bottomBar) {
-                        NewCommentForm(submitAction: { _ in true })
+                        NewCommentForm(submitAction: { _ in })
                     }
                 }
         }
