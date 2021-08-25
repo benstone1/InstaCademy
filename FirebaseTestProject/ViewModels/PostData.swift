@@ -30,11 +30,13 @@ import Foundation
         }
     }
     
-    func delete(_ post: Post) async throws {
+    func deleteAction(for post: Post) -> (() async throws -> Void)? {
         guard post.author.id == user.id else {
-            preconditionFailure("User is not permitted to delete post")
+            return nil
         }
-        try await PostService.delete(post)
-        posts.removeAll { $0 == post }
+        return {
+            try await PostService.delete(post)
+            posts.removeAll { $0 == post }
+        }
     }
 }

@@ -10,12 +10,10 @@ import SwiftUI
 struct PostsList: View {
     @StateObject var postData: PostData
     
-    @Environment(\.user) private var user
-    
     var body: some View {
         NavigationView {
             List(postData.posts) { post in
-                PostRow(post: post, deleteAction: post.author.id == user.id ? { try await postData.delete(post) } : nil)
+                PostRow(post: post, deleteAction: postData.deleteAction(for: post))
             }
             .refreshable {
                 await postData.loadPosts()
