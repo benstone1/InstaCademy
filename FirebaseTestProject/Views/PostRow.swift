@@ -31,7 +31,8 @@ struct PostRow: View {
                     Button(action: {
                         showAlert = true
                     }, label: {
-                        Label("", systemImage: "trash")
+                        Label("Delete", systemImage: "trash")
+                            .labelStyle(IconOnlyLabelStyle())
                     })
                     .buttonStyle(PlainButtonStyle())
                 }
