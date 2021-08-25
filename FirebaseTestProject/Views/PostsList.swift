@@ -61,7 +61,6 @@ struct PostsList: View {
 extension PostsList {
     enum ViewStyle {
         case all
-        case favorites
         case singleAuthor(String)
     }
     
@@ -76,8 +75,6 @@ extension PostsList {
         switch viewStyle {
         case .all:
             return postData.posts
-        case .favorites:
-            return postData.favorites
         case let .singleAuthor(author):
             return postData.posts.filter({ $0.author == author })
         }
