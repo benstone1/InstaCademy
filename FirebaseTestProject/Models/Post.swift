@@ -13,6 +13,7 @@ struct Post: FirebaseConvertable {
     let author: String
     let text: String
     let id: UUID
+    let authorid: UUID
     let timestamp: Date
     
     init(title: String, text: String, author: String) {
@@ -21,42 +22,10 @@ struct Post: FirebaseConvertable {
         self.text = text
         self.id = UUID()
         self.timestamp = Date()
+        let userid = UserDefaults.standard.value(forKey: "userid") != nil ? UUID(uuidString: UserDefaults.standard.value(forKey: "userid") as! String) : UUID(uuidString: "00854E9E-8468-421D-8AA2-605D8E6C61D9")
+        self.authorid = userid!
     }
     static let testPost = Post(title: "Title", text: "Content", author: "First Last")
-    
-    func contains(_ str:String) -> Bool {
-        // Not 100% sure works -- "generic" (we still have to do a specific if-case for each type) functionality for not requiring specific property names
-        // as in the case commented below
-        let stringValues = self.jsonDict.values.map { val -> String in
-            if let value = val as? String {
-                return value
-            }
-            // We don't want to search on ANY UUIDs
-            if let _ = val as? UUID {
-                return ""
-            }
-            if let value = val as? Date {
-                return DateFormatter.postFormat(date: value).lowercased()
-            }
-            return ""
-        }
-        
-        
-        let filteredStrings = stringValues.filter({ $0 != "" && $0.contains(str.lowercased()) })
-        
-        return filteredStrings.count > 0
-        
-        // 100% sure works with the specific properties
-//        let lowercaseString = str.lowercased()
-//        let lowercaseTitle = title.lowercased()
-//        let lowercaseAuthor = author.lowercased()
-//        let lowercaseText = text.lowercased()
-//        let lowercaseDate = DateFormatter.postFormat(date: timestamp).lowercased()
-//        return  lowercaseTitle.contains(lowercaseString) ||
-//                lowercaseAuthor.contains(lowercaseString) ||
-//                lowercaseText.contains(lowercaseString) ||
-//                lowercaseDate.contains(lowercaseString)
-    }
 }
 
 protocol FirebaseConvertable: Codable {
