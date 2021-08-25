@@ -11,7 +11,6 @@ struct PostRow: View {
     @Binding  var post: Post
     @State var isPresenting: Bool = false
     @State private var showAlert: Bool = false
-    @State private var systemImage: String = ""
     let deletePostAction:((Post) -> Void)
     
     init(post: Binding<Post>, deletePostAction: @escaping (Post) -> Void) {
