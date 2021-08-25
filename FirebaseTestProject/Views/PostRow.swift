@@ -40,8 +40,6 @@ struct PostRow: View {
                 Button(action: {
                     Task {
                         post.isFavorite = !post.isFavorite
-                        post.isFavorite ?
-                            try await PostService.favorite(post) : try await PostService.delete(favorite: post)
                         isFavoriteAction(post)
                     }
                 }, label: {
@@ -82,7 +80,7 @@ struct PostRow: View {
                 // the horizontal component
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .background(Color.blue.opacity(0.5))
+        .background(Color.red.opacity(0.5))
         .cornerRadius(10)
     }
 }
