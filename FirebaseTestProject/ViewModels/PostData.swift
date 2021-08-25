@@ -9,7 +9,7 @@ import Foundation
 
 @MainActor class PostData: ObservableObject {
     @Published var posts: [Post] = []
-    @Published var favorites: [Post] = []
+    @Published var favorites: [Favorite] = []
     
     init() {
         Task {
@@ -17,7 +17,7 @@ import Foundation
             await loadFavorites()
             
             // Set Post.isFavorite for all favorited posts
-            let favoritesID = favorites.map({ $0.id })
+            let favoritesID = favorites.map({ $0.postid })
             for i in 0..<posts.count {
                 if favoritesID.contains(posts[i].id) {
                     posts[i].isFavorite = true
@@ -45,7 +45,6 @@ import Foundation
             print(error)
         }
     }
-    
     func index(of post: Post) -> Int? {
         for i in posts.indices {
             if posts[i].id == post.id {
@@ -57,14 +56,33 @@ import Foundation
     
     func remove(post: Post) {
         Task {
-            try await PostService.delete(post: post)
+            try await PostService.delete(post)
         }
         
         guard let index = posts.firstIndex(where: { $0.id == post.id }) else { return }
         posts.remove(at: index)
         
         // If is a favorite, we remove it as well. If not, it returns
-        guard let index = favorites.firstIndex(where: { $0.id == post.id }) else { return }
+        unfavorite(post)
+    }
+    
+    func favorite(_ post: Post) {
+        let userid = UserDefaults.standard.value(forKey: "userid") as? String ?? "00854E9E-8468-421D-8AA2-605D8E6C61D9"
+        let favorite = Favorite(postid: post.id.uuidString, userid: userid)
+        favorites.append(favorite)
+        
+        Task {
+            try await PostService.favorite(favorite)
+        }
+    }
+    
+    func unfavorite(_ post: Post) {
+        guard let index = favorites.firstIndex(where: { $0.postid == post.id }) else { return }
+        let favorite = favorites[index]
         favorites.remove(at: index)
+        
+        Task {
+            try await PostService.unfavorite(favorite)
+        }
     }
 }
