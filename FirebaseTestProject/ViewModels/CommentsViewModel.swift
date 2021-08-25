@@ -13,6 +13,7 @@ import Foundation
     
     enum State {
         case loading
+        case error
         case loaded
     }
     
@@ -32,6 +33,7 @@ import Foundation
                 state = .loaded
             } catch {
                 print("[CommentsViewModel] Cannot load comments: \(error.localizedDescription)")
+                state = .error
             }
         }
     }

@@ -17,6 +17,8 @@ struct CommentsList: View {
             switch viewModel.state {
             case .loading:
                 loadingScreen
+            case .error:
+                errorScreen
             case .loaded where viewModel.comments.isEmpty:
                 emptyScreen
             case .loaded:
@@ -39,6 +41,23 @@ private extension CommentsList {
             .onAppear {
                 viewModel.loadComments()
             }
+    }
+    
+    var errorScreen: some View {
+        VStack(alignment: .center, spacing: 20) {
+            Text("Cannot Load Comments")
+                .font(.title2)
+                .fontWeight(.semibold)
+            Button(action: {
+                viewModel.loadComments()
+            }) {
+                Text("Try Again")
+                    .font(.subheadline)
+                    .padding(10)
+                    .foregroundColor(Color.gray)
+                    .background(RoundedRectangle(cornerRadius: 5).stroke(Color.gray))
+            }
+        }
     }
     
     var emptyScreen: some View {
