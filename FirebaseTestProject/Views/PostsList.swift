@@ -1,6 +1,6 @@
 //
-//  ContentView.swift
-//  FirebaseTestProject
+//  PostsList.swift
+//  PostsList
 //
 //  Created by Ben Stone on 8/9/21.
 //
@@ -9,17 +9,16 @@ import SwiftUI
 
 struct PostsList: View {
     @StateObject var postData = PostData()
-    @State private var searchText: String = ""
+    @State private var searchText = ""
     
     var body: some View {
-        //Searchable Posts
-        SearchBar(text: $searchText)
-        let posts = searchText == "" ? postData.posts : postData.posts.filter({ $0.contains(searchText) })
-        
         NavigationView {
-            List(posts, id: \.text) { post in
-                PostRow(post: post)
+            List(postData.posts, id: \.text) { post in
+                if searchText.isEmpty || post.contains(searchText) {
+                    PostRow(post: post)
+                }
             }
+            .searchable(text: $searchText)
             .refreshable {
                 await postData.loadPosts()
             }
@@ -33,7 +32,7 @@ struct PostsList: View {
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
+struct PostsList_Previews: PreviewProvider {
     static var previews: some View {
         PostsList()
     }

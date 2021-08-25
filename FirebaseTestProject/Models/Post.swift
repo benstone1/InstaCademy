@@ -24,37 +24,17 @@ struct Post: FirebaseConvertable {
     }
     static let testPost = Post(title: "Title", text: "Content", author: "First Last")
     
-    func contains(_ str:String) -> Bool {
-        // Probably Works -- VERY ARBITRARY (works for any keys)
-        let stringValues = self.jsonDict.values.map { val -> String in
-            if let value = val as? String {
-                return value
-            }
-            // We don't want to search on ANY UUIDs
-            if let value = val as? UUID {
-                return ""
-            }
-            if let value = val as? Date {
+    func contains(_ string: String) -> Bool {
+        let strings = jsonDict.values.compactMap { value -> String? in
+            if let value = value as? String {
+                return value.lowercased()
+            } else if let value = value as? Date {
                 return DateFormatter.postFormat(date: value).lowercased()
             }
-            return ""
+            return nil
         }
-        
-        
-        let filteredStrings = stringValues.filter({ $0 != "" && $0.contains(str.lowercased()) })
-        
-        return filteredStrings.count > 0
-        
-        // Definitely works - VERY SPECIFIC in keys
-//        let lowercaseString = str.lowercased()
-//        let lowercaseTitle = title.lowercased()
-//        let lowercaseAuthor = author.lowercased()
-//        let lowercaseText = text.lowercased()
-//        let lowercaseDate = DateFormatter.postFormat(date: timestamp).lowercased()
-//        return  lowercaseTitle.contains(lowercaseString) ||
-//                lowercaseAuthor.contains(lowercaseString) ||
-//                lowercaseText.contains(lowercaseString) ||
-//                lowercaseDate.contains(lowercaseString)
+        let matches = strings.filter { $0.contains(string.lowercased()) }
+        return matches.count > 0
     }
 }
 

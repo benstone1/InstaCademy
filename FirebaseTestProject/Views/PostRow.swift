@@ -9,6 +9,7 @@ import SwiftUI
 
 struct PostRow: View {
     let post: Post
+    
     var body: some View {
         VStack {
             Text(post.title)
