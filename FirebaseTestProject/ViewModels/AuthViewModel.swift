@@ -13,6 +13,7 @@ import Foundation
     private let userService: UserService
     
     init(userService: UserService = .init()) {
+        self.user = userService.currentUser()
         self.userService = userService
         
         Task {
