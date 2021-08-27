@@ -8,9 +8,11 @@
 import SwiftUI
 
 struct NewPostForm: View {
-    @State var postContent = ""
-    @State var title = ""
+    @State private var title = ""
+    @State private var postContent = ""
     @FocusState private var showingKeyboard: Bool
+    @StateObject private var submitTask = TaskViewModel()
+    @Environment(\.user) private var user
     
     var body: some View {
         Form {
@@ -18,17 +20,21 @@ struct NewPostForm: View {
                 .focused($showingKeyboard)
             TextField("Post content", text: $postContent)
                 .focused($showingKeyboard)
-            Button("Submit") {
-                showingKeyboard = false
-                Task {
-                    do {
-                        try await PostService.upload(Post(title: title, text: postContent, author: "Add Auth"))
-                    }
-                    catch {
-                        print(error)
-                    }
-                }
-            }
+            Button("Submit", action: submitPost)
+        }
+        .alert("Cannot Submit Post", isPresented: $submitTask.isError, presenting: submitTask.error) { error in
+            Text(error.localizedDescription)
+        }
+    }
+    
+    private func submitPost() {
+        showingKeyboard = false
+        let post = Post(title: title, text: postContent, author: user)
+        
+        submitTask.run {
+            try await PostService.upload(post)
+            title = ""
+            postContent = ""
         }
     }
 }
