@@ -37,11 +37,3 @@ struct Post: Identifiable, Equatable, FirebaseConvertable {
         return matches.count > 0
     }
 }
-
-extension DateFormatter {
-    static func postFormat(date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "d MMM y"
-        return formatter.string(from: date)
-    }
-}
