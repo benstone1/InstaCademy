@@ -32,7 +32,7 @@ struct NewPostForm: View {
         let post = Post(title: title, text: postContent, author: user)
         
         submitTask.run {
-            try await PostService.upload(post)
+            try await PostService(user: user).create(post)
             title = ""
             postContent = ""
         }
