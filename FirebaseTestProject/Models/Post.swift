@@ -7,12 +7,34 @@
 
 import Foundation
 
-struct Post: FirebaseConvertable {
+struct Post: Identifiable, Equatable, FirebaseConvertable {
     let title: String
-    let author: User
     let text: String
+    let author: User
     let id: UUID
     let timestamp: Date
+    
+    init(title: String, text: String, author: User, id: UUID = .init(), timestamp: Date = .init()) {
+        self.title = title
+        self.text = text
+        self.author = author
+        self.id = id
+        self.timestamp = timestamp
+    }
+    static let testPost = Post(title: "Title", text: "Content", author: "First Last")
+    
+    func contains(_ string: String) -> Bool {
+        let strings = jsonDict.values.compactMap { value -> String? in
+            if let value = value as? String {
+                return value.lowercased()
+            } else if let value = value as? Date {
+                return DateFormatter.postFormat(date: value).lowercased()
+            }
+            return nil
+        }
+        let matches = strings.filter { $0.contains(string.lowercased()) }
+        return matches.count > 0
+    }
 }
 
 extension Post {
@@ -24,6 +46,13 @@ extension Post {
         self.id = UUID()
         self.timestamp = Date()
     }
-    
-    static let testPost = Post(title: "Title", text: "Content", author: "First Last")
+}
+
+
+extension DateFormatter {
+    static func postFormat(date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d MMM y"
+        return formatter.string(from: date)
+    }
 }

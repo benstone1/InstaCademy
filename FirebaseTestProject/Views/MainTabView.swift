@@ -20,26 +20,27 @@ struct MainTabView: View {
     
     private func authenticatedView(_ user: User) -> some View {
         TabView {
-            PostsList()
+            PostsList(postData: .init(user: user))
                 .tabItem {
                     Label("Posts", systemImage: "list.dash")
                 }
             NewPostForm()
-                 .tabItem {
-                     Label("New Post", systemImage: "plus.circle")
-                 }
+                .tabItem {
+                    Label("New Post", systemImage: "plus.circle")
+                }
+            ProfileView(user: user, signOutAction: userService.signOut)
+                .tabItem {
+                    Label("Profile", systemImage: "gear")
+                }
         }
         .environment(\.user, user)
     }
     
     private var unauthenticatedView: some View {
-        // TODO: Replace this with Tim’s authentication UI. This is a placeholder to facilitate the development of comments, which rely on there being an authenticated user.
-        ProgressView()
-            .onAppear {
-                Task {
-                    try! await userService.signIn(email: "A21-4@testuser.com", password: "password")
-                }
-            }
+        SignInView(
+            action: userService.signIn(email:password:),
+            createAccountView: SignUpView(action: userService.createAccount(name:email:password:))
+        )
     }
 }
 

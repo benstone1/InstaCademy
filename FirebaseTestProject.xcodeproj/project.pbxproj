@@ -7,16 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		52424B8B26D1E1BE009F91C3 /* CommentsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52424B8A26D1E1BE009F91C3 /* CommentsViewModel.swift */; };
-		52424B8F26D1E228009F91C3 /* NewCommentForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52424B8E26D1E228009F91C3 /* NewCommentForm.swift */; };
+		41CF7E7026CC312A0043EB96 /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41CF7E6D26CC312A0043EB96 /* SignUpView.swift */; };
+		41CF7E7126CC312A0043EB96 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41CF7E6E26CC312A0043EB96 /* ProfileView.swift */; };
+		41CF7E7226CC312A0043EB96 /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41CF7E6F26CC312A0043EB96 /* SignInView.swift */; };
 		52917CC226D162B20061E69F /* FirebaseConvertable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52917CC126D162B20061E69F /* FirebaseConvertable.swift */; };
 		52917CC526D162ED0061E69F /* PostService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52917CC426D162ED0061E69F /* PostService.swift */; };
 		52917CCB26D16AE60061E69F /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52917CCA26D16AE60061E69F /* UserService.swift */; };
 		52917CCD26D16AF00061E69F /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52917CCC26D16AF00061E69F /* User.swift */; };
-		52917CD126D185530061E69F /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52917CD026D185530061E69F /* Comment.swift */; };
-		52917CD526D18D9E0061E69F /* CommentsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52917CD426D18D9E0061E69F /* CommentsList.swift */; };
-		52917CD726D198DC0061E69F /* CommentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52917CD626D198DC0061E69F /* CommentRow.swift */; };
-		529271FB26D6F2F200A35315 /* TaskViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529271FA26D6F2F200A35315 /* TaskViewModel.swift */; };
+		529271FF26D7003500A35315 /* TaskViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529271FE26D7003500A35315 /* TaskViewModel.swift */; };
 		F2576EAA26C18A1700D3F344 /* FirebaseTestProjectApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EA926C18A1700D3F344 /* FirebaseTestProjectApp.swift */; };
 		F2576EAC26C18A1700D3F344 /* PostsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EAB26C18A1700D3F344 /* PostsList.swift */; };
 		F2576EAE26C18A1A00D3F344 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F2576EAD26C18A1A00D3F344 /* Assets.xcassets */; };
@@ -53,16 +51,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		52424B8A26D1E1BE009F91C3 /* CommentsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsViewModel.swift; sourceTree = "<group>"; };
-		52424B8E26D1E228009F91C3 /* NewCommentForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCommentForm.swift; sourceTree = "<group>"; };
+		41CF7E6D26CC312A0043EB96 /* SignUpView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
+		41CF7E6E26CC312A0043EB96 /* ProfileView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		41CF7E6F26CC312A0043EB96 /* SignInView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
 		52917CC126D162B20061E69F /* FirebaseConvertable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseConvertable.swift; sourceTree = "<group>"; };
 		52917CC426D162ED0061E69F /* PostService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostService.swift; sourceTree = "<group>"; };
 		52917CCA26D16AE60061E69F /* UserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
 		52917CCC26D16AF00061E69F /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
-		52917CD026D185530061E69F /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
-		52917CD426D18D9E0061E69F /* CommentsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsList.swift; sourceTree = "<group>"; };
-		52917CD626D198DC0061E69F /* CommentRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentRow.swift; sourceTree = "<group>"; };
-		529271FA26D6F2F200A35315 /* TaskViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskViewModel.swift; sourceTree = "<group>"; };
+		529271FE26D7003500A35315 /* TaskViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskViewModel.swift; sourceTree = "<group>"; };
 		F2576EA626C18A1700D3F344 /* FirebaseTestProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FirebaseTestProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2576EA926C18A1700D3F344 /* FirebaseTestProjectApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseTestProjectApp.swift; sourceTree = "<group>"; };
 		F2576EAB26C18A1700D3F344 /* PostsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostsList.swift; sourceTree = "<group>"; };
@@ -188,8 +184,7 @@
 			isa = PBXGroup;
 			children = (
 				F2576EDE26C19ED000D3F344 /* PostData.swift */,
-				52424B8A26D1E1BE009F91C3 /* CommentsViewModel.swift */,
-				529271FA26D6F2F200A35315 /* TaskViewModel.swift */,
+				529271FE26D7003500A35315 /* TaskViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -197,7 +192,6 @@
 		F2576EE726C1A21300D3F344 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				52917CD026D185530061E69F /* Comment.swift */,
 				F2576EDA26C19A3C00D3F344 /* Post.swift */,
 				52917CCC26D16AF00061E69F /* User.swift */,
 			);
@@ -211,9 +205,9 @@
 				F2576EAB26C18A1700D3F344 /* PostsList.swift */,
 				F2576EED26C1B67E00D3F344 /* PostRow.swift */,
 				F2576EE926C1A2FA00D3F344 /* NewPostForm.swift */,
-				52917CD426D18D9E0061E69F /* CommentsList.swift */,
-				52917CD626D198DC0061E69F /* CommentRow.swift */,
-				52424B8E26D1E228009F91C3 /* NewCommentForm.swift */,
+				41CF7E6E26CC312A0043EB96 /* ProfileView.swift */,
+				41CF7E6F26CC312A0043EB96 /* SignInView.swift */,
+				41CF7E6D26CC312A0043EB96 /* SignUpView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -358,22 +352,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				52424B8F26D1E228009F91C3 /* NewCommentForm.swift in Sources */,
-				52424B8B26D1E1BE009F91C3 /* CommentsViewModel.swift in Sources */,
 				F2576EEE26C1B67E00D3F344 /* PostRow.swift in Sources */,
 				F2576EDB26C19A3C00D3F344 /* Post.swift in Sources */,
 				52917CC226D162B20061E69F /* FirebaseConvertable.swift in Sources */,
+				41CF7E7126CC312A0043EB96 /* ProfileView.swift in Sources */,
 				F2576EDF26C19ED000D3F344 /* PostData.swift in Sources */,
 				F2576EAC26C18A1700D3F344 /* PostsList.swift in Sources */,
-				529271FB26D6F2F200A35315 /* TaskViewModel.swift in Sources */,
 				F2576EAA26C18A1700D3F344 /* FirebaseTestProjectApp.swift in Sources */,
 				52917CCB26D16AE60061E69F /* UserService.swift in Sources */,
-				52917CD126D185530061E69F /* Comment.swift in Sources */,
 				F2576EEA26C1A2FA00D3F344 /* NewPostForm.swift in Sources */,
 				52917CC526D162ED0061E69F /* PostService.swift in Sources */,
+				41CF7E7026CC312A0043EB96 /* SignUpView.swift in Sources */,
+				41CF7E7226CC312A0043EB96 /* SignInView.swift in Sources */,
 				F2576EE326C1A1A600D3F344 /* MainTabView.swift in Sources */,
-				52917CD526D18D9E0061E69F /* CommentsList.swift in Sources */,
-				52917CD726D198DC0061E69F /* CommentRow.swift in Sources */,
+				529271FF26D7003500A35315 /* TaskViewModel.swift in Sources */,
 				52917CCD26D16AF00061E69F /* User.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
