@@ -10,7 +10,7 @@
 		41CF7E7026CC312A0043EB96 /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41CF7E6D26CC312A0043EB96 /* SignUpView.swift */; };
 		41CF7E7126CC312A0043EB96 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41CF7E6E26CC312A0043EB96 /* ProfileView.swift */; };
 		41CF7E7226CC312A0043EB96 /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41CF7E6F26CC312A0043EB96 /* SignInView.swift */; };
-		5230FE8F26D996C600BC956C /* CommentsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5230FE8E26D996C600BC956C /* CommentsViewModel.swift */; };
+		5230FE8F26D996C600BC956C /* CommentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5230FE8E26D996C600BC956C /* CommentViewModel.swift */; };
 		5230FE9326D996D800BC956C /* NewCommentForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5230FE9026D996D800BC956C /* NewCommentForm.swift */; };
 		5230FE9426D996D800BC956C /* CommentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5230FE9126D996D800BC956C /* CommentRow.swift */; };
 		5230FE9526D996D800BC956C /* CommentsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5230FE9226D996D800BC956C /* CommentsList.swift */; };
@@ -59,7 +59,7 @@
 		41CF7E6D26CC312A0043EB96 /* SignUpView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
 		41CF7E6E26CC312A0043EB96 /* ProfileView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		41CF7E6F26CC312A0043EB96 /* SignInView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
-		5230FE8E26D996C600BC956C /* CommentsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentsViewModel.swift; sourceTree = "<group>"; };
+		5230FE8E26D996C600BC956C /* CommentViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentViewModel.swift; sourceTree = "<group>"; };
 		5230FE9026D996D800BC956C /* NewCommentForm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewCommentForm.swift; sourceTree = "<group>"; };
 		5230FE9126D996D800BC956C /* CommentRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentRow.swift; sourceTree = "<group>"; };
 		5230FE9226D996D800BC956C /* CommentsList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentsList.swift; sourceTree = "<group>"; };
@@ -194,7 +194,7 @@
 			isa = PBXGroup;
 			children = (
 				F2576EDE26C19ED000D3F344 /* PostData.swift */,
-				5230FE8E26D996C600BC956C /* CommentsViewModel.swift */,
+				5230FE8E26D996C600BC956C /* CommentViewModel.swift */,
 				529271FE26D7003500A35315 /* TaskViewModel.swift */,
 			);
 			path = ViewModels;
@@ -372,7 +372,7 @@
 				F2576EDB26C19A3C00D3F344 /* Post.swift in Sources */,
 				52917CC226D162B20061E69F /* FirebaseConvertable.swift in Sources */,
 				41CF7E7126CC312A0043EB96 /* ProfileView.swift in Sources */,
-				5230FE8F26D996C600BC956C /* CommentsViewModel.swift in Sources */,
+				5230FE8F26D996C600BC956C /* CommentViewModel.swift in Sources */,
 				F2576EDF26C19ED000D3F344 /* PostData.swift in Sources */,
 				F2576EAC26C18A1700D3F344 /* PostsList.swift in Sources */,
 				5230FE9426D996D800BC956C /* CommentRow.swift in Sources */,

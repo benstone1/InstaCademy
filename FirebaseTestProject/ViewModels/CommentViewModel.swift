@@ -7,7 +7,7 @@
 
 import Foundation
 
-@MainActor class CommentsViewModel: ObservableObject {
+@MainActor class CommentViewModel: ObservableObject {
     @Published var comments: [Comment] = []
     @Published var state: State = .loading
     

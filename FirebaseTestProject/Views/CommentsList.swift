@@ -10,7 +10,7 @@ import SwiftUI
 // MARK: - CommentsList
 
 struct CommentsList: View {
-    @ObservedObject var viewModel: CommentsViewModel
+    @ObservedObject var viewModel: CommentViewModel
     
     var body: some View {
         Group {
