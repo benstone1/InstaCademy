@@ -24,6 +24,10 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Posts", systemImage: "list.dash")
                 }
+            PostsList(postData: .init(filter: .favorites, user: user))
+                .tabItem {
+                    Label("Favorites", systemImage: "heart")
+                }
             NewPostForm()
                 .tabItem {
                     Label("New Post", systemImage: "plus.circle")

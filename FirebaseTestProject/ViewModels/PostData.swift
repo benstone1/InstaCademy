@@ -7,33 +7,41 @@
 
 import Foundation
 
+private typealias PostLoader = () async throws -> [Post]
+
 @MainActor class PostData: ObservableObject {
     @Published var posts: [Post] = []
     
     private let postService: PostService
+    private let postLoader: PostLoader
     
-    init(user: User) {
+    init(filter: Filter? = .none, user: User) {
         postService = .init(user: user)
+        postLoader = postService.postLoader(for: filter)
         
         Task {
             await loadPosts()
         }
     }
     
+    enum Filter {
+        case favorites
+    }
+    
     func loadPosts() async {
         do {
-            let posts = try await postService.posts()
-            self.posts = posts
-        }
-        catch {
+            posts = try await postLoader()
+        } catch {
             print(error)
         }
     }
     
     func favoriteAction(for post: Post) -> (() async throws -> Void) {
-        return { [weak self] in
-            guard let self = self else { return }
-            try await (post.isFavorite ? self.unfavorite(post) : self.favorite(post))
+        return { [self] in
+            if let i = posts.firstIndex(of: post) {
+                posts[i].isFavorite = !post.isFavorite
+            }
+            try await (post.isFavorite ? postService.unfavorite(post) : postService.favorite(post))
         }
     }
     
@@ -41,27 +49,20 @@ import Foundation
         guard post.author.id == postService.user.id else {
             return nil
         }
-        return { [weak self] in
-            try await self?.delete(post)
+        return { [self] in
+            try await postService.delete(post)
+            posts.removeAll { $0.id == post.id }
         }
     }
-    
-    private func favorite(_ post: Post) async throws {
-        if let i = posts.firstIndex(of: post) {
-            posts[i].isFavorite = true
+}
+
+private extension PostService {
+    func postLoader(for filter: PostData.Filter?) -> PostLoader {
+        switch filter {
+        case .none:
+            return posts
+        case .favorites:
+            return favoritePosts
         }
-        try await postService.favorite(post)
-    }
-    
-    private func unfavorite(_ post: Post) async throws {
-        if let i = posts.firstIndex(of: post) {
-            posts[i].isFavorite = false
-        }
-        try await postService.unfavorite(post)
-    }
-    
-    private func delete(_ post: Post) async throws {
-        try await postService.delete(post)
-        posts.removeAll { $0.id == post.id }
     }
 }
