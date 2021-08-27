@@ -13,7 +13,7 @@ struct PostsList: View {
   
     var body: some View {
         NavigationView {
-            List(postData.posts: id: \.text) { post in
+            List(postData.posts, id: \.text) { post in
                 if searchText.isEmpty || post.contains(searchText) {
                     PostRow(post: post, deleteAction: postData.deleteAction(for: post))
                 }

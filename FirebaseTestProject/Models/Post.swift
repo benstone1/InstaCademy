@@ -37,24 +37,6 @@ struct Post: Identifiable, Equatable, FirebaseConvertable {
     }
 }
 
-protocol FirebaseConvertable: Codable {
-    init(from jsonDict: [String: Any])
-    var jsonDict: [String: Any] { get }
-}
-
-extension FirebaseConvertable {
-    init(from jsonDict: [String: Any]) {
-        let data = try! JSONSerialization.data(withJSONObject: jsonDict)
-        let newInstance = try! JSONDecoder().decode(Self.self, from: data)
-        self = newInstance
-    }
-    var jsonDict: [String: Any] {
-        let data = try! JSONEncoder().encode(self)
-        let jsonObject = try! JSONSerialization.jsonObject(with: data)
-        return jsonObject as! [String: Any]
-    }
-}
-
 extension Post {
     @available(*, deprecated, message: "Specify the author with a User object instead.")
     init(title: String, text: String, author: String) {
@@ -64,8 +46,6 @@ extension Post {
         self.id = UUID()
         self.timestamp = Date()
     }
-    
-    static let testPost = Post(title: "Title", text: "Content", author: "First Last")
 }
 
 
