@@ -10,7 +10,11 @@ import Foundation
 @MainActor class PostData: ObservableObject {
     @Published var posts: [Post] = []
     
-    init() {
+    private let user: User
+    
+    init(user: User) {
+        self.user = user
+        
         Task {
             await loadPosts()
         }
@@ -23,6 +27,16 @@ import Foundation
         }
         catch {
             print(error)
+        }
+    }
+    
+    func deleteAction(for post: Post) -> (() async throws -> Void)? {
+        guard post.author.id == user.id else {
+            return nil
+        }
+        return {
+            try await PostService.delete(post)
+            self.posts.removeAll { $0 == post }
         }
     }
 }

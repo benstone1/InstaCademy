@@ -8,9 +8,19 @@
 import SwiftUI
 
 struct MainTabView: View {
+    @StateObject private var userService = UserService()
+    
     var body: some View {
+        if let user = userService.user {
+            authenticatedView(user)
+        } else {
+            unauthenticatedView
+        }
+    }
+    
+    private func authenticatedView(_ user: User) -> some View {
         TabView {
-            PostsList()
+            PostsList(postData: .init(user: user))
                 .tabItem {
                     Label("Posts", systemImage: "list.dash")
                 }
@@ -18,7 +28,30 @@ struct MainTabView: View {
                 .tabItem {
                     Label("New Post", systemImage: "plus.circle")
                 }
+            ProfileView(user: user, signOutAction: userService.signOut)
+                .tabItem {
+                    Label("Profile", systemImage: "gear")
+                }
         }
+        .environment(\.user, user)
+    }
+    
+    private var unauthenticatedView: some View {
+        SignInView(
+            action: userService.signIn(email:password:),
+            createAccountView: SignUpView(action: userService.createAccount(name:email:password:))
+        )
+    }
+}
+
+struct UserEnvironmentKey: EnvironmentKey {
+    static let defaultValue = User.testUser
+}
+
+extension EnvironmentValues {
+    var user: User {
+        get { self[UserEnvironmentKey.self] }
+        set { self[UserEnvironmentKey.self] = newValue }
     }
 }
 

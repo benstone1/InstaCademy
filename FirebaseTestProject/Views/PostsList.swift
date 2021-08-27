@@ -8,14 +8,14 @@
 import SwiftUI
 
 struct PostsList: View {
-    @StateObject var postData = PostData()
+    @StateObject var postData: PostData
     @State private var searchText = ""
-    
+  
     var body: some View {
         NavigationView {
             List(postData.posts, id: \.text) { post in
                 if searchText.isEmpty || post.contains(searchText) {
-                    PostRow(post: post)
+                    PostRow(post: post, deleteAction: postData.deleteAction(for: post))
                 }
             }
             .searchable(text: $searchText)
@@ -34,6 +34,6 @@ struct PostsList: View {
 
 struct PostsList_Previews: PreviewProvider {
     static var previews: some View {
-        PostsList()
+        PostsList(postData: .init(user: .testUser))
     }
 }

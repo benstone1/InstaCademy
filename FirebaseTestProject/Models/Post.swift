@@ -6,21 +6,20 @@
 //
 
 import Foundation
-import FirebaseFirestore
 
-struct Post: FirebaseConvertable {
+struct Post: Identifiable, Equatable, FirebaseConvertable {
     let title: String
-    let author: String
     let text: String
+    let author: User
     let id: UUID
     let timestamp: Date
     
-    init(title: String, text: String, author: String) {
+    init(title: String, text: String, author: User, id: UUID = .init(), timestamp: Date = .init()) {
         self.title = title
-        self.author = author
         self.text = text
-        self.id = UUID()
-        self.timestamp = Date()
+        self.author = author
+        self.id = id
+        self.timestamp = timestamp
     }
     static let testPost = Post(title: "Title", text: "Content", author: "First Last")
     
@@ -38,38 +37,14 @@ struct Post: FirebaseConvertable {
     }
 }
 
-protocol FirebaseConvertable: Codable {
-    init(from jsonDict: [String: Any])
-    var jsonDict: [String: Any] { get }
-}
-
-extension FirebaseConvertable {
-    init(from jsonDict: [String: Any]) {
-        let data = try! JSONSerialization.data(withJSONObject: jsonDict)
-        let newInstance = try! JSONDecoder().decode(Self.self, from: data)
-        self = newInstance
-    }
-    var jsonDict: [String: Any] {
-        let data = try! JSONEncoder().encode(self)
-        let jsonObject = try! JSONSerialization.jsonObject(with: data)
-        return jsonObject as! [String: Any]
-    }
-}
-
-struct PostService {
-    static var postsReference: CollectionReference {
-        let db = Firestore.firestore()
-        return db.collection("posts")
-    }
-    
-    static func getPosts() async throws -> [Post] {
-        let postsSnapshots = try await postsReference.getDocuments()
-        let posts = postsSnapshots.documents.map { Post(from: $0.data()) }
-        return posts
-    }
-    
-    static func upload(_ post: Post) async throws {
-        try await postsReference.document(post.id.uuidString).setData(post.jsonDict)
+extension Post {
+    @available(*, deprecated, message: "Specify the author with a User object instead.")
+    init(title: String, text: String, author: String) {
+        self.title = title
+        self.author = .init(name: author)
+        self.text = text
+        self.id = UUID()
+        self.timestamp = Date()
     }
 }
 
