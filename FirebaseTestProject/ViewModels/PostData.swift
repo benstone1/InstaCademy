@@ -36,7 +36,7 @@ import Foundation
         }
         return {
             try await PostService.delete(post)
-            posts.removeAll { $0 == post }
+            self.posts.removeAll { $0 == post }
         }
     }
 }
