@@ -45,7 +45,7 @@ struct PostsList: View {
                     case .none:
                         EmptyView()
                     case let .comments(post):
-                        CommentsList(viewModel: .init(post: post, user: user))
+                        CommentsList(viewModel: postData.commentViewModel(for: post))
                     }
                 } label: {
                     EmptyView()

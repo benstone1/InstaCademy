@@ -17,21 +17,17 @@ import Foundation
         case loaded
     }
     
-    private let post: Post
-    private let user: User
-    private let postService: PostService
+    private let commentService: CommentService
     
-    init(post: Post, user: User) {
-        self.post = post
-        self.user = user
-        self.postService = .init(user: user)
+    init(commentService: CommentService) {
+        self.commentService = commentService
     }
     
     func loadComments() {
         Task {
             do {
                 state = .loading
-                comments = try await postService.fetchComments(for: post)
+                comments = try await commentService.comments()
                 state = .loaded
             } catch {
                 print("[CommentsViewModel] Cannot load comments: \(error.localizedDescription)")
@@ -41,18 +37,18 @@ import Foundation
     }
     
     func submitComment(content: String) async throws {
-        let comment = Comment(author: user, content: content)
-        try await postService.addComment(comment, to: post)
+        let comment = Comment(author: commentService.user, content: content)
+        try await commentService.create(comment)
         comments.append(comment)
     }
     
     func deleteAction(for comment: Comment) -> (() async throws -> Void)? {
-        guard [comment.author.id, post.author.id].contains(user.id) else {
+        guard commentService.isDeletable(comment) else {
             return nil
         }
         return { [weak self] in
             guard let self = self else { return }
-            try await self.postService.removeComment(comment, from: self.post)
+            try await self.commentService.delete(comment)
             self.comments.removeAll { $0 == comment }
         }
     }

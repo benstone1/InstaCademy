@@ -20,5 +20,5 @@ struct Comment: Identifiable, Equatable, FirebaseConvertable {
         self.content = content
     }
     
-    static let preview: Comment = .init(author: .init(name: "Jane Doe"), content: "Great job!")
+    static let preview: Comment = .init(author: .testUser, content: "Great job!")
 }

@@ -87,9 +87,13 @@ private extension CommentsList {
 // MARK: - Preview
 
 struct CommentsList_Previews: PreviewProvider {
+    
     static var previews: some View {
         NavigationView {
-            CommentsList(viewModel: .init(post: .testPost, user: .testUser))
+            let postService = PostService(user: .testUser)
+            let commentService = CommentService(post: .testPost, postService: postService)
+            let viewModel = CommentViewModel(commentService: commentService)
+            CommentsList(viewModel: viewModel)
         }
     }
 }
