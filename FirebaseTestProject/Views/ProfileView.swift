@@ -16,52 +16,36 @@ struct ProfileView: View {
     @State private var imageSourceType: ImagePickerView.SourceType?
     @State private var newImageCandidate: UIImage?
     
-    @StateObject private var uploadImageTask = TaskViewModel()
+    @StateObject private var updateImageTask = TaskViewModel()
     @StateObject private var signOutTask = TaskViewModel()
     
     var body: some View {
         VStack{
             Spacer()
-            if let image = newImageCandidate {
-                Image(uiImage: image)
+            AsyncImage(url: URL(string: user.imageURL)) { image in
+                image
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 300, height: 300)
                     .clipShape(Circle())
                     .overlay(Circle().stroke(Color.white, lineWidth: 4))
                     .shadow(radius: 10)
-                HStack(alignment: .center, spacing: 25) {
-                    Button("Confirm", action: {
-                        uploadImageTask.run {
-                            try await updateImageAction(image)
-                            newImageCandidate = nil
-                        }
-                    })
-                    Button("Cancel", role: .destructive, action: {
-                        newImageCandidate = nil
-                    })
-                }
-                .disabled(uploadImageTask.isInProgress)
-            } else {
-                AsyncImage(url: URL(string: user.imageURL), content: { image in
-                    image
+            } placeholder: {
+                VStack {
+                    Image(systemName: "icloud.and.arrow.down")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: 300, height: 300)
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.white, lineWidth: 4))
-                        .shadow(radius: 10)
-                }, placeholder: {
-                    VStack {
-                        Image(systemName: "icloud.and.arrow.down")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 75, height: 50)
-                        Text("Image downloading...")
-                            .font(.caption)
-                    }
+                        .frame(width: 75, height: 50)
+                    Text("Image downloading...")
+                        .font(.caption)
                 }
-                )
+            }
+            if updateImageTask.isInProgress {
+                HStack(spacing: 10) {
+                    ProgressView()
+                    Text("Uploading Photo")
+                }
+            } else {
                 Button("Change Photo", action: {
                     showChooseImageSource = true
                 })
@@ -82,13 +66,13 @@ struct ProfileView: View {
             .disabled(signOutTask.isInProgress)
             Spacer()
         }
-        .alert("Cannot Update Profile Photo", isPresented: $uploadImageTask.isError, presenting: uploadImageTask.error, actions: { _ in }) { error in
+        .alert("Cannot Update Profile Photo", isPresented: $updateImageTask.isError, presenting: updateImageTask.error, actions: { _ in }) { error in
             Text(error.localizedDescription)
         }
         .alert("Cannot Sign Out", isPresented: $signOutTask.isError, presenting: signOutTask.error, actions: { _ in }) { error in
             Text(error.localizedDescription)
         }
-        .confirmationDialog("Change Profile Photo", isPresented: $showChooseImageSource, titleVisibility: .visible) {
+        .alert("Choose Profile Photo", isPresented: $showChooseImageSource) { // When the .confirmationDialog() modifier was used instead of an alert, the other alerts became inoperable (probably a SwiftUI bug), meaning that any potential errors were not propagated to the user.
             Button("Choose from Library", action: {
                 imageSourceType = .photoLibrary
             })
@@ -96,7 +80,13 @@ struct ProfileView: View {
                 imageSourceType = .camera
             })
         }
-        .sheet(item: $imageSourceType) {
+        .sheet(item: $imageSourceType, onDismiss: {
+            guard let image = newImageCandidate else { return }
+            updateImageTask.run {
+                try await updateImageAction(image)
+                newImageCandidate = nil
+            }
+        }) {
             ImagePickerView(sourceType: $0, selection: $newImageCandidate)
         }
     }
