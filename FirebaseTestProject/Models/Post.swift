@@ -28,7 +28,7 @@ struct Post: Identifiable, Equatable, FirebaseConvertable {
             if let value = value as? String {
                 return value.lowercased()
             } else if let value = value as? Date {
-                return DateFormatter.postFormat(date: value).lowercased()
+                return value.formatted()
             }
             return nil
         }
@@ -45,14 +45,5 @@ extension Post {
         self.text = text
         self.id = UUID()
         self.timestamp = Date()
-    }
-}
-
-
-extension DateFormatter {
-    static func postFormat(date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "d MMM y"
-        return formatter.string(from: date)
     }
 }
