@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 @MainActor class AuthViewModel: ObservableObject {
     @Published var user: User?
@@ -32,5 +33,9 @@ import Foundation
     func signOut() throws {
         try userService.signOut()
         user = nil
+    }
+    
+    func updateImage(_ image: UIImage) async throws {
+        user = try await userService.updateImage(image, for: user!)
     }
 }

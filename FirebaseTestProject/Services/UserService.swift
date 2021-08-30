@@ -8,10 +8,13 @@
 import Foundation
 import FirebaseAuth
 import FirebaseFirestore
+import FirebaseStorage
+import UIKit
 
 struct UserService {
     var auth = Auth.auth()
     var usersReference = Firestore.firestore().collection("users")
+    var imagesReference = Storage.storage().reference().child("images/users")
     var cache = Cache<User>(key: "user")
     
     func createAccount(name: String, email: String, password: String) async throws -> User {
@@ -49,6 +52,30 @@ struct UserService {
     func signOut() throws {
         try auth.signOut()
         cache.save(nil)
+    }
+    
+    func updateImage(_ image: UIImage, for user: User) async throws -> User {
+        guard let uid = auth.currentUser?.uid else {
+            preconditionFailure("Cannot update image without an authenticated user")
+        }
+        guard let imageData = image.jpegData(compressionQuality: 0.75) else {
+            preconditionFailure("Cannot obtain JPEG data from image")
+        }
+        let userImageReference = imagesReference.child("\(uid).jpg")
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            userImageReference.putData(imageData, metadata: nil) { _, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume()
+                }
+            }
+        }
+        var user = user
+        user.imageURL = try await userImageReference.downloadURL().absoluteString
+        try await usersReference.document(uid).updateData(["imageURL": user.imageURL])
+        cache.save(user)
+        return user
     }
     
     private func user(_ uid: String) async throws -> User? {
