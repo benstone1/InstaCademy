@@ -9,15 +9,18 @@ import UIKit
 import SwiftUI
 
 struct ImagePickerView: UIViewControllerRepresentable {
-    
     @Binding var selectedImage: UIImage?
-    @Environment(\.presentationMode) var isPresented
+    @Environment(\.dismiss) private var dismiss
     
     var sourceType: UIImagePickerController.SourceType
     
+    func makeCoordinator() -> Coordinator {
+        .init(view: self)
+    }
+    
     func makeUIViewController(context: Context) -> UIImagePickerController {
         let imagePicker = UIImagePickerController()
-        imagePicker.sourceType = self.sourceType
+        imagePicker.sourceType = sourceType
         imagePicker.delegate = context.coordinator
         return imagePicker
     }
@@ -25,24 +28,20 @@ struct ImagePickerView: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {
         
     }
-    
-    func makeCoordinator() -> Coordinator {
-        return Coordinator(picker: self)
-    }
 }
 
-
-class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
-    var picker: ImagePickerView
-    
-    init(picker: ImagePickerView) {
-        self.picker = picker
+extension ImagePickerView {
+    class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+        var view: ImagePickerView
+        
+        init(view: ImagePickerView) {
+            self.view = view
+        }
+        
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+            guard let selectedImage = info[.originalImage] as? UIImage else { return }
+            view.selectedImage = selectedImage
+            view.dismiss()
+        }
     }
-    
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        guard let selectedImage = info[.originalImage] as? UIImage else { return }
-        self.picker.selectedImage = selectedImage
-        self.picker.isPresented.wrappedValue.dismiss()
-    }
-    
 }
