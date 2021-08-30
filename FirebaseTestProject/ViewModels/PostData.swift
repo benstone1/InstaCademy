@@ -7,82 +7,62 @@
 
 import Foundation
 
+private typealias PostLoader = () async throws -> [Post]
+
 @MainActor class PostData: ObservableObject {
     @Published var posts: [Post] = []
-    @Published var favorites: [Favorite] = []
     
-    init() {
+    private let postService: PostService
+    private let postLoader: PostLoader
+    
+    init(filter: Filter? = .none, user: User) {
+        postService = .init(user: user)
+        postLoader = postService.postLoader(for: filter)
+        
         Task {
             await loadPosts()
-            await loadFavorites()
-            
-            // Set Post.isFavorite for all favorited posts
-            let favoritesID = favorites.map({ $0.postid })
-            for i in 0..<posts.count {
-                if favoritesID.contains(posts[i].id) {
-                    posts[i].isFavorite = true
-                }
-            }
         }
+    }
+    
+    enum Filter {
+        case favorites
     }
     
     func loadPosts() async {
         do {
-            let posts = try await PostService.getPosts()
-            self.posts = posts
-        }
-        catch {
+            posts = try await postLoader()
+        } catch {
             print(error)
         }
     }
     
-    func loadFavorites() async {
-        do {
-            let favorites = try await PostService.getFavorites()
-            self.favorites = favorites
-        }
-        catch {
-            print(error)
-        }
-    }
-    func index(of post: Post) -> Int? {
-        for i in posts.indices {
-            if posts[i].id == post.id {
-                return i
+    func favoriteAction(for post: Post) -> (() async throws -> Void) {
+        return { [self] in
+            if let i = posts.firstIndex(of: post) {
+                posts[i].isFavorite = !post.isFavorite
             }
-        }
-        return nil
-    }
-    
-    func remove(post: Post) {
-        Task {
-            try await PostService.delete(post)
-        }
-        
-        guard let index = posts.firstIndex(where: { $0.id == post.id }) else { return }
-        posts.remove(at: index)
-        
-        // If is a favorite, we remove it as well. If not, it returns
-        unfavorite(post)
-    }
-    
-    func favorite(_ post: Post) {
-        let userid = UserDefaults.standard.value(forKey: "userid") as? String ?? "00854E9E-8468-421D-8AA2-605D8E6C61D9"
-        let favorite = Favorite(postid: post.id.uuidString, userid: userid)
-        favorites.append(favorite)
-        
-        Task {
-            try await PostService.favorite(favorite)
+            try await (post.isFavorite ? postService.unfavorite(post) : postService.favorite(post))
         }
     }
     
-    func unfavorite(_ post: Post) {
-        guard let index = favorites.firstIndex(where: { $0.postid == post.id }) else { return }
-        let favorite = favorites[index]
-        favorites.remove(at: index)
-        
-        Task {
-            try await PostService.unfavorite(favorite)
+    func deleteAction(for post: Post) -> (() async throws -> Void)? {
+        guard post.author.id == postService.user.id else {
+            return nil
+        }
+        return { [self] in
+            try await postService.delete(post)
+            posts.removeAll { $0.id == post.id }
+        }
+    }
+}
+
+private extension PostService {
+    func postLoader(for filter: PostData.Filter?) -> PostLoader {
+        switch filter {
+        case .none:
+            return posts
+        case .favorites:
+            return favoritePosts
         }
     }
 }

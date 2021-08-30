@@ -6,122 +6,52 @@
 //
 
 import Foundation
-import FirebaseFirestore
 
-struct Post: FirebaseConvertable {
+struct Post: Identifiable, Equatable, FirebaseConvertable {
     let title: String
-    let author: String
     let text: String
-    let authorid: UUID
+    let author: User
     let id: UUID
     let timestamp: Date
-    var isFavorite: Bool = false
+    var isFavorite = false
+
+    init(title: String, text: String, author: User, id: UUID = .init(), timestamp: Date = .init(), isFavorite: Bool = false) {
+        self.title = title
+        self.text = text
+        self.author = author
+        self.id = id
+        self.timestamp = timestamp
+        self.isFavorite = isFavorite
+    }
     
+    static let testPost = Post(title: "Test post title", text: "This post has some content!", author: .testUser)
+
+    enum CodingKeys: CodingKey {
+        case title, text, author, id, timestamp
+    }
+    
+    func contains(_ string: String) -> Bool {
+        let strings = jsonDict.values.compactMap { value -> String? in
+            if let value = value as? String {
+                return value.lowercased()
+            } else if let value = value as? Date {
+                return DateFormatter.postFormat(date: value).lowercased()
+            }
+            return nil
+        }
+        let matches = strings.filter { $0.contains(string.lowercased()) }
+        return matches.count > 0
+    }
+}
+
+extension Post {
+    @available(*, deprecated, message: "Specify the author with a User object instead.")
     init(title: String, text: String, author: String) {
         self.title = title
-        self.author = author
+        self.author = .init(name: author)
         self.text = text
         self.id = UUID()
         self.timestamp = Date()
-        let userid = UserDefaults.standard.value(forKey: "userid") != nil ? UUID(uuidString: UserDefaults.standard.value(forKey: "userid") as! String) : UUID(uuidString: "00854E9E-8468-421D-8AA2-605D8E6C61D9")
-        self.authorid = userid!
-    }
-    
-    private enum CodingKeys: String, CodingKey {
-        case title
-        case author
-        case text
-        case authorid
-        case id
-        case timestamp
-    }
-    
-    //Custom Decoder for `isFavorite` since we don't set it using th Firebase.posts collections
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        title = try container.decode(String.self, forKey: .title)
-        author = try container.decode(String.self, forKey: .author)
-        text = try container.decode(String.self, forKey: .text)
-        id = try container.decode(UUID.self, forKey: .id)
-        authorid = try container.decode(UUID.self, forKey: .authorid)
-        timestamp = try container.decode(Date.self, forKey: .timestamp)
-    }
-    
-    static let testPost = Post(title: "Title", text: "Content", author: "First Last")
-}
-
-struct Favorite: FirebaseConvertable {
-    let id: UUID
-    let postid: UUID
-    let userid: UUID
-    
-    init(postid: String, userid: String) {
-        self.id = UUID()
-        self.postid = UUID(uuidString: postid)!
-        self.userid = UUID(uuidString: userid)!
-    }
-}
-
-protocol FirebaseConvertable: Codable {
-    init(from jsonDict: [String: Any])
-    var jsonDict: [String: Any] { get }
-}
-
-extension FirebaseConvertable {
-    init(from jsonDict: [String: Any]) {
-        print(jsonDict)
-        
-        let data = try! JSONSerialization.data(withJSONObject: jsonDict)
-        let newInstance = try! JSONDecoder().decode(Self.self, from: data)
-        self = newInstance
-    }
-    var jsonDict: [String: Any] {
-        let data = try! JSONEncoder().encode(self)
-        let jsonObject = try! JSONSerialization.jsonObject(with: data)
-        return jsonObject as! [String: Any]
-    }
-}
-
-struct PostService {
-    static var postsReference: CollectionReference {
-        let db = Firestore.firestore()
-        return db.collection("posts")
-    }
-    
-    static var favoritesReference: CollectionReference {
-        let db = Firestore.firestore()
-        return db.collection("favorites")
-    }
-    
-    static func getPosts() async throws -> [Post] {
-        let postsSnapshots = try await postsReference.getDocuments()
-        let posts = postsSnapshots.documents.map { Post(from: $0.data()) }
-        return posts
-    }
-    
-    static func getFavorites() async throws -> [Favorite] {
-        let userid = UserDefaults.standard.value(forKey: "userid") != nil ?  UserDefaults.standard.value(forKey: "userid") as! String : "00854E9E-8468-421D-8AA2-605D8E6C61D9"
-        let favoritesQuery = favoritesReference.whereField("userid", isEqualTo: userid)
-        let favoritesSnapshots = try await favoritesQuery.getDocuments()
-        let favorites = favoritesSnapshots.documents.map { Favorite(from: $0.data()) }
-        return favorites
-    }
-    
-    static func upload(_ post: Post) async throws {
-        try await postsReference.document(post.id.uuidString).setData(post.jsonDict)
-    }
-    
-    static func delete(_ post: Post) async throws {
-        try await postsReference.document(post.id.uuidString).delete()
-    }
-    
-    static func favorite(_ favorite: Favorite) async throws {
-        try await favoritesReference.document(favorite.id.uuidString).setData(favorite.jsonDict)
-    }
-    
-    // Added for the Delete functionality in the other branch
-    static func unfavorite(_ favorite: Favorite) async throws {
-        try await favoritesReference.document(favorite.id.uuidString).delete()
     }
 }
 
