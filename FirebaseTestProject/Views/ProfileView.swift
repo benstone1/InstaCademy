@@ -10,17 +10,18 @@ import SwiftUI
 struct ProfileView: View {
     @State var user: User
     let signOutAction: () async throws -> Void
-    @State private var sourceType: UIImagePickerController.SourceType = .photoLibrary
-    @State private var isSelectingImage = false
-    @State private var changingProfilePhoto = false
-    @State private var image: UIImage?
     
+    @State private var showChooseImageSource = false
+    @State private var imageSourceType: ImagePickerView.SourceType?
+    @State private var newImageCandidate: UIImage?
+    
+    @StateObject private var uploadImageTask = TaskViewModel()
     @StateObject private var signOutTask = TaskViewModel()
     
     var body: some View {
         VStack{
             Spacer()
-            if let image = image {
+            if let image = newImageCandidate {
                 Image(uiImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -29,20 +30,18 @@ struct ProfileView: View {
                     .overlay(Circle().stroke(Color.white, lineWidth: 4))
                     .shadow(radius: 10)
                 HStack(alignment: .center, spacing: 25) {
-                    Button {
-                        signOutTask.run {
+                    Button("Confirm", action: {
+                        uploadImageTask.run {
                             user.imageURL = await UserService.uploadPhoto(user, image: image)
 //                            user.imageURL = await UserService.uploadPhoto(user, image: image)
 //                            UserService.updateURL(user, imageURL: user.imageURL)
-                            self.image = nil
+                            newImageCandidate = nil
                         }
-                    } label: {
-                        Text("Confirm")
-                    }
-                    Button {self.image = nil} label: {
-                        Text("Cancel")
-                            .foregroundColor(Color.red)
-                    }
+                    })
+                    Button("Cancel", action: {
+                        newImageCandidate = nil
+                    })
+                        .foregroundColor(.red)
                 }
             } else {
                 AsyncImage(url: URL(string: user.imageURL), content: { image in
@@ -64,9 +63,9 @@ struct ProfileView: View {
                     }
                 }
                 )
-                Button { changingProfilePhoto.toggle()} label: {
-                    Text("Change Photo")
-                }
+                Button("Change Photo", action: {
+                    showChooseImageSource = true
+                })
             }
             Spacer()
             Text("User Name:")
@@ -87,17 +86,16 @@ struct ProfileView: View {
         .alert("Cannot Sign Out", isPresented: $signOutTask.isError, presenting: signOutTask.error, actions: { _ in }) { error in
             Text(error.localizedDescription)
         }
-        .alert(isPresented: $changingProfilePhoto) {
-            Alert(title: Text("Changing Profile Picture"), message: Text("Select where you would like your image to come from:"), primaryButton: .default(Text("Camera")) {
-                sourceType = .camera
-                isSelectingImage.toggle()
-            }, secondaryButton: .default(Text("Library")) {
-                sourceType = .photoLibrary
-                isSelectingImage.toggle()
+        .confirmationDialog("Change Profile Photo", isPresented: $showChooseImageSource, titleVisibility: .visible) {
+            Button("Choose from Library", action: {
+                imageSourceType = .photoLibrary
+            })
+            Button("Take Photo", action: {
+                imageSourceType = .camera
             })
         }
-        .sheet(isPresented: $isSelectingImage) {
-            ImagePickerView(sourceType: sourceType, selection: $image)
+        .sheet(item: $imageSourceType) {
+            ImagePickerView(sourceType: $0, selection: $newImageCandidate)
         }
     }
     

@@ -10,8 +10,7 @@ import SwiftUI
 struct NewPostForm: View {
     @State private var title = "Title"
     @State private var postContent = "Post Content"
-    @State private var sourceType: UIImagePickerController.SourceType = .photoLibrary
-    @State private var isSelectingImage = false
+    @State private var imageSourceType: ImagePickerView.SourceType?
     @State private var image: UIImage?
     
     @FocusState private var showingKeyboard: Bool
@@ -47,8 +46,7 @@ struct NewPostForm: View {
                         .foregroundColor(Color.blue)
                         .padding(.trailing, 30)
                     Button {
-                        sourceType = .photoLibrary
-                        isSelectingImage.toggle()
+                        imageSourceType = .photoLibrary
                     }  label: {
                         Image(systemName: "photo")
                             .resizable()
@@ -56,8 +54,7 @@ struct NewPostForm: View {
                             .padding(.trailing, 30)
                     }
                     Button {
-                        sourceType = .camera
-                        isSelectingImage.toggle()
+                        imageSourceType = .camera
                     }  label: {
                         Image(systemName: "camera")
                             .resizable()
@@ -71,8 +68,8 @@ struct NewPostForm: View {
         .alert("Cannot Submit Post", isPresented: $submitTask.isError, presenting: submitTask.error) { error in
             Text(error.localizedDescription)
         }
-        .sheet(isPresented: $isSelectingImage) {
-            ImagePickerView(sourceType: sourceType, selection: $image)
+        .sheet(item: $imageSourceType) {
+            ImagePickerView(sourceType: $0, selection: $image)
         }
     }
     
@@ -86,8 +83,7 @@ struct NewPostForm: View {
             try await PostService.upload(post)
             title = ""
             postContent = ""
-            sourceType = .photoLibrary
-            isSelectingImage = false
+            imageSourceType = nil
             image = nil
         }
     }
