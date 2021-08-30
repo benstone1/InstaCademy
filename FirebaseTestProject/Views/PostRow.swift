@@ -26,11 +26,29 @@ struct PostRow: View {
             Text(post.author.name)
                 .padding(.bottom, 8)
                 .padding()
+            if post.imageURL != "" {
+                AsyncImage(url: URL(string: post.imageURL), content: { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 300, height: 200)
+                }, placeholder: {
+                    VStack {
+                        Image(systemName: "icloud.and.arrow.down")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 75, height: 50)
+                        Text("Image downloading...")
+                            .font(.caption)
+                    }
+                }
+                )
+            }
             HStack {
-                Text(post.author.name)
                 if let deleteAction = deleteAction {
                     Spacer()
                     deleteButton(with: deleteAction)
+                        .buttonStyle(.borderless)
                 }
             }
             .padding(.bottom, 8)
