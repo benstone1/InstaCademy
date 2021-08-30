@@ -19,17 +19,19 @@ import Foundation
     
     private let post: Post
     private let user: User
+    private let postService: PostService
     
     init(post: Post, user: User) {
         self.post = post
         self.user = user
+        self.postService = .init(user: user)
     }
     
     func loadComments() {
         Task {
             do {
                 state = .loading
-                comments = try await PostService.fetchComments(for: post)
+                comments = try await postService.fetchComments(for: post)
                 state = .loaded
             } catch {
                 print("[CommentsViewModel] Cannot load comments: \(error.localizedDescription)")
@@ -40,7 +42,7 @@ import Foundation
     
     func submitComment(content: String) async throws {
         let comment = Comment(author: user, content: content)
-        try await PostService.addComment(comment, to: post)
+        try await postService.addComment(comment, to: post)
         comments.append(comment)
     }
     
@@ -50,7 +52,7 @@ import Foundation
         }
         return { [weak self] in
             guard let self = self else { return }
-            try await PostService.removeComment(comment, from: self.post)
+            try await self.postService.removeComment(comment, from: self.post)
             self.comments.removeAll { $0 == comment }
         }
     }

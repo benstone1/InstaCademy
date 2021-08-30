@@ -10,10 +10,12 @@ import SwiftUI
 struct PostRow: View {
     let post: Post
     @Binding var route: PostsList.Route?
-    let deleteAction: DeleteAction?
+    let favoriteAction: Action
+    let deleteAction: Action?
     
-    typealias DeleteAction = () async throws -> Void
+    typealias Action = () async throws -> Void
     
+    @StateObject private var favoriteTask = TaskViewModel()
     @StateObject private var deleteTask = DeleteTaskViewModel()
     
     var body: some View {
@@ -41,7 +43,7 @@ struct PostRow: View {
     
     private var footer: some View {
         HStack(alignment: .center, spacing: 10) {
-            Text(DateFormatter.postFormat(date: post.timestamp))
+            Text(post.timestamp.formatted(date: .abbreviated, time: .shortened))
                 .font(.caption)
                 .foregroundColor(.gray)
             Spacer()
@@ -49,6 +51,15 @@ struct PostRow: View {
                 route = .comments(post)
             } label: {
                 Label("Comments", systemImage: "text.bubble")
+            }
+            Button {
+                favoriteTask.run(action: favoriteAction)
+            } label: {
+                if post.isFavorite {
+                    Label("Remove from Favorites", systemImage: "heart.fill")
+                } else {
+                    Label("Add to Favorites", systemImage: "heart")
+                }
             }
             if let deleteAction = deleteAction {
                 Button(role: .destructive) {
@@ -66,6 +77,8 @@ struct PostRow: View {
 
 struct PostRow_Previews: PreviewProvider {
     static var previews: some View {
-        PostRow(post: .testPost, route: .constant(nil), deleteAction: {})
+        List {
+            PostRow(post: .testPost, route: .constant(nil), favoriteAction: {}, deleteAction: {})
+        }
     }
 }

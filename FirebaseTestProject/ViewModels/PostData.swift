@@ -7,36 +7,62 @@
 
 import Foundation
 
+private typealias PostLoader = () async throws -> [Post]
+
 @MainActor class PostData: ObservableObject {
     @Published var posts: [Post] = []
     
-    private let user: User
+    private let postService: PostService
+    private let postLoader: PostLoader
     
-    init(user: User) {
-        self.user = user
+    init(filter: Filter? = .none, user: User) {
+        postService = .init(user: user)
+        postLoader = postService.postLoader(for: filter)
         
         Task {
             await loadPosts()
         }
     }
     
+    enum Filter {
+        case favorites
+    }
+    
     func loadPosts() async {
         do {
-            let posts = try await PostService.getPosts()
-            self.posts = posts
-        }
-        catch {
+            posts = try await postLoader()
+        } catch {
             print(error)
         }
     }
     
+    func favoriteAction(for post: Post) -> (() async throws -> Void) {
+        return { [self] in
+            if let i = posts.firstIndex(of: post) {
+                posts[i].isFavorite = !post.isFavorite
+            }
+            try await (post.isFavorite ? postService.unfavorite(post) : postService.favorite(post))
+        }
+    }
+    
     func deleteAction(for post: Post) -> (() async throws -> Void)? {
-        guard post.author.id == user.id else {
+        guard post.author.id == postService.user.id else {
             return nil
         }
-        return {
-            try await PostService.delete(post)
-            self.posts.removeAll { $0 == post }
+        return { [self] in
+            try await postService.delete(post)
+            posts.removeAll { $0.id == post.id }
+        }
+    }
+}
+
+private extension PostService {
+    func postLoader(for filter: PostData.Filter?) -> PostLoader {
+        switch filter {
+        case .none:
+            return posts
+        case .favorites:
+            return favoritePosts
         }
     }
 }

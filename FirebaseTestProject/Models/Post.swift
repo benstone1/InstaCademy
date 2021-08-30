@@ -13,15 +13,22 @@ struct Post: Identifiable, Equatable, FirebaseConvertable {
     let author: User
     let id: UUID
     let timestamp: Date
-    
-    init(title: String, text: String, author: User, id: UUID = .init(), timestamp: Date = .init()) {
+    var isFavorite = false
+
+    init(title: String, text: String, author: User, id: UUID = .init(), timestamp: Date = .init(), isFavorite: Bool = false) {
         self.title = title
         self.text = text
         self.author = author
         self.id = id
         self.timestamp = timestamp
+        self.isFavorite = isFavorite
     }
-    static let testPost = Post(title: "Title", text: "Content", author: "First Last")
+    
+    static let testPost = Post(title: "Test post title", text: "This post has some content!", author: .testUser)
+
+    enum CodingKeys: CodingKey {
+        case title, text, author, id, timestamp
+    }
     
     func contains(_ string: String) -> Bool {
         let strings = jsonDict.values.compactMap { value -> String? in
@@ -47,7 +54,6 @@ extension Post {
         self.timestamp = Date()
     }
 }
-
 
 extension DateFormatter {
     static func postFormat(date: Date) -> String {

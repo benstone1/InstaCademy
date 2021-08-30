@@ -24,6 +24,7 @@ struct PostsList: View {
                     PostRow(
                         post: post,
                         route: $navigation.route,
+                        favoriteAction: postData.favoriteAction(for: post),
                         deleteAction: postData.deleteAction(for: post)
                     )
                 }
