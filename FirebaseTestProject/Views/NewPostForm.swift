@@ -75,12 +75,9 @@ struct NewPostForm: View {
     
     private func submitPost() {
         showingKeyboard = false
-        var post = Post(title: title, text: postContent, author: user)
+        let post = Post(title: title, text: postContent, author: user)
         submitTask.run {
-            if let image = image {
-                post.imageURL = await PostService.uploadPhoto(post.id, image: image)
-            }
-            try await PostService.upload(post)
+            try await PostService.upload(post, with: image)
             title = ""
             postContent = ""
             imageSourceType = nil
