@@ -15,7 +15,7 @@ struct PostsList: View {
         NavigationView {
             List(postData.posts, id: \.text) { post in
                 if searchText.isEmpty || post.contains(searchText) {
-                    PostRow(post: post, deleteAction: postData.deleteAction(for: post))
+                    PostRow(post: post, favoriteAction: postData.favoriteAction(for: post), deleteAction: postData.deleteAction(for: post))
                 }
             }
             .searchable(text: $searchText)
