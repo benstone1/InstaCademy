@@ -23,6 +23,7 @@ struct ImagePickerView: UIViewControllerRepresentable {
         let imagePicker = UIImagePickerController()
         imagePicker.sourceType = sourceType
         imagePicker.delegate = context.coordinator
+        imagePicker.allowsEditing = true
         return imagePicker
     }
     
@@ -40,7 +41,7 @@ extension ImagePickerView {
         }
         
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            guard let image = info[.originalImage] as? UIImage else { return }
+            guard let image = info[.editedImage] as? UIImage else { return }
             view.selection = image
             view.dismiss()
         }
