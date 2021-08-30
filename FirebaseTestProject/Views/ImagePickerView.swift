@@ -1,6 +1,6 @@
 //
-//  ImagePicker.swift
-//  ImagePicker
+//  ImagePickerView.swift
+//  ImagePickerView
 //
 //  Created by Tim Miller on 8/30/21.
 //
