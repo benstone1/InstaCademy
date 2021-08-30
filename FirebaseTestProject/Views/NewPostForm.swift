@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct NewPostForm: View {
-    @State private var title = "Title"
-    @State private var postContent = "Post Content"
+    @State private var title = ""
+    @State private var postContent = ""
     @State private var imageSourceType: ImagePickerView.SourceType?
     @State private var image: UIImage?
     
@@ -77,7 +77,7 @@ struct NewPostForm: View {
         showingKeyboard = false
         let post = Post(title: title, text: postContent, author: user)
         submitTask.run {
-            try await PostService.upload(post, with: image)
+            try await PostService(user: user).create(post, with: image)
             title = ""
             postContent = ""
             imageSourceType = nil

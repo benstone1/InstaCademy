@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct MainTabView: View {
-    @StateObject private var userService = UserService()
+    @StateObject private var auth = AuthViewModel()
     
     var body: some View {
-        if let user = userService.user {
+        if let user = auth.user {
             authenticatedView(user)
         } else {
             unauthenticatedView
@@ -24,11 +24,15 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Posts", systemImage: "list.dash")
                 }
+            PostsList(postData: .init(filter: .favorites, user: user))
+                .tabItem {
+                    Label("Favorites", systemImage: "heart")
+                }
             NewPostForm()
                 .tabItem {
                     Label("New Post", systemImage: "plus.circle")
                 }
-            ProfileView(user: user, updateImageAction: userService.updateImage, signOutAction: userService.signOut)
+            ProfileView(user: user, signOutAction: auth.signOut)
                 .tabItem {
                     Label("Profile", systemImage: "gear")
                 }
@@ -38,8 +42,8 @@ struct MainTabView: View {
     
     private var unauthenticatedView: some View {
         SignInView(
-            action: userService.signIn(email:password:),
-            createAccountView: SignUpView(action: userService.createAccount(name:email:password:))
+            action: auth.signIn(email:password:),
+            createAccountView: SignUpView(action: auth.createAccount(name:email:password:))
         )
     }
 }

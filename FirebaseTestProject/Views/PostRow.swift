@@ -9,71 +9,92 @@ import SwiftUI
 
 struct PostRow: View {
     let post: Post
-    let deleteAction: DeleteAction?
+    let favoriteAction: Action
+    let deleteAction: Action?
     
-    typealias DeleteAction = () async throws -> Void
+    typealias Action = () async throws -> Void
     
+    @StateObject private var favoriteTask = TaskViewModel()
     @StateObject private var deleteTask = DeleteTaskViewModel()
     
     var body: some View {
-        VStack {
-            Text(post.title)
-                .font(.title)
-                .padding(.bottom, 8)
+        VStack(alignment: .leading, spacing: 20) {
+            header
+            if !post.imageURL.isEmpty {
+                image
+            }
             Text(post.text)
-                .font(.body)
-                .padding(.bottom, 8)
-            Text(post.author.name)
-                .padding(.bottom, 8)
-                .padding()
-            if post.imageURL != "" {
-                AsyncImage(url: URL(string: post.imageURL), content: { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 300, height: 200)
-                }, placeholder: {
-                    VStack {
-                        Image(systemName: "icloud.and.arrow.down")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 75, height: 50)
-                        Text("Image downloading...")
-                            .font(.caption)
-                    }
-                }
-                )
-            }
-            HStack {
-                if let deleteAction = deleteAction {
-                    Spacer()
-                    deleteButton(with: deleteAction)
-                        .buttonStyle(.borderless)
-                }
-            }
-            .padding(.bottom, 8)
+            footer
         }
-        .alert("Are you sure you want to delete this comment?", isPresented: $deleteTask.isPending, presenting: deleteTask.confirmAction) {
+        .confirmationDialog("Are you sure you want to delete this post?", isPresented: $deleteTask.isPending, titleVisibility: .visible, presenting: deleteTask.confirmAction) {
             Button("Delete", role: .destructive, action: $0)
         }
-        .alert("Cannot Delete Comment", isPresented: $deleteTask.isError, presenting: deleteTask.error) { error in
+        .alert("Cannot Delete Post", isPresented: $deleteTask.isError, presenting: deleteTask.error) { error in
             Text(error.localizedDescription)
         }
     }
     
-    private func deleteButton(with deleteAction: @escaping DeleteAction) -> some View {
-        Button {
-            deleteTask.request(with: deleteAction)
-        } label: {
-            Label("Delete", systemImage: "trash")
-                .foregroundColor(Color.red)
-                .labelStyle(IconOnlyLabelStyle())
+    private var header: some View {
+        VStack(alignment: .leading) {
+            Text(post.title)
+                .font(.headline)
+            Text(post.author.name)
+                .font(.caption)
         }
+    }
+    
+    private var image: some View {
+        AsyncImage(url: URL(string: post.imageURL)) { image in
+            image
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .frame(width: 300, height: 200)
+        } placeholder: {
+            VStack {
+                ProgressView()
+                Text("Loading Image")
+                    .font(.caption)
+            }
+            .frame(width: 300, height: 200)
+        }
+        .padding(.horizontal)
+    }
+    
+    private var footer: some View {
+        HStack(alignment: .center, spacing: 10) {
+            Text(DateFormatter.postFormat(date: post.timestamp))
+                .font(.caption)
+                .foregroundColor(.gray)
+            Spacer()
+            Button {
+                favoriteTask.run(action: favoriteAction)
+            } label: {
+                if post.isFavorite {
+                    Label("Remove from Favorites", systemImage: "heart.fill")
+                } else {
+                    Label("Add to Favorites", systemImage: "heart")
+                }
+            }
+            .foregroundColor(.blue)
+            if let deleteAction = deleteAction {
+                Button(role: .destructive) {
+                    deleteTask.request(with: deleteAction)
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
+                .foregroundColor(.red)
+            }
+        }
+        .labelStyle(IconOnlyLabelStyle())
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
 struct PostRow_Previews: PreviewProvider {
     static var previews: some View {
-        PostRow(post: Post.testPost, deleteAction: {})
+        List {
+            PostRow(post: .testPost, favoriteAction: {}, deleteAction: {})
+        }
     }
 }

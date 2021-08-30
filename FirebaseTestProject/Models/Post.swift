@@ -14,16 +14,23 @@ struct Post: Identifiable, Equatable, FirebaseConvertable {
     var imageURL: String
     let id: UUID
     let timestamp: Date
+    var isFavorite = false
     
-    init(title: String, text: String, author: User, imageURL: String = "", id: UUID = .init(), timestamp: Date = .init()) {
+    init(title: String, text: String, author: User, imageURL: String = "", id: UUID = .init(), timestamp: Date = .init(), isFavorite: Bool = false) {
         self.title = title
         self.text = text
         self.author = author
         self.id = id
         self.timestamp = timestamp
         self.imageURL = imageURL
+        self.isFavorite = isFavorite
     }
-    static let testPost = Post(title: "Title", text: "Content", author: "First Last")
+    
+    static let testPost = Post(title: "Test post title", text: "This post has some content!", author: .testUser)
+
+    enum CodingKeys: CodingKey {
+        case title, text, author, imageURL, id, timestamp
+    }
     
     func contains(_ string: String) -> Bool {
         let strings = jsonDict.values.compactMap { value -> String? in
@@ -38,19 +45,6 @@ struct Post: Identifiable, Equatable, FirebaseConvertable {
         return matches.count > 0
     }
 }
-
-extension Post {
-    @available(*, deprecated, message: "Specify the author with a User object instead.")
-    init(title: String, text: String, author: String, imageURL: String = "") {
-        self.title = title
-        self.author = .init(id: UUID().uuidString, name: author)
-        self.text = text
-        self.id = UUID()
-        self.timestamp = Date()
-        self.imageURL = imageURL
-    }
-}
-
 
 extension DateFormatter {
     static func postFormat(date: Date) -> String {
