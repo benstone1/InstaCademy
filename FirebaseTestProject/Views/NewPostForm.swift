@@ -72,7 +72,7 @@ struct NewPostForm: View {
             Text(error.localizedDescription)
         }
         .sheet(isPresented: $isSelectingImage) {
-            ImagePickerView(selectedImage: $image, sourceType: sourceType)
+            ImagePickerView(sourceType: sourceType, selection: $image)
         }
     }
     

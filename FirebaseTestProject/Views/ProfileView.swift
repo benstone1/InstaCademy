@@ -97,7 +97,7 @@ struct ProfileView: View {
             })
         }
         .sheet(isPresented: $isSelectingImage) {
-            ImagePickerView(selectedImage: $image, sourceType: sourceType)
+            ImagePickerView(sourceType: sourceType, selection: $image)
         }
     }
     
