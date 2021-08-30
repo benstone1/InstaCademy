@@ -15,11 +15,8 @@ import UIKit
     @Published var user: User?
     
     private var auth = Auth.auth()
-    private var users = Firestore.firestore().collection("users")
-    static var usersReference: CollectionReference {
-        let db = Firestore.firestore()
-        return db.collection("users")
-    }
+    private var usersReference = Firestore.firestore().collection("users")
+    private var imagesReference = Storage.storage().reference().child("images/users")
     private var listener: AuthStateDidChangeListenerHandle?
     
     init() {
@@ -37,7 +34,7 @@ import UIKit
     func createAccount(name: String, email: String, password: String) async throws {
         let response = try await auth.createUser(withEmail: email, password: password)
         let createdUser = User(id: response.user.uid, name: name)
-        try await users.document(response.user.uid).setData(createdUser.jsonDict)
+        try await usersReference.document(response.user.uid).setData(createdUser.jsonDict)
         user = createdUser
     }
     
@@ -52,37 +49,31 @@ import UIKit
     func signOut() throws {
         try auth.signOut()
     }
-    static func updateURL(_ user: User, imageURL: String) {
-//        usersReference.document(user.id).setValue(imageURL, forKey: "imageURL")
-        usersReference.document(user.id).updateData(["imageURL": imageURL])
-//        usersReference.child(user.id).setValue(["imageURL": imageURL])
-    }
     
-    static var imagesRef: StorageReference {
-        let storage = Storage.storage()
-        let storageRef = storage.reference()
-        return storageRef.child("images/users")
-    }
-    
-    static func uploadPhoto(_ user: User, image: UIImage) async -> String{
-        let postImageRef = imagesRef.child("\(user.id).jpg")
-        var imageURL = ""
-        if let imageData = image.jpegData(compressionQuality: 0.75) {
-            // withCheckedContinuation creates an async function out of the putData completion handler
-            await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-                postImageRef.putData(imageData, metadata: nil) { metadata, error in
+    func updateImage(_ image: UIImage) async throws {
+        guard let id = auth.currentUser?.uid else {
+            preconditionFailure("Cannot update image without an authenticated user")
+        }
+        guard let imageData = image.jpegData(compressionQuality: 0.75) else {
+            preconditionFailure("Cannot obtain JPEG data from image")
+        }
+        let userImageReference = imagesReference.child("\(id).jpg")
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            userImageReference.putData(imageData, metadata: nil) { _, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else {
                     continuation.resume()
                 }
             }
         }
-        do {
-            imageURL = try await postImageRef.downloadURL().absoluteString
-            try await usersReference.document(user.id).updateData(["imageURL": imageURL])
-            return imageURL
-        } catch {
-            print("There was an error obtaining the download URL: \(error)")
+        let imageURL = try await userImageReference.downloadURL().absoluteString
+        try await usersReference.document(id).updateData(["imageURL": imageURL])
+        
+        // Without async dispatch, update is sent from background thread and does not propagate to views. This is almost surely a bug.
+        DispatchQueue.main.async { [weak self] in
+            self?.user?.imageURL = imageURL
         }
-        return imageURL
     }
 }
 
@@ -98,7 +89,7 @@ private extension UserService {
     }
     
     func user(_ uid: String) async throws -> User? {
-        let user = try await users.document(uid).getDocument()
+        let user = try await usersReference.document(uid).getDocument()
         guard let userData = user.data() else {
             return nil
         }

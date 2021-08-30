@@ -28,7 +28,7 @@ struct MainTabView: View {
                 .tabItem {
                     Label("New Post", systemImage: "plus.circle")
                 }
-            ProfileView(user: user, signOutAction: userService.signOut)
+            ProfileView(user: user, updateImageAction: userService.updateImage, signOutAction: userService.signOut)
                 .tabItem {
                     Label("Profile", systemImage: "gear")
                 }

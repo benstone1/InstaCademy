@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct ProfileView: View {
-    @State var user: User
+    let user: User
+    let updateImageAction: (UIImage) async throws -> Void
     let signOutAction: () async throws -> Void
     
     @State private var showChooseImageSource = false
@@ -32,17 +33,15 @@ struct ProfileView: View {
                 HStack(alignment: .center, spacing: 25) {
                     Button("Confirm", action: {
                         uploadImageTask.run {
-                            user.imageURL = await UserService.uploadPhoto(user, image: image)
-//                            user.imageURL = await UserService.uploadPhoto(user, image: image)
-//                            UserService.updateURL(user, imageURL: user.imageURL)
+                            try await updateImageAction(image)
                             newImageCandidate = nil
                         }
                     })
-                    Button("Cancel", action: {
+                    Button("Cancel", role: .destructive, action: {
                         newImageCandidate = nil
                     })
-                        .foregroundColor(.red)
                 }
+                .disabled(uploadImageTask.isInProgress)
             } else {
                 AsyncImage(url: URL(string: user.imageURL), content: { image in
                     image
@@ -83,6 +82,9 @@ struct ProfileView: View {
             .disabled(signOutTask.isInProgress)
             Spacer()
         }
+        .alert("Cannot Update Profile Photo", isPresented: $uploadImageTask.isError, presenting: uploadImageTask.error, actions: { _ in }) { error in
+            Text(error.localizedDescription)
+        }
         .alert("Cannot Sign Out", isPresented: $signOutTask.isError, presenting: signOutTask.error, actions: { _ in }) { error in
             Text(error.localizedDescription)
         }
@@ -106,6 +108,6 @@ struct ProfileView: View {
 
 struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
-        ProfileView(user: .testUser, signOutAction: {})
+        ProfileView(user: .testUser, updateImageAction: { _ in }, signOutAction: {})
     }
 }
