@@ -41,27 +41,22 @@ struct NewPostForm: View {
                     .frame(width: 200, height: 200, alignment: .center)
             }
             VStack {
-                HStack {
-                    Text("Attach image from:")
-                        .foregroundColor(Color.blue)
-                        .padding(.trailing, 30)
+                HStack(spacing: 30) {
+                    Text("Attach Image")
+                    Spacer()
                     Button {
                         imageSourceType = .photoLibrary
                     }  label: {
-                        Image(systemName: "photo")
-                            .resizable()
-                            .frame(width: 35, height: 25)
-                            .padding(.trailing, 30)
+                        Label("Choose from Library", systemImage: "photo")
                     }
                     Button {
                         imageSourceType = .camera
                     }  label: {
-                        Image(systemName: "camera")
-                            .resizable()
-                            .frame(width: 35, height: 25)
+                        Label("Take Photo", systemImage: "camera")
                     }
                 }
                 .buttonStyle(.borderless)
+                .labelStyle(.iconOnly)
             }
             Button("Submit", action: submitPost)
         }
