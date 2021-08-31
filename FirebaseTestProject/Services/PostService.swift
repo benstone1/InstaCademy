@@ -7,8 +7,8 @@
 
 import Foundation
 import FirebaseFirestore
-import UIKit
 import FirebaseStorage
+import UIKit
 
 struct PostService {
     let user: User
@@ -41,7 +41,7 @@ struct PostService {
         }
         return posts
     }
-
+    
     func create(_ post: Post, with image: UIImage?) async throws {
         var post = post
         if let image = image {
@@ -62,27 +62,27 @@ struct PostService {
         }
         try await postsReference.document(post.id.uuidString).setData(post.jsonDict)
     }
-
+    
     func delete(_ post: Post) async throws {
         guard user.id == post.author.id else {
             preconditionFailure("Cannot delete post because the user is not the author")
         }
         try await postsReference.document(post.id.uuidString).delete()
     }
-
+    
     func favorite(_ post: Post) async throws {
         let favorite = Favorite(postid: post.id, userid: user.id)
         try await favoritesReference.document(favorite.id.uuidString).setData(favorite.jsonDict)
     }
-
+    
     func unfavorite(_ post: Post) async throws {
         let query = favoritesReference
             .whereField("postid", isEqualTo: post.id.uuidString)
             .whereField("userid", isEqualTo: user.id)
         let snapshot = try await query.getDocuments()
-
+        
         guard !snapshot.isEmpty else { return }
-
+        
         for document in snapshot.documents {
             try await document.reference.delete()
         }
