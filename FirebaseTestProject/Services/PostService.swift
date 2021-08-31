@@ -12,7 +12,7 @@ import FirebaseStorage
 
 struct PostService {
     let user: User
-    var postsReference = Firestore.firestore().collection("posts_v1")
+    var postsReference = Firestore.firestore().collection("posts_v2")
     var favoritesReference = Firestore.firestore().collection("favorites")
     var imagesReference = Storage.storage().reference().child("images/posts")
     
@@ -20,7 +20,7 @@ struct PostService {
         postsReference.order(by: "timestamp", descending: false)
     }
     private var favoritesQuery: Query {
-        favoritesReference.whereField("userid", isEqualTo: user.id.uuidString)
+        favoritesReference.whereField("userid", isEqualTo: user.id)
     }
     
     func posts() async throws -> [Post] {
@@ -78,7 +78,7 @@ struct PostService {
     func unfavorite(_ post: Post) async throws {
         let query = favoritesReference
             .whereField("postid", isEqualTo: post.id.uuidString)
-            .whereField("userid", isEqualTo: user.id.uuidString)
+            .whereField("userid", isEqualTo: user.id)
         let snapshot = try await query.getDocuments()
 
         guard !snapshot.isEmpty else { return }
@@ -92,9 +92,9 @@ struct PostService {
 private struct Favorite: Identifiable, FirebaseConvertable {
     let id: UUID
     let postid: UUID
-    let userid: UUID
+    let userid: String
     
-    init(id: UUID = .init(), postid: UUID, userid: UUID) {
+    init(id: UUID = .init(), postid: UUID, userid: String) {
         self.id = id
         self.postid = postid
         self.userid = userid

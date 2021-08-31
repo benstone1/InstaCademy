@@ -13,25 +13,25 @@ import UIKit
 
 struct UserService {
     var auth = Auth.auth()
-    var usersReference = Firestore.firestore().collection("users")
+    var usersReference = Firestore.firestore().collection("users_v2")
     var imagesReference = Storage.storage().reference().child("images/users")
     var cache = Cache<User>(key: "user")
     
     func createAccount(name: String, email: String, password: String) async throws -> User {
-        let response = try await auth.createUser(withEmail: email, password: password)
-        let createdUser = User(name: name)
-        try await usersReference.document(response.user.uid).setData(createdUser.jsonDict)
-        cache.save(createdUser)
-        return createdUser
+        let result = try await auth.createUser(withEmail: email, password: password)
+        let user = User(id: result.user.uid, name: name)
+        try await usersReference.document(user.id).setData(user.jsonDict)
+        cache.save(user)
+        return user
     }
     
     func signIn(email: String, password: String) async throws -> User {
-        let response = try await auth.signIn(withEmail: email, password: password)
-        guard let signedInUser = try await user(response.user.uid) else {
-            preconditionFailure("Cannot find user \(response.user.uid) (email: \(email), password: \(password))")
+        let result = try await auth.signIn(withEmail: email, password: password)
+        guard let user = try await user(result.user.uid) else {
+            preconditionFailure("Cannot find user \(result.user.uid) (email: \(email), password: \(password))")
         }
-        cache.save(signedInUser)
-        return signedInUser
+        cache.save(user)
+        return user
     }
     
     func currentUser() -> User? {
@@ -55,13 +55,10 @@ struct UserService {
     }
     
     func updateImage(_ image: UIImage, for user: User) async throws -> User {
-        guard let uid = auth.currentUser?.uid else {
-            preconditionFailure("Cannot update image without an authenticated user")
-        }
         guard let imageData = image.jpegData(compressionQuality: 0.75) else {
             preconditionFailure("Cannot obtain JPEG data from image")
         }
-        let userImageReference = imagesReference.child("\(uid).jpg")
+        let userImageReference = imagesReference.child("\(user.id).jpg")
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             userImageReference.putData(imageData, metadata: nil) { _, error in
                 if let error = error {
@@ -73,7 +70,7 @@ struct UserService {
         }
         var user = user
         user.imageURL = try await userImageReference.downloadURL().absoluteString
-        try await usersReference.document(uid).updateData(["imageURL": user.imageURL])
+        try await usersReference.document(user.id).updateData(["imageURL": user.imageURL])
         cache.save(user)
         return user
     }
