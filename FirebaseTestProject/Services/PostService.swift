@@ -31,6 +31,7 @@ struct PostService {
     
     func favoritePosts() async throws -> [Post] {
         let favorites = try await favoritesQuery.getDocuments(as: Favorite.self).map(\.postid.uuidString)
+        guard !favorites.isEmpty else { return [] }
         var posts = try await postsQuery.whereField("id", in: favorites).getDocuments(as: Post.self)
         for i in posts.indices {
             posts[i].isFavorite = true
