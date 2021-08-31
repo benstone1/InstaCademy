@@ -43,14 +43,3 @@ struct Post: Identifiable, Equatable, FirebaseConvertable {
         return matches.count > 0
     }
 }
-
-extension Post {
-    @available(*, deprecated, message: "Specify the author with a User object instead.")
-    init(title: String, text: String, author: String) {
-        self.title = title
-        self.author = .init(name: author)
-        self.text = text
-        self.id = UUID()
-        self.timestamp = Date()
-    }
-}
