@@ -35,30 +35,11 @@ struct Post: Identifiable, Equatable, FirebaseConvertable {
             if let value = value as? String {
                 return value.lowercased()
             } else if let value = value as? Date {
-                return DateFormatter.postFormat(date: value).lowercased()
+                return value.formatted()
             }
             return nil
         }
         let matches = strings.filter { $0.contains(string.lowercased()) }
         return matches.count > 0
-    }
-}
-
-extension Post {
-    @available(*, deprecated, message: "Specify the author with a User object instead.")
-    init(title: String, text: String, author: String) {
-        self.title = title
-        self.author = .init(name: author)
-        self.text = text
-        self.id = UUID()
-        self.timestamp = Date()
-    }
-}
-
-extension DateFormatter {
-    static func postFormat(date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "d MMM y"
-        return formatter.string(from: date)
     }
 }

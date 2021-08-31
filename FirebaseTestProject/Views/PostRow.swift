@@ -43,7 +43,7 @@ struct PostRow: View {
     
     private var footer: some View {
         HStack(alignment: .center, spacing: 10) {
-            Text(post.timestamp.formatted(date: .abbreviated, time: .shortened))
+            Text(post.timestamp.formatted())
                 .font(.caption)
                 .foregroundColor(.gray)
             Spacer()
