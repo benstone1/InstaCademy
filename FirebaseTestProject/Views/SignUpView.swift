@@ -6,9 +6,10 @@
 //
 
 import SwiftUI
+import AuthenticationServices
 
 struct SignUpView: View {
-    let action: (String, String, String) async throws -> Void
+    @EnvironmentObject private var auth: AuthViewModel
     
     @State private var name = ""
     @State private var email = ""
@@ -39,11 +40,24 @@ struct SignUpView: View {
                     .textContentType(.password)
                 Button(action: createAccount) {
                     Text("Create Account")
+                        .padding()
+                        .frame(maxWidth: .infinity)
                         .foregroundColor(Color.white)
-                        .frame(width: 150, height: 50)
                         .background(Color.blue)
                         .cornerRadius(15)
                 }
+                Divider()
+                    .padding(.vertical)
+                SignInWithAppleButton(.signUp) { request in
+                    auth.configureAppleSignInRequest(request)
+                } onCompletion: { result in
+                    createAccountTask.run {
+                        try await auth.signInWithApple(result)
+                    }
+                }
+                .signInWithAppleButtonStyle(.black)
+                .frame(height: 50)
+                .cornerRadius(15)
             }
             .padding()
             Spacer()
@@ -57,13 +71,14 @@ struct SignUpView: View {
     
     private func createAccount() {
         createAccountTask.run {
-            try await action(name, email, password)
+            try await auth.createAccount(name: name, email: email, password: password)
         }
     }
 }
 
 struct SignUpView_Previews: PreviewProvider {
     static var previews: some View {
-        SignUpView(action: { _, _, _ in })
+        SignUpView()
+            .environmentObject(AuthViewModel())
     }
 }

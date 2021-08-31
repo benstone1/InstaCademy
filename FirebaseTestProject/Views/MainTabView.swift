@@ -41,10 +41,8 @@ struct MainTabView: View {
     }
     
     private var unauthenticatedView: some View {
-        SignInView(
-            action: auth.signIn(email:password:),
-            createAccountView: SignUpView(action: auth.createAccount(name:email:password:))
-        )
+        SignInView(createAccountView: SignUpView())
+            .environmentObject(auth)
     }
 }
 
