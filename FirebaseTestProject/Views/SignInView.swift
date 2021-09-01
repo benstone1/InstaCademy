@@ -28,6 +28,7 @@ struct SignInView<CreateAccountView: View>: View {
                         .background(Color.secondary)
                         .cornerRadius(15)
                         .textContentType(.emailAddress)
+                        .textInputAutocapitalization(.never)
                     SecureField("Password", text: $password)
                         .padding()
                         .background(Color.secondary)
