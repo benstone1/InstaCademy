@@ -18,6 +18,7 @@
 		52917CCB26D16AE60061E69F /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52917CCA26D16AE60061E69F /* UserService.swift */; };
 		52917CCD26D16AF00061E69F /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52917CCC26D16AF00061E69F /* User.swift */; };
 		529271FF26D7003500A35315 /* TaskViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529271FE26D7003500A35315 /* TaskViewModel.swift */; };
+		52BA809D26E1878F009BC2B6 /* ProfileImagePlaceholder.png in Resources */ = {isa = PBXBuildFile; fileRef = 52BA809C26E1878E009BC2B6 /* ProfileImagePlaceholder.png */; };
 		F2576EAA26C18A1700D3F344 /* FirebaseTestProjectApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EA926C18A1700D3F344 /* FirebaseTestProjectApp.swift */; };
 		F2576EAC26C18A1700D3F344 /* PostsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EAB26C18A1700D3F344 /* PostsList.swift */; };
 		F2576EAE26C18A1A00D3F344 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F2576EAD26C18A1A00D3F344 /* Assets.xcassets */; };
@@ -64,6 +65,7 @@
 		52917CCA26D16AE60061E69F /* UserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
 		52917CCC26D16AF00061E69F /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		529271FE26D7003500A35315 /* TaskViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskViewModel.swift; sourceTree = "<group>"; };
+		52BA809C26E1878E009BC2B6 /* ProfileImagePlaceholder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ProfileImagePlaceholder.png; sourceTree = "<group>"; };
 		F2576EA626C18A1700D3F344 /* FirebaseTestProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FirebaseTestProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2576EA926C18A1700D3F344 /* FirebaseTestProjectApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseTestProjectApp.swift; sourceTree = "<group>"; };
 		F2576EAB26C18A1700D3F344 /* PostsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostsList.swift; sourceTree = "<group>"; };
@@ -165,6 +167,7 @@
 				52917CC326D162E00061E69F /* Services */,
 				52917CC026D162910061E69F /* Utilities */,
 				F2576EAD26C18A1A00D3F344 /* Assets.xcassets */,
+				52BA809C26E1878E009BC2B6 /* ProfileImagePlaceholder.png */,
 				F2576EAF26C18A1A00D3F344 /* Preview Content */,
 			);
 			path = FirebaseTestProject;
@@ -341,6 +344,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F2576EB126C18A1A00D3F344 /* Preview Assets.xcassets in Resources */,
+				52BA809D26E1878F009BC2B6 /* ProfileImagePlaceholder.png in Resources */,
 				F2576EAE26C18A1A00D3F344 /* Assets.xcassets in Resources */,
 				F2576ED226C18AD100D3F344 /* GoogleService-Info.plist in Resources */,
 			);

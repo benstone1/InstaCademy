@@ -12,7 +12,7 @@ struct User: Equatable, FirebaseConvertable {
     var name: String
     var imageURL: URL {
         get {
-            URL(string: imageURLString) ?? User.defaultImageURL
+            URL(string: imageURLString) ?? Bundle.main.url(forResource: "ProfileImagePlaceholder", withExtension: "png")!
         }
         set {
             imageURLString = newValue.absoluteString
@@ -20,12 +20,10 @@ struct User: Equatable, FirebaseConvertable {
     }
     private var imageURLString = ""
     
-    init(id: String, name: String, imageURL: URL = User.defaultImageURL) {
+    init(id: String, name: String) {
         self.id = id
         self.name = name
-        self.imageURL = imageURL
     }
     
-    static let defaultImageURL = URL(string: "https://firebasestorage.googleapis.com/v0/b/instacademy-test1.appspot.com/o/images%2Fusers%2Fdefault_profile.png?alt=media&token=6700ffd7-2675-45ad-a197-bb2e4e307da7")!
     static let testUser = User(id: "0000000000000000000000000000", name: "Jane Doe")
 }

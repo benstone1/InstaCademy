@@ -21,7 +21,6 @@ struct UserService {
         
         try await result.user.update {
             $0.displayName = user.name
-            $0.photoURL = user.imageURL
         }
         
         return user
@@ -75,7 +74,7 @@ private extension User {
     init(from user: FirebaseAuth.User) {
         id = user.uid
         name = user.displayName ?? "User \(user.uid)"
-        imageURL = user.photoURL ?? User.defaultImageURL
+        imageURL = user.photoURL ?? imageURL
     }
 }
 
