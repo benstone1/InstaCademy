@@ -92,7 +92,7 @@ private extension PostRow {
         
         var body: some View {
             Button(role: .destructive) {
-                task.run(action: action)
+                task.request(with: action)
             } label: {
                 Label("Delete", systemImage: "trash")
                     .foregroundColor(.red)
