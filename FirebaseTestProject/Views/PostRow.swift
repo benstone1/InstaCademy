@@ -20,8 +20,8 @@ struct PostRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             header
-            if !post.imageURL.isEmpty {
-                image
+            if let imageURL = post.imageURL {
+                image(url: imageURL)
             }
             Text(post.text)
             footer
@@ -43,8 +43,8 @@ struct PostRow: View {
         }
     }
     
-    private var image: some View {
-        AsyncImage(url: URL(string: post.imageURL)) { image in
+    private func image(url: URL) -> some View {
+        AsyncImage(url: url) { image in
             image
                 .resizable()
                 .aspectRatio(contentMode: .fit)

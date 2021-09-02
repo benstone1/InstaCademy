@@ -58,7 +58,7 @@ struct PostService {
                     }
                 }
             }
-            post.imageURL = try await postImageReference.downloadURL().absoluteString
+            post.imageURL = try await postImageReference.downloadURL()
         }
         try await postsReference.document(post.id.uuidString).setData(post.jsonDict)
     }

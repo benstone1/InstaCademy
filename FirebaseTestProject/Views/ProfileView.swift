@@ -22,7 +22,7 @@ struct ProfileView: View {
     var body: some View {
         VStack{
             Spacer()
-            AsyncImage(url: URL(string: user.imageURL)) { image in
+            AsyncImage(url: user.imageURL) { image in
                 image
                     .resizable()
                     .aspectRatio(contentMode: .fit)
