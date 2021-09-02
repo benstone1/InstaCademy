@@ -35,6 +35,6 @@ import UIKit
         guard let currentUser = user else {
             preconditionFailure("Cannot update profile image because there is no authenticated user")
         }
-        user = try await userService.updateImage(image, for: currentUser)
+        user = try await userService.updateProfileImage(image, for: currentUser)
     }
 }

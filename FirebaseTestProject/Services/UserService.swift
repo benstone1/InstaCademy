@@ -43,7 +43,7 @@ struct UserService {
         try auth.signOut()
     }
     
-    func updateImage(_ image: UIImage, for user: User) async throws -> User {
+    func updateProfileImage(_ image: UIImage, for user: User) async throws -> User {
         guard let currentUser = auth.currentUser, currentUser.uid == user.id else {
             preconditionFailure("Cannot update image because there is no signed in user")
         }
