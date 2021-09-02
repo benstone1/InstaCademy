@@ -21,7 +21,7 @@ struct PostRow: View {
         VStack(alignment: .leading, spacing: 20) {
             header
             if let imageURL = post.imageURL {
-                image(url: imageURL)
+                PostImage(url: imageURL)
             }
             Text(post.text)
             footer
@@ -33,7 +33,9 @@ struct PostRow: View {
             Text(error.localizedDescription)
         }
     }
-    
+}
+
+private extension PostRow {
     private var header: some View {
         VStack(alignment: .leading) {
             Text(post.title)
@@ -41,24 +43,6 @@ struct PostRow: View {
             Text(post.author.name)
                 .font(.caption)
         }
-    }
-    
-    private func image(url: URL) -> some View {
-        AsyncImage(url: url) { image in
-            image
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-                .frame(width: 300, height: 200)
-        } placeholder: {
-            VStack {
-                ProgressView()
-                Text("Loading Image")
-                    .font(.caption)
-            }
-            .frame(width: 300, height: 200)
-        }
-        .padding(.horizontal)
     }
     
     private var footer: some View {
@@ -88,6 +72,30 @@ struct PostRow: View {
         }
         .labelStyle(IconOnlyLabelStyle())
         .buttonStyle(PlainButtonStyle())
+    }
+}
+
+private extension PostRow {
+    struct PostImage: View {
+        let url: URL
+        
+        var body: some View {
+            AsyncImage(url: url) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .frame(width: 300, height: 200)
+            } placeholder: {
+                VStack {
+                    ProgressView()
+                    Text("Loading Image")
+                        .font(.caption)
+                }
+                .frame(width: 300, height: 200)
+            }
+            .padding(.horizontal)
+        }
     }
 }
 

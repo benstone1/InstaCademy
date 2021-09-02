@@ -25,7 +25,7 @@ struct PostService {
     
     func posts() async throws -> [Post] {
         var posts = try await postsQuery.getDocuments(as: Post.self)
-        let favorites = try await favoritesQuery.getDocuments(as: Favorite.self).map(\.postid)
+        let favorites = try await favoritesQuery.getDocuments(as: Favorite.self).map(\.postID)
         for i in posts.indices where favorites.contains(posts[i].id) {
             posts[i].isFavorite = true
         }
@@ -33,7 +33,7 @@ struct PostService {
     }
     
     func favoritePosts() async throws -> [Post] {
-        let favorites = try await favoritesQuery.getDocuments(as: Favorite.self).map(\.postid.uuidString)
+        let favorites = try await favoritesQuery.getDocuments(as: Favorite.self).map(\.postID.uuidString)
         guard !favorites.isEmpty else { return [] }
         var posts = try await postsQuery.whereField("id", in: favorites).getDocuments(as: Post.self)
         for i in posts.indices {
@@ -71,7 +71,7 @@ struct PostService {
     }
     
     func favorite(_ post: Post) async throws {
-        let favorite = Favorite(postid: post.id, userid: user.id)
+        let favorite = Favorite(postID: post.id, userID: user.id)
         try await favoritesReference.document(favorite.id.uuidString).setData(favorite.jsonDict)
     }
     
@@ -91,13 +91,13 @@ struct PostService {
 
 private struct Favorite: Identifiable, FirebaseConvertable {
     let id: UUID
-    let postid: UUID
-    let userid: String
+    let postID: UUID
+    let userID: String
     
-    init(id: UUID = .init(), postid: UUID, userid: String) {
+    init(id: UUID = .init(), postID: UUID, userID: String) {
         self.id = id
-        self.postid = postid
-        self.userid = userid
+        self.postID = postID
+        self.userID = userID
     }
 }
 

@@ -31,7 +31,10 @@ import UIKit
         user = nil
     }
     
-    func updateImage(_ image: UIImage) async throws {
-        user = try await userService.updateImage(image, for: user!)
+    func updateProfileImage(_ image: UIImage) async throws {
+        guard let currentUser = user else {
+            preconditionFailure("Cannot update profile image because there is no authenticated user")
+        }
+        user = try await userService.updateImage(image, for: currentUser)
     }
 }

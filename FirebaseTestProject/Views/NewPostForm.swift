@@ -18,7 +18,6 @@ struct NewPostForm: View {
     @StateObject private var submitTask = TaskViewModel()
     
     @Environment(\.user) private var user
-
     
     var body: some View {
         Form {
@@ -26,20 +25,12 @@ struct NewPostForm: View {
                 .focused($showingKeyboard)
             TextEditor(text: $postContent)
                 .focused($showingKeyboard)
-                .multilineTextAlignment(/*@START_MENU_TOKEN@*/.leading/*@END_MENU_TOKEN@*/)
+                .multilineTextAlignment(.leading)
                 .frame(width: 300, height: 300, alignment: .topLeading)
-                
-            if let image = image {
-                Image(uiImage: image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 200, height: 200, alignment: .center)
-            } else {
-                Image(systemName: "photo")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 200, height: 200, alignment: .center)
-            }
+            uploadedImageOrPlaceholder
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 200, height: 200, alignment: .center)
             VStack {
                 HStack(spacing: 30) {
                     Text("Attach Image")
@@ -66,6 +57,13 @@ struct NewPostForm: View {
         .sheet(item: $imageSourceType) {
             ImagePickerView(sourceType: $0, selection: $image)
         }
+    }
+    
+    private var uploadedImageOrPlaceholder: Image {
+        if let image = image {
+            return Image(uiImage: image)
+        }
+        return Image(systemName: "photo")
     }
     
     private func submitPost() {

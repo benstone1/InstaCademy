@@ -9,11 +9,11 @@ import UIKit
 import SwiftUI
 
 struct ImagePickerView: UIViewControllerRepresentable {
+    typealias SourceType = UIImagePickerController.SourceType
+    
     var sourceType: SourceType
     @Binding var selection: UIImage?
     @Environment(\.dismiss) private var dismiss
-    
-    typealias SourceType = UIImagePickerController.SourceType
     
     func makeCoordinator() -> Coordinator {
         .init(view: self)
