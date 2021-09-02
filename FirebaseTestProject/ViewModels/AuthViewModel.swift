@@ -16,10 +16,6 @@ import UIKit
     init(userService: UserService = .init()) {
         self.user = userService.currentUser()
         self.userService = userService
-        
-        Task {
-            user = try await userService.currentUser()
-        }
     }
     
     func createAccount(name: String, email: String, password: String) async throws {
