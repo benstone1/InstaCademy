@@ -20,7 +20,7 @@ struct PostService {
         postsReference.order(by: "timestamp", descending: false)
     }
     private var favoritesQuery: Query {
-        favoritesReference.whereField("userid", isEqualTo: user.id)
+        favoritesReference.whereField("userID", isEqualTo: user.id)
     }
     
     func posts() async throws -> [Post] {
@@ -77,8 +77,8 @@ struct PostService {
     
     func unfavorite(_ post: Post) async throws {
         let query = favoritesReference
-            .whereField("postid", isEqualTo: post.id.uuidString)
-            .whereField("userid", isEqualTo: user.id)
+            .whereField("postID", isEqualTo: post.id.uuidString)
+            .whereField("userID", isEqualTo: user.id)
         let snapshot = try await query.getDocuments()
         
         guard !snapshot.isEmpty else { return }
