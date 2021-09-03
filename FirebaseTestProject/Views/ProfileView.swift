@@ -16,8 +16,7 @@ struct ProfileView: View {
     @State private var imageSourceType: ImagePickerView.SourceType?
     @State private var newImageCandidate: UIImage?
     
-    @StateObject private var updateImageTask = TaskViewModel()
-    @StateObject private var signOutTask = TaskViewModel()
+    @StateObject private var task = TaskViewModel()
     
     var body: some View {
         VStack{
@@ -40,16 +39,10 @@ struct ProfileView: View {
                         .font(.caption)
                 }
             }
-            if updateImageTask.isInProgress {
-                HStack(spacing: 10) {
-                    ProgressView()
-                    Text("Uploading Photo")
-                }
-            } else {
-                Button("Change Photo", action: {
-                    showChooseImageSource = true
-                })
-            }
+            Button("Change Photo", action: {
+                showChooseImageSource = true
+            })
+                .disabled(task.isInProgress)
             Spacer()
             Text("User Name:")
             Text(user.name)
@@ -63,13 +56,10 @@ struct ProfileView: View {
                     .background(Color.blue)
                     .cornerRadius(15)
             }
-            .disabled(signOutTask.isInProgress)
+            .disabled(task.isInProgress)
             Spacer()
         }
-        .alert("Cannot Update Profile Photo", isPresented: $updateImageTask.isError, presenting: updateImageTask.error, actions: { _ in }) { error in
-            Text(error.localizedDescription)
-        }
-        .alert("Cannot Sign Out", isPresented: $signOutTask.isError, presenting: signOutTask.error, actions: { _ in }) { error in
+        .alert("Error", isPresented: $task.isError, presenting: task.error, actions: { _ in }) { error in
             Text(error.localizedDescription)
         }
         .alert("Choose Profile Photo", isPresented: $showChooseImageSource) { // When the .confirmationDialog() modifier was used instead of an alert, the other alerts became inoperable (probably a SwiftUI bug), meaning that any potential errors were not propagated to the user.
@@ -82,7 +72,7 @@ struct ProfileView: View {
         }
         .sheet(item: $imageSourceType, onDismiss: {
             guard let image = newImageCandidate else { return }
-            updateImageTask.run {
+            task.run {
                 try await updateImageAction(image)
                 newImageCandidate = nil
             }
@@ -92,7 +82,7 @@ struct ProfileView: View {
     }
     
     private func signOut() {
-        signOutTask.run(action: signOutAction)
+        task.run(action: signOutAction)
     }
 }
 
