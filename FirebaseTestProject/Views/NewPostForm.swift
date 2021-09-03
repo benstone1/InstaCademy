@@ -62,8 +62,9 @@ struct NewPostForm: View {
     private var uploadedImageOrPlaceholder: Image {
         if let image = image {
             return Image(uiImage: image)
+        } else {
+            return Image(systemName: "photo")
         }
-        return Image(systemName: "photo")
     }
     
     private func submitPost() {
