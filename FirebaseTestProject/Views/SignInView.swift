@@ -11,11 +11,29 @@ struct SignInView<CreateAccountView: View>: View {
     let action: (String, String) async throws -> Void
     let createAccountView: CreateAccountView
     
+    @State private var authenticating = false
     @State private var email = ""
     @State private var password = ""
     @StateObject private var signInTask = TaskViewModel()
     
     var body: some View {
+        if authenticating {
+            ZStack {
+                withAnimation(.none) {
+                    content
+                }
+                ProgressView()
+                    .progressViewStyle(.circular)
+                    .tint(.black)
+                    .scaleEffect(2)
+            }
+        }
+        else {
+            content
+        }
+    }
+    
+    private var content: some View {
         NavigationView {
             VStack {
                 Image("login")
@@ -61,8 +79,10 @@ struct SignInView<CreateAccountView: View>: View {
     }
     
     private func signIn() {
+        authenticating = true
         signInTask.run {
             try await action(email, password)
+            authenticating = false
         }
     }
 }
