@@ -59,10 +59,14 @@ struct ProfileView: View {
             .disabled(task.isInProgress)
             Spacer()
         }
-        .alert("Error", isPresented: $task.isError, presenting: task.error, actions: { _ in }) { error in
-            Text(error.localizedDescription)
+        .alert(isPresented: $task.isError) {
+            Alert(
+                title: Text("Error"),
+                message: Text(task.error?.localizedDescription ?? "Sorry, something went wrong."),
+                dismissButton: nil
+            )
         }
-        .alert("Choose Profile Photo", isPresented: $showChooseImageSource) { // When the .confirmationDialog() modifier was used instead of an alert, the other alerts became inoperable (probably a SwiftUI bug), meaning that any potential errors were not propagated to the user.
+        .confirmationDialog("Choose Profile Photo", isPresented: $showChooseImageSource, titleVisibility: .visible) {
             Button("Choose from Library", action: {
                 imageSourceType = .photoLibrary
             })
