@@ -10,12 +10,30 @@ import SwiftUI
 struct SignUpView: View {
     let action: (String, String, String) async throws -> Void
     
+    @State private var authenticating = false
     @State private var name = ""
     @State private var email = ""
     @State private var password = ""
     @StateObject private var createAccountTask = TaskViewModel()
     
     var body: some View {
+        if authenticating {
+            ZStack {
+                withAnimation(.none) {
+                    content
+                }
+                ProgressView()
+                    .progressViewStyle(.circular)
+                    .tint(.black)
+                    .scaleEffect(2)
+            }
+        }
+        else {
+            content
+        }
+    }
+    
+    var content: some View {
         VStack {
             Image("login")
                 .resizable()
@@ -57,8 +75,10 @@ struct SignUpView: View {
     }
     
     private func createAccount() {
+        authenticating = true
         createAccountTask.run {
             try await action(name, email, password)
+            authenticating = false
         }
     }
 }
