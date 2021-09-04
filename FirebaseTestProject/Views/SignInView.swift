@@ -11,29 +11,11 @@ struct SignInView<CreateAccountView: View>: View {
     let action: (String, String) async throws -> Void
     let createAccountView: CreateAccountView
     
-    @State private var authenticating = false
     @State private var email = ""
     @State private var password = ""
     @StateObject private var signInTask = TaskViewModel()
     
-    var body: some View {
-        if authenticating {
-            ZStack {
-                withAnimation(.none) {
-                    content
-                }
-                ProgressView()
-                    .progressViewStyle(.circular)
-                    .tint(.black)
-                    .scaleEffect(2)
-            }
-        }
-        else {
-            content
-        }
-    }
-    
-    private var content: some View {
+     var body: some View {
         NavigationView {
             VStack {
                 Image("login")
@@ -60,7 +42,8 @@ struct SignInView<CreateAccountView: View>: View {
                                 .background(Color.blue)
                                 .cornerRadius(15)
                         }
-                        NavigationLink("Create Account", destination: createAccountView)
+                        NavigationLink("Create Account",
+                                       destination: createAccountView)
                             .foregroundColor(Color.white)
                             .frame(width: 150, height: 50)
                             .background(Color.blue)
@@ -72,18 +55,34 @@ struct SignInView<CreateAccountView: View>: View {
             }
             .onSubmit(signIn)
             .disabled(signInTask.isInProgress)
-            .alert("Cannot Sign In", isPresented: $signInTask.isError, presenting: signInTask.error, actions: { _ in }) { error in
+            .alert("Cannot Sign In",
+                   isPresented: $signInTask.isError,
+                   presenting: signInTask.error,
+                   actions: { _ in }) { error in
                 Text(error.localizedDescription)
+            }
+        }
+        .if(signInTask.isInProgress) {
+            $0.overlay {
+                ProgressView()
+                    .tint(.black)
+                    .scaleEffect(2)
             }
         }
     }
     
     private func signIn() {
-        authenticating = true
         signInTask.run {
             try await action(email, password)
-            authenticating = false
         }
+    }
+}
+
+extension View {
+    @ViewBuilder
+    func `if`<Transform: View>(_ condition: Bool, transform: (Self) -> Transform) -> some View {
+        if condition { transform(self) }
+        else { self }
     }
 }
 
