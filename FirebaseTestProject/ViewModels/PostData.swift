@@ -19,6 +19,7 @@ private typealias PostLoader = () async throws -> [Post]
         postService = .init(user: user)
         postLoader = postService.postLoader(for: filter)
         
+        
         Task {
             await loadPosts()
         }
@@ -34,6 +35,10 @@ private typealias PostLoader = () async throws -> [Post]
         } catch {
             print(error)
         }
+    }
+    
+    func commentViewModel(for post: Post) -> CommentViewModel {
+        .init(commentService: .init(post: post, postService: postService))
     }
     
     func favoriteAction(for post: Post) -> (() async throws -> Void) {

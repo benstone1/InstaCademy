@@ -10,18 +10,14 @@ import FirebaseFirestore
 
 struct PostService {
     let user: User
+    var postsReference = Firestore.firestore().collection("posts_v1")
+    var favoritesReference = Firestore.firestore().collection("favorites")
     
-    private var postsCollection: CollectionReference {
-        Firestore.firestore().collection("posts_v1")
-    }
     private var postsQuery: Query {
-        postsCollection.order(by: "timestamp", descending: false)
-    }
-    private var favoritesCollection: CollectionReference {
-        Firestore.firestore().collection("favorites")
+        postsReference.order(by: "timestamp", descending: false)
     }
     private var favoritesQuery: Query {
-        favoritesCollection.whereField("userid", isEqualTo: user.id.uuidString)
+        favoritesReference.whereField("userid", isEqualTo: user.id.uuidString)
     }
     
     func posts() async throws -> [Post] {
@@ -44,23 +40,21 @@ struct PostService {
     }
 
     func create(_ post: Post) async throws {
-        try await postsCollection.document(post.id.uuidString).setData(post.jsonDict)
+        try await postsReference.document(post.id.uuidString).setData(post.jsonDict)
     }
 
     func delete(_ post: Post) async throws {
-        guard user.id == post.author.id else {
-            preconditionFailure("Cannot delete post because the user is not the author")
-        }
-        try await postsCollection.document(post.id.uuidString).delete()
+        precondition(user.id == post.author.id, "User not authorized to delete post")
+        try await postsReference.document(post.id.uuidString).delete()
     }
 
     func favorite(_ post: Post) async throws {
         let favorite = Favorite(postid: post.id, userid: user.id)
-        try await favoritesCollection.document(favorite.id.uuidString).setData(favorite.jsonDict)
+        try await favoritesReference.document(favorite.id.uuidString).setData(favorite.jsonDict)
     }
 
     func unfavorite(_ post: Post) async throws {
-        let query = favoritesCollection
+        let query = favoritesReference
             .whereField("postid", isEqualTo: post.id.uuidString)
             .whereField("userid", isEqualTo: user.id.uuidString)
         let snapshot = try await query.getDocuments()
@@ -82,12 +76,5 @@ private struct Favorite: Identifiable, FirebaseConvertable {
         self.id = id
         self.postid = postid
         self.userid = userid
-    }
-}
-
-private extension Query {
-    func getDocuments<Model: FirebaseConvertable>(as modelType: Model.Type) async throws -> [Model] {
-        let snapshot = try await getDocuments()
-        return snapshot.documents.map { Model(from: $0.data()) }
     }
 }

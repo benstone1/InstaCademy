@@ -9,13 +9,24 @@ import SwiftUI
 
 struct PostsList: View {
     @StateObject var postData: PostData
+    @StateObject private var navigation = NavigationViewModel()
     @State private var searchText = ""
+    @Environment(\.user) private var user
+    
+    enum Route: Equatable {
+        case comments(Post)
+    }
   
     var body: some View {
         NavigationView {
-            List(postData.posts, id: \.text) { post in
+            List(postData.posts) { post in
                 if searchText.isEmpty || post.contains(searchText) {
-                    PostRow(post: post, favoriteAction: postData.favoriteAction(for: post), deleteAction: postData.deleteAction(for: post))
+                    PostRow(
+                        post: post,
+                        route: $navigation.route,
+                        favoriteAction: postData.favoriteAction(for: post),
+                        deleteAction: postData.deleteAction(for: post)
+                    )
                 }
             }
             .searchable(text: $searchText)
@@ -28,7 +39,28 @@ struct PostsList: View {
                     await postData.loadPosts()
                 }
             }
+            .background {
+                NavigationLink(isActive: $navigation.isActive) {
+                    switch navigation.route {
+                    case .none:
+                        EmptyView()
+                    case let .comments(post):
+                        CommentsList(viewModel: postData.commentViewModel(for: post))
+                    }
+                } label: {
+                    EmptyView()
+                }
+            }
         }
+    }
+    
+    private class NavigationViewModel: ObservableObject {
+        @Published var route: Route? {
+            didSet {
+                isActive = route != nil
+            }
+        }
+        @Published var isActive = false
     }
 }
 
