@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 private typealias PostLoader = () async throws -> [Post]
 
@@ -38,6 +39,12 @@ private typealias PostLoader = () async throws -> [Post]
     
     func commentViewModel(for post: Post) -> CommentViewModel {
         .init(commentService: .init(post: post, postService: postService))
+    }
+    
+    func createPost(title: String, content: String, image: UIImage?) async throws {
+        let initialPost = Post(title: title, text: content, author: postService.user)
+        let post = try await postService.create(initialPost, with: image)
+        posts.insert(post, at: 0)
     }
     
     func deleteAction(for post: Post) -> (() async throws -> Void)? {

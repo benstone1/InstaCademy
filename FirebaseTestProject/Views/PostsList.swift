@@ -11,6 +11,7 @@ struct PostsList: View {
     @StateObject var viewModel: PostViewModel
     @StateObject private var navigation = NavigationViewModel()
     @State private var searchText = ""
+    @State private var showNewPostForm = false
     @Environment(\.user) private var user
     
     enum Route: Equatable {
@@ -38,6 +39,16 @@ struct PostsList: View {
                 Task {
                     await viewModel.loadPosts()
                 }
+            }
+            .toolbar {
+                Button {
+                    showNewPostForm = true
+                } label: {
+                    Label("New Post", systemImage: "plus")
+                }
+            }
+            .sheet(isPresented: $showNewPostForm) {
+                NewPostForm(submitAction: viewModel.createPost(title:content:image:))
             }
             .background {
                 NavigationLink(isActive: $navigation.isActive) {

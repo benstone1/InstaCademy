@@ -28,10 +28,6 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Favorites", systemImage: "heart")
                 }
-            NewPostForm()
-                .tabItem {
-                    Label("New Post", systemImage: "plus.circle")
-                }
             ProfileView(user: user, updateImageAction: auth.updateProfileImage(_:), signOutAction: auth.signOut)
                 .tabItem {
                     Label("Profile", systemImage: "gear")

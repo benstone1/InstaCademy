@@ -42,7 +42,7 @@ struct PostService {
         return posts
     }
     
-    func create(_ post: Post, with image: UIImage?) async throws {
+    func create(_ post: Post, with image: UIImage?) async throws -> Post {
         var post = post
         if let image = image {
             let imageReference = imagesReference.child("\(post.id.uuidString)/post.jpg")
@@ -50,6 +50,7 @@ struct PostService {
         }
         let postReference = postsReference.document(post.id.uuidString)
         try await postReference.setData(post.jsonDict)
+        return post
     }
     
     func canDelete(_ post: Post) -> Bool {

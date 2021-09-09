@@ -8,22 +8,23 @@
 import SwiftUI
 
 struct NewPostForm: View {
+    let submitAction: (String, String, UIImage?) async throws -> Void
+    
     @State private var title = ""
-    @State private var postContent = ""
-    @State private var imageSourceType: ImagePickerView.SourceType?
+    @State private var content = ""
     @State private var image: UIImage?
     
+    @State private var imageSourceType: ImagePickerView.SourceType?
     @FocusState private var showingKeyboard: Bool
+    @Environment(\.dismiss) private var dismiss
     
     @StateObject private var submitTask = TaskViewModel()
-    
-    @Environment(\.user) private var user
     
     var body: some View {
         Form {
             TextField("Title", text: $title)
                 .focused($showingKeyboard)
-            TextEditor(text: $postContent)
+            TextEditor(text: $content)
                 .focused($showingKeyboard)
                 .multilineTextAlignment(.leading)
                 .frame(width: 300, height: 300, alignment: .topLeading)
@@ -69,19 +70,15 @@ struct NewPostForm: View {
     
     private func submitPost() {
         showingKeyboard = false
-        let post = Post(title: title, text: postContent, author: user)
         submitTask.run {
-            try await PostService(user: user).create(post, with: image)
-            title = ""
-            postContent = ""
-            imageSourceType = nil
-            image = nil
+            try await submitAction(title, content, image)
+            dismiss()
         }
     }
 }
 
 struct NewPostForm_Previews: PreviewProvider {
     static var previews: some View {
-        NewPostForm()
+        NewPostForm(submitAction: { _, _, _ in })
     }
 }
