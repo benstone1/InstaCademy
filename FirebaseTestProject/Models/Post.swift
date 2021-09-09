@@ -13,21 +13,31 @@ struct Post: Identifiable, Equatable, FirebaseConvertable {
     let author: User
     let id: UUID
     let timestamp: Date
+    var imageURL: URL? {
+        get {
+            URL(string: imageURLString)
+        }
+        set {
+            imageURLString = newValue?.absoluteString ?? ""
+        }
+    }
+    private var imageURLString = ""
     var isFavorite = false
-
-    init(title: String, text: String, author: User, id: UUID = .init(), timestamp: Date = .init(), isFavorite: Bool = false) {
+    
+    init(title: String, text: String, author: User, id: UUID = UUID(), timestamp: Date = Date(), imageURL: URL? = nil, isFavorite: Bool = false) {
         self.title = title
         self.text = text
         self.author = author
         self.id = id
         self.timestamp = timestamp
+        self.imageURL = imageURL
         self.isFavorite = isFavorite
     }
     
     static let testPost = Post(title: "Test post title", text: "This post has some content!", author: .testUser)
-
+    
     enum CodingKeys: CodingKey {
-        case title, text, author, id, timestamp
+        case id, title, text, author, timestamp, imageURLString
     }
     
     func contains(_ string: String) -> Bool {
@@ -40,6 +50,6 @@ struct Post: Identifiable, Equatable, FirebaseConvertable {
             return nil
         }
         let matches = strings.filter { $0.contains(string.lowercased()) }
-        return matches.count > 0
+        return !matches.isEmpty
     }
 }

@@ -37,13 +37,13 @@ import Foundation
     }
     
     func submitComment(content: String) async throws {
-        let comment = Comment(author: commentService.user, content: content)
+        let comment = Comment(content: content, author: commentService.user)
         try await commentService.create(comment)
         comments.append(comment)
     }
     
     func deleteAction(for comment: Comment) -> (() async throws -> Void)? {
-        guard commentService.isDeletable(comment) else {
+        guard commentService.canDelete(comment) else {
             return nil
         }
         return { [weak self] in

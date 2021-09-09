@@ -8,17 +8,17 @@
 import Foundation
 
 struct Comment: Identifiable, Equatable, FirebaseConvertable {
-    let id: UUID
-    let author: User
-    let timestamp: Date
     let content: String
+    let author: User
+    let id: UUID
+    let timestamp: Date
     
-    init(id: UUID = .init(), author: User, timestamp: Date = .init(), content: String) {
-        self.id = id
-        self.author = author
-        self.timestamp = timestamp
+    init(content: String, author: User, id: UUID = UUID(), timestamp: Date = Date()) {
         self.content = content
+        self.author = author
+        self.id = id
+        self.timestamp = timestamp
     }
     
-    static let preview: Comment = .init(author: .testUser, content: "Great job!")
+    static let testComment: Comment = .init(content: "Great job!", author: .testUser)
 }

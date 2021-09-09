@@ -12,6 +12,10 @@ private typealias PostLoader = () async throws -> [Post]
 @MainActor class PostData: ObservableObject {
     @Published var posts: [Post] = []
     
+    enum Filter {
+        case favorites
+    }
+    
     private let postService: PostService
     private let postLoader: PostLoader
     
@@ -19,14 +23,9 @@ private typealias PostLoader = () async throws -> [Post]
         postService = .init(user: user)
         postLoader = postService.postLoader(for: filter)
         
-        
         Task {
             await loadPosts()
         }
-    }
-    
-    enum Filter {
-        case favorites
     }
     
     func loadPosts() async {
@@ -41,22 +40,22 @@ private typealias PostLoader = () async throws -> [Post]
         .init(commentService: .init(post: post, postService: postService))
     }
     
+    func deleteAction(for post: Post) -> (() async throws -> Void)? {
+        guard postService.canDelete(post) else {
+            return nil
+        }
+        return { [self] in
+            try await postService.delete(post)
+            posts.removeAll { $0.id == post.id }
+        }
+    }
+    
     func favoriteAction(for post: Post) -> (() async throws -> Void) {
         return { [self] in
             if let i = posts.firstIndex(of: post) {
                 posts[i].isFavorite = !post.isFavorite
             }
             try await (post.isFavorite ? postService.unfavorite(post) : postService.favorite(post))
-        }
-    }
-    
-    func deleteAction(for post: Post) -> (() async throws -> Void)? {
-        guard post.author.id == postService.user.id else {
-            return nil
-        }
-        return { [self] in
-            try await postService.delete(post)
-            posts.removeAll { $0.id == post.id }
         }
     }
 }

@@ -35,14 +35,14 @@ struct CommentService {
         try await commentReference.setData(comment.jsonDict)
     }
     
-    func delete(_ comment: Comment) async throws {
-        precondition(isDeletable(comment), "User not authorized to delete comment")
-        let commentReference = commentsReference.document(comment.id.uuidString)
-        try await commentReference.delete()
+    func canDelete(_ comment: Comment) -> Bool {
+        [post.author.id, comment.author.id].contains(user.id)
     }
     
-    func isDeletable(_ comment: Comment) -> Bool {
-        [post.author.id, comment.author.id].contains(user.id)
+    func delete(_ comment: Comment) async throws {
+        precondition(canDelete(comment), "User not authorized to delete comment")
+        let commentReference = commentsReference.document(comment.id.uuidString)
+        try await commentReference.delete()
     }
     
     enum CommentError: LocalizedError {

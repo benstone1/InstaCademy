@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 @MainActor class AuthViewModel: ObservableObject {
     @Published var user: User?
@@ -15,10 +16,6 @@ import Foundation
     init(userService: UserService = .init()) {
         self.user = userService.currentUser()
         self.userService = userService
-        
-        Task {
-            user = try await userService.currentUser()
-        }
     }
     
     func createAccount(name: String, email: String, password: String) async throws {
@@ -32,5 +29,12 @@ import Foundation
     func signOut() throws {
         try userService.signOut()
         user = nil
+    }
+    
+    func updateProfileImage(_ image: UIImage) async throws {
+        guard let currentUser = user else {
+            preconditionFailure("Cannot update profile image because there is no authenticated user")
+        }
+        user = try await userService.updateProfileImage(image, for: currentUser)
     }
 }

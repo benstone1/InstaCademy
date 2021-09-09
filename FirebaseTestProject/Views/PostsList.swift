@@ -16,7 +16,7 @@ struct PostsList: View {
     enum Route: Equatable {
         case comments(Post)
     }
-  
+    
     var body: some View {
         NavigationView {
             List(postData.posts) { post in

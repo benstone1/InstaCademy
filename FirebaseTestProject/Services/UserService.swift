@@ -8,74 +8,80 @@
 import Foundation
 import FirebaseAuth
 import FirebaseFirestore
+import FirebaseStorage
+import UIKit
 
 struct UserService {
     var auth = Auth.auth()
-    var usersReference = Firestore.firestore().collection("users")
-    var cache = Cache<User>(key: "user")
+    var imagesReference = Storage.storage().reference().child("images/users")
     
     func createAccount(name: String, email: String, password: String) async throws -> User {
-        let response = try await auth.createUser(withEmail: email, password: password)
-        let createdUser = User(name: name)
-        try await usersReference.document(response.user.uid).setData(createdUser.jsonDict)
-        cache.save(createdUser)
-        return createdUser
+        let result = try await auth.createUser(withEmail: email, password: password)
+        let user = User(id: result.user.uid, name: name)
+        
+        try await result.user.update {
+            $0.displayName = user.name
+        }
+        
+        return user
     }
     
     func signIn(email: String, password: String) async throws -> User {
-        let response = try await auth.signIn(withEmail: email, password: password)
-        guard let signedInUser = try await user(response.user.uid) else {
-            preconditionFailure("Cannot find user \(response.user.uid) (email: \(email), password: \(password))")
-        }
-        cache.save(signedInUser)
-        return signedInUser
+        let result = try await auth.signIn(withEmail: email, password: password)
+        return User(from: result.user)
     }
     
     func currentUser() -> User? {
-        cache.load()
-    }
-    
-    func currentUser() async throws -> User? {
-        guard let uid = auth.currentUser?.uid else {
+        guard let currentUser = auth.currentUser else {
             return nil
         }
-        guard let user = try await user(uid) else {
-            preconditionFailure("Cannot find current user \(uid)")
-        }
-        cache.save(user)
-        return user
+        return User(from: currentUser)
     }
     
     func signOut() throws {
         try auth.signOut()
-        cache.save(nil)
     }
     
-    private func user(_ uid: String) async throws -> User? {
-        let user = try await usersReference.document(uid).getDocument()
-        guard let userData = user.data() else {
-            return nil
+    func updateProfileImage(_ image: UIImage, for user: User) async throws -> User {
+        guard let currentUser = auth.currentUser, currentUser.uid == user.id else {
+            preconditionFailure("Cannot update image because there is no signed in user")
         }
-        return User(from: userData)
+        guard let imageData = image.jpegData(compressionQuality: 0.75) else {
+            preconditionFailure("Cannot obtain JPEG data from image")
+        }
+        
+        let userImageReference = imagesReference.child("\(user.id).jpg")
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            userImageReference.putData(imageData, metadata: nil) { _, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume()
+                }
+            }
+        }
+        
+        let imageURL = try await userImageReference.downloadURL()
+        try await currentUser.update {
+            $0.photoURL = imageURL
+        }
+        
+        return User(from: currentUser)
     }
-    
-    struct Cache<Record: Codable> {
-        var key: String
-        var defaults = UserDefaults.standard
-        
-        func load() -> Record? {
-            if let data = defaults.data(forKey: key), let record = try? JSONDecoder().decode(Record.self, from: data) {
-                return record
-            }
-            return nil
-        }
-        
-        func save(_ record: Record?) {
-            if let record = record, let data = try? JSONEncoder().encode(record) {
-                defaults.set(data, forKey: key)
-            } else {
-                defaults.set(nil, forKey: key)
-            }
-        }
+}
+
+private extension User {
+    init(from user: FirebaseAuth.User) {
+        id = user.uid
+        name = user.displayName ?? "User \(user.uid)"
+        imageURL = user.photoURL ?? imageURL
+    }
+}
+
+private extension FirebaseAuth.User {
+    func update(updateHandler: @escaping (UserProfileChangeRequest) -> Void) async throws {
+        let profileChangeRequest = createProfileChangeRequest()
+        updateHandler(profileChangeRequest)
+        try await profileChangeRequest.commitChanges()
     }
 }

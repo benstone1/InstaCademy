@@ -8,13 +8,22 @@
 import Foundation
 
 struct User: Equatable, FirebaseConvertable {
-    let id: UUID
+    let id: String
     var name: String
+    var imageURL: URL {
+        get {
+            URL(string: imageURLString) ?? Bundle.main.url(forResource: "ProfileImagePlaceholder", withExtension: "png")!
+        }
+        set {
+            imageURLString = newValue.absoluteString
+        }
+    }
+    private var imageURLString = ""
     
-    init(id: UUID = .init(), name: String) {
+    init(id: String, name: String) {
         self.id = id
         self.name = name
     }
     
-    static let testUser = User(name: "Jane Doe")
+    static let testUser = User(id: "0000000000000000000000000000", name: "Jane Doe")
 }

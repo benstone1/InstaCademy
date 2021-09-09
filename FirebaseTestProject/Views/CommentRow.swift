@@ -73,6 +73,6 @@ private extension Comment {
 
 struct CommentRow_Previews: PreviewProvider {
     static var previews: some View {
-        CommentRow(comment: .preview, deleteAction: {})
+        CommentRow(comment: .testComment, deleteAction: {})
     }
 }
