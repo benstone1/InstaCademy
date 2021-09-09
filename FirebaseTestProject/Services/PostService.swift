@@ -60,19 +60,23 @@ struct PostService {
             }
             post.imageURL = try await postImageReference.downloadURL()
         }
-        try await postsReference.document(post.id.uuidString).setData(post.jsonDict)
+        let postReference = postsReference.document(post.id.uuidString)
+        try await postReference.setData(post.jsonDict)
+    }
+    
+    func canDelete(_ post: Post) -> Bool {
+        user.id == post.author.id
     }
     
     func delete(_ post: Post) async throws {
-        guard user.id == post.author.id else {
-            preconditionFailure("Cannot delete post because the user is not the author")
-        }
-        try await postsReference.document(post.id.uuidString).delete()
+        precondition(canDelete(post), "User not authorized to delete post")
+        let postReference = postsReference.document(post.id.uuidString)
+        try await postReference.delete()
     }
     
     func favorite(_ post: Post) async throws {
         let favorite = Favorite(postID: post.id, userID: user.id)
-        try await favoritesReference.document(favorite.id.uuidString).setData(favorite.jsonDict)
+        try await favoritesReference.document().setData(favorite.jsonDict)
     }
     
     func unfavorite(_ post: Post) async throws {
@@ -89,21 +93,7 @@ struct PostService {
     }
 }
 
-private struct Favorite: Identifiable, FirebaseConvertable {
-    let id: UUID
+private struct Favorite: FirebaseConvertable {
     let postID: UUID
     let userID: String
-    
-    init(id: UUID = .init(), postID: UUID, userID: String) {
-        self.id = id
-        self.postID = postID
-        self.userID = userID
-    }
-}
-
-private extension Query {
-    func getDocuments<Model: FirebaseConvertable>(as modelType: Model.Type) async throws -> [Model] {
-        let snapshot = try await getDocuments()
-        return snapshot.documents.map { Model(from: $0.data()) }
-    }
 }

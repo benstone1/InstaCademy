@@ -35,7 +35,7 @@ struct Post: Identifiable, Equatable, FirebaseConvertable {
     }
     
     static let testPost = Post(title: "Test post title", text: "This post has some content!", author: .testUser)
-
+    
     enum CodingKeys: CodingKey {
         case id, title, text, author, timestamp, imageURLString
     }

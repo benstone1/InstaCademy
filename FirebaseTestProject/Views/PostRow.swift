@@ -9,6 +9,7 @@ import SwiftUI
 
 struct PostRow: View {
     let post: Post
+    @Binding var route: PostsList.Route?
     let favoriteAction: Action
     let deleteAction: Action?
     
@@ -31,6 +32,11 @@ struct PostRow: View {
                     .font(.caption)
                     .foregroundColor(.gray)
                 Spacer()
+                Button {
+                    route = .comments(post)
+                } label: {
+                    Label("Comments", systemImage: "text.bubble")
+                }
                 FavoriteButton(isFavorite: post.isFavorite, action: favoriteAction)
                 if let deleteAction = deleteAction {
                     DeleteButton(action: deleteAction)
@@ -111,7 +117,7 @@ private extension PostRow {
 struct PostRow_Previews: PreviewProvider {
     static var previews: some View {
         List {
-            PostRow(post: .testPost, favoriteAction: {}, deleteAction: {})
+            PostRow(post: .testPost, route: .constant(nil), favoriteAction: {}, deleteAction: {})
         }
     }
 }
