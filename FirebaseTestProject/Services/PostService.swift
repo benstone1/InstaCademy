@@ -45,20 +45,8 @@ struct PostService {
     func create(_ post: Post, with image: UIImage?) async throws {
         var post = post
         if let image = image {
-            guard let imageData = image.jpegData(compressionQuality: 0.75) else {
-                preconditionFailure("Cannot obtain JPEG data from image")
-            }
-            let postImageReference = imagesReference.child("\(post.id.uuidString)/post.jpg")
-            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-                postImageReference.putData(imageData, metadata: nil) { _, error in
-                    if let error = error {
-                        continuation.resume(throwing: error)
-                    } else {
-                        continuation.resume()
-                    }
-                }
-            }
-            post.imageURL = try await postImageReference.downloadURL()
+            let imageReference = imagesReference.child("\(post.id.uuidString)/post.jpg")
+            post.imageURL = try await imageReference.uploadImage(image)
         }
         let postReference = postsReference.document(post.id.uuidString)
         try await postReference.setData(post.jsonDict)

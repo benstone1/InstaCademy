@@ -46,22 +46,10 @@ struct UserService {
         guard let currentUser = auth.currentUser, currentUser.uid == user.id else {
             preconditionFailure("Cannot update image because there is no signed in user")
         }
-        guard let imageData = image.jpegData(compressionQuality: 0.75) else {
-            preconditionFailure("Cannot obtain JPEG data from image")
-        }
         
-        let userImageReference = imagesReference.child("\(user.id).jpg")
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            userImageReference.putData(imageData, metadata: nil) { _, error in
-                if let error = error {
-                    continuation.resume(throwing: error)
-                } else {
-                    continuation.resume()
-                }
-            }
-        }
+        let imageReference = imagesReference.child("\(user.id).jpg")
+        let imageURL = try await imageReference.uploadImage(image)
         
-        let imageURL = try await userImageReference.downloadURL()
         try await currentUser.update {
             $0.photoURL = imageURL
         }
