@@ -24,7 +24,7 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Posts", systemImage: "list.dash")
                 }
-            PostsList(viewModel: PostViewModel(filter: .favorites, user: user))
+            PostsList(viewModel: PostViewModel(user: user, filter: .favorites))
                 .tabItem {
                     Label("Favorites", systemImage: "heart")
                 }

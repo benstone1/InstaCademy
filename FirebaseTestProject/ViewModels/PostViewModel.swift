@@ -8,32 +8,28 @@
 import Foundation
 import UIKit
 
-private typealias PostLoader = () async throws -> [Post]
-
 @MainActor class PostViewModel: ObservableObject {
     @Published var posts: [Post] = []
     
-    enum Filter {
-        case favorites
+    private let filter: PostFilter?
+    private let postService: PostService
+    
+    init(user: User, filter: PostFilter? = nil) {
+        self.filter = filter
+        self.postService = PostService(user: user)
     }
     
-    private let postService: PostService
-    private let postLoader: PostLoader
-    
-    init(filter: Filter? = .none, user: User) {
-        postService = .init(user: user)
-        postLoader = postService.postLoader(for: filter)
-        
+    func loadPosts() {
         Task {
-            await loadPosts()
+            await refreshPosts()
         }
     }
     
-    func loadPosts() async {
+    func refreshPosts() async {
         do {
-            posts = try await postLoader()
+            posts = try await postService.fetchPosts(matching: filter)
         } catch {
-            print(error)
+            print("[PostViewModel] Cannot load posts: \(error.localizedDescription)")
         }
     }
     
@@ -63,17 +59,6 @@ private typealias PostLoader = () async throws -> [Post]
                 posts[i].isFavorite = !post.isFavorite
             }
             try await (post.isFavorite ? postService.unfavorite(post) : postService.favorite(post))
-        }
-    }
-}
-
-private extension PostService {
-    func postLoader(for filter: PostViewModel.Filter?) -> PostLoader {
-        switch filter {
-        case .none:
-            return posts
-        case .favorites:
-            return favoritePosts
         }
     }
 }

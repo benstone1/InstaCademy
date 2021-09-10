@@ -10,51 +10,96 @@ import FirebaseFirestore
 import FirebaseStorage
 import UIKit
 
-struct PostService {
+// MARK: - PostServiceProtocol
+
+protocol PostServiceProtocol {
+    var user: User { get }
+    
+    func fetchPosts() async throws -> [Post]
+    func fetchFavoritePosts() async throws -> [Post]
+    
+    func create(_ post: Post, with image: UIImage?) async throws -> Post
+    func delete(_ post: Post) async throws
+    
+    func favorite(_ post: Post) async throws
+    func unfavorite(_ post: Post) async throws
+    
+    func canDelete(_ post: Post) -> Bool
+}
+
+extension PostServiceProtocol {
+    func canDelete(_ post: Post) -> Bool {
+        user.id == post.author.id
+    }
+}
+
+// MARK: - PostFilter
+
+enum PostFilter {
+    case favorites
+}
+
+extension PostServiceProtocol {
+    func fetchPosts(matching filter: PostFilter?) async throws -> [Post] {
+        switch filter {
+        case .none:
+            return try await fetchPosts()
+        case .favorites:
+            return try await fetchFavoritePosts()
+        }
+    }
+}
+
+// MARK: - PostService
+
+struct PostService: PostServiceProtocol {
     let user: User
     var postsReference = Firestore.firestore().collection("posts_v2")
     var favoritesReference = Firestore.firestore().collection("favorites")
     var imagesReference = Storage.storage().reference().child("images/posts")
     
-    private var postsQuery: Query {
-        postsReference.order(by: "timestamp", descending: false)
-    }
-    private var favoritesQuery: Query {
-        favoritesReference.whereField("userID", isEqualTo: user.id)
-    }
-    
-    func posts() async throws -> [Post] {
-        var posts = try await postsQuery.getDocuments(as: Post.self)
-        let favorites = try await favoritesQuery.getDocuments(as: Favorite.self).map(\.postID)
-        for i in posts.indices where favorites.contains(posts[i].id) {
-            posts[i].isFavorite = true
+    func fetchPosts() async throws -> [Post] {
+        async let postsTask = postsReference
+            .order(by: "timestamp", descending: true)
+            .getDocuments(as: Post.self)
+        
+        let (posts, favorites) = try await (postsTask, favoritesTask)
+        
+        return posts.map {
+            var post = $0
+            post.isFavorite = favorites.contains($0.id)
+            return post
         }
-        return posts
     }
     
-    func favoritePosts() async throws -> [Post] {
-        let favorites = try await favoritesQuery.getDocuments(as: Favorite.self).map(\.postID.uuidString)
+    func fetchFavoritePosts() async throws -> [Post] {
+        let favorites = try await favoritesTask
         guard !favorites.isEmpty else { return [] }
-        var posts = try await postsQuery.whereField("id", in: favorites).getDocuments(as: Post.self)
-        for i in posts.indices {
-            posts[i].isFavorite = true
+        
+        let posts = try await postsReference
+            .order(by: "timestamp", descending: true)
+            .whereField("id", in: favorites.map(\.uuidString))
+            .getDocuments(as: Post.self)
+        
+        return posts.map {
+            var post = $0
+            post.isFavorite = true
+            return post
         }
-        return posts
     }
     
     func create(_ post: Post, with image: UIImage?) async throws -> Post {
         var post = post
-        if let image = image {
+        post.imageURL = try await {
+            guard let image = image else { return nil }
             let imageReference = imagesReference.child("\(post.id.uuidString)/post.jpg")
-            post.imageURL = try await imageReference.uploadImage(image)
-        }
+            return try await imageReference.uploadImage(image)
+        }()
+        
         let postReference = postsReference.document(post.id.uuidString)
         try await postReference.setData(post.jsonDict)
+        
         return post
-    }
-    
-    func canDelete(_ post: Post) -> Bool {
-        user.id == post.author.id
     }
     
     func delete(_ post: Post) async throws {
@@ -69,20 +114,26 @@ struct PostService {
     }
     
     func unfavorite(_ post: Post) async throws {
-        let query = favoritesReference
+        let snapshot = try await favoritesReference
             .whereField("postID", isEqualTo: post.id.uuidString)
             .whereField("userID", isEqualTo: user.id)
-        let snapshot = try await query.getDocuments()
-        
-        guard !snapshot.isEmpty else { return }
-        
-        for document in snapshot.documents {
-            try await document.reference.delete()
+            .getDocuments()
+        guard let favoriteReference = snapshot.documents.first?.reference else { return }
+        assert(snapshot.count == 1, "Expected 1 favorite reference but found \(snapshot.count)")
+        try await favoriteReference.delete()
+    }
+    
+    private var favoritesTask: [Post.ID] {
+        get async throws {
+            try await favoritesReference
+                .whereField("userID", isEqualTo: user.id)
+                .getDocuments(as: Favorite.self)
+                .map(\.postID)
         }
     }
-}
-
-private struct Favorite: FirestoreConvertable {
-    let postID: UUID
-    let userID: String
+    
+    private struct Favorite: FirestoreConvertable {
+        let postID: UUID
+        let userID: String
+    }
 }

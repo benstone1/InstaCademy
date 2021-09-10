@@ -32,13 +32,11 @@ struct PostsList: View {
             }
             .searchable(text: $searchText)
             .refreshable {
-                await viewModel.loadPosts()
+                await viewModel.refreshPosts()
             }
             .navigationTitle("Posts")
             .onAppear {
-                Task {
-                    await viewModel.loadPosts()
-                }
+                viewModel.loadPosts()
             }
             .toolbar {
                 Button {
