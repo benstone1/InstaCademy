@@ -34,7 +34,7 @@ import UIKit
     }
     
     func commentViewModel(for post: Post) -> CommentViewModel {
-        .init(commentService: .init(post: post, postService: postService))
+        CommentViewModel(commentService: CommentService(post: post, postService: postService))
     }
     
     func createPost(title: String, content: String, image: UIImage?) async throws {

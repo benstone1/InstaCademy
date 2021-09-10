@@ -17,9 +17,9 @@ import Foundation
         case loaded
     }
     
-    private let commentService: CommentService
+    private let commentService: CommentServiceProtocol
     
-    init(commentService: CommentService) {
+    init(commentService: CommentServiceProtocol) {
         self.commentService = commentService
     }
     
@@ -27,7 +27,7 @@ import Foundation
         Task {
             do {
                 state = .loading
-                comments = try await commentService.comments()
+                comments = try await commentService.fetchComments()
                 state = .loaded
             } catch {
                 print("[CommentsViewModel] Cannot load comments: \(error.localizedDescription)")

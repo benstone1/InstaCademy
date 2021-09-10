@@ -8,9 +8,29 @@
 import Foundation
 import FirebaseFirestore
 
-private let COMMENT_CHARACTER_LIMIT = 1000
+// MARK: - CommentServiceProtocol
 
-struct CommentService {
+protocol CommentServiceProtocol {
+    var post: Post { get }
+    var user: User { get }
+    
+    func fetchComments() async throws -> [Comment]
+    
+    func create(_ comment: Comment) async throws
+    func delete(_ comment: Comment) async throws
+    
+    func canDelete(_ comment: Comment) -> Bool
+}
+
+extension CommentServiceProtocol {
+    func canDelete(_ comment: Comment) -> Bool {
+        [post.author.id, comment.author.id].contains(user.id)
+    }
+}
+
+// MARK: - CommentService
+
+struct CommentService: CommentServiceProtocol {
     let post: Post
     let user: User
     let commentsReference: CollectionReference
@@ -23,47 +43,18 @@ struct CommentService {
         self.commentsReference = postReference.collection("comments")
     }
     
-    func comments() async throws -> [Comment] {
+    func fetchComments() async throws -> [Comment] {
         try await commentsReference.order(by: "timestamp", descending: true).getDocuments(as: Comment.self)
     }
     
     func create(_ comment: Comment) async throws {
-        if comment.content.count > COMMENT_CHARACTER_LIMIT {
-            throw CommentError.exceedsCharacterLimit
-        }
         let commentReference = commentsReference.document(comment.id.uuidString)
         try await commentReference.setData(comment.jsonDict)
-    }
-    
-    func canDelete(_ comment: Comment) -> Bool {
-        [post.author.id, comment.author.id].contains(user.id)
     }
     
     func delete(_ comment: Comment) async throws {
         precondition(canDelete(comment), "User not authorized to delete comment")
         let commentReference = commentsReference.document(comment.id.uuidString)
         try await commentReference.delete()
-    }
-    
-    enum CommentError: LocalizedError {
-        case exceedsCharacterLimit, unknown
-        
-        var errorDescription: String? {
-            switch self {
-            case .exceedsCharacterLimit:
-                return "Cannot Post Comment"
-            case .unknown:
-                return "Error"
-            }
-        }
-        
-        var failureReason: String? {
-            switch self {
-            case .exceedsCharacterLimit:
-                return "Your comment has more than \(COMMENT_CHARACTER_LIMIT) characters."
-            case .unknown:
-                return "Sorry, something went wrong."
-            }
-        }
     }
 }
