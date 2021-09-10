@@ -38,7 +38,7 @@
 		F2576ED326C18AD100D3F344 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F2576ED126C18AD100D3F344 /* GoogleService-Info.plist */; };
 		F2576ED426C18AD100D3F344 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F2576ED126C18AD100D3F344 /* GoogleService-Info.plist */; };
 		F2576EDB26C19A3C00D3F344 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EDA26C19A3C00D3F344 /* Post.swift */; };
-		F2576EDF26C19ED000D3F344 /* PostData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EDE26C19ED000D3F344 /* PostData.swift */; };
+		F2576EDF26C19ED000D3F344 /* PostViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EDE26C19ED000D3F344 /* PostViewModel.swift */; };
 		F2576EE326C1A1A600D3F344 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EE226C1A1A600D3F344 /* MainTabView.swift */; };
 		F2576EEA26C1A2FA00D3F344 /* NewPostForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EE926C1A2FA00D3F344 /* NewPostForm.swift */; };
 		F2576EEE26C1B67E00D3F344 /* PostRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EED26C1B67E00D3F344 /* PostRow.swift */; };
@@ -91,7 +91,7 @@
 		F2576EC426C18A1B00D3F344 /* FirebaseTestProjectUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseTestProjectUITests.swift; sourceTree = "<group>"; };
 		F2576ED126C18AD100D3F344 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F2576EDA26C19A3C00D3F344 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
-		F2576EDE26C19ED000D3F344 /* PostData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostData.swift; sourceTree = "<group>"; };
+		F2576EDE26C19ED000D3F344 /* PostViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostViewModel.swift; sourceTree = "<group>"; };
 		F2576EE226C1A1A600D3F344 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		F2576EE926C1A2FA00D3F344 /* NewPostForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostForm.swift; sourceTree = "<group>"; };
 		F2576EED26C1B67E00D3F344 /* PostRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostRow.swift; sourceTree = "<group>"; };
@@ -208,9 +208,9 @@
 		F2576EE626C1A20C00D3F344 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				F2576EDE26C19ED000D3F344 /* PostData.swift */,
 				52E308D726DDAA6F0082EC98 /* AuthViewModel.swift */,
 				5230FE8E26D996C600BC956C /* CommentViewModel.swift */,
+				F2576EDE26C19ED000D3F344 /* PostViewModel.swift */,
 				529271FE26D7003500A35315 /* TaskViewModel.swift */,
 			);
 			path = ViewModels;
@@ -393,7 +393,7 @@
 				52917CC226D162B20061E69F /* Firestore+Extensions.swift in Sources */,
 				41CF7E7126CC312A0043EB96 /* ProfileView.swift in Sources */,
 				5230FE8F26D996C600BC956C /* CommentViewModel.swift in Sources */,
-				F2576EDF26C19ED000D3F344 /* PostData.swift in Sources */,
+				F2576EDF26C19ED000D3F344 /* PostViewModel.swift in Sources */,
 				F2576EAC26C18A1700D3F344 /* PostsList.swift in Sources */,
 				5230FE9426D996D800BC956C /* CommentRow.swift in Sources */,
 				F2576EAA26C18A1700D3F344 /* FirebaseTestProjectApp.swift in Sources */,

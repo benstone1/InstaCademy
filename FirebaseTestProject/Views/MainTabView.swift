@@ -20,11 +20,11 @@ struct MainTabView: View {
     
     private func authenticatedView(_ user: User) -> some View {
         TabView {
-            PostsList(postData: .init(user: user))
+            PostsList(viewModel: PostViewModel(user: user))
                 .tabItem {
                     Label("Posts", systemImage: "list.dash")
                 }
-            PostsList(postData: .init(filter: .favorites, user: user))
+            PostsList(viewModel: PostViewModel(filter: .favorites, user: user))
                 .tabItem {
                     Label("Favorites", systemImage: "heart")
                 }

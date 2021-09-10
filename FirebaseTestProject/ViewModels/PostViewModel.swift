@@ -1,6 +1,6 @@
 //
-//  PostData.swift
-//  PostData
+//  PostViewModel.swift
+//  PostViewModel
 //
 //  Created by Ben Stone on 8/9/21.
 //
@@ -9,7 +9,7 @@ import Foundation
 
 private typealias PostLoader = () async throws -> [Post]
 
-@MainActor class PostData: ObservableObject {
+@MainActor class PostViewModel: ObservableObject {
     @Published var posts: [Post] = []
     
     enum Filter {
@@ -61,7 +61,7 @@ private typealias PostLoader = () async throws -> [Post]
 }
 
 private extension PostService {
-    func postLoader(for filter: PostData.Filter?) -> PostLoader {
+    func postLoader(for filter: PostViewModel.Filter?) -> PostLoader {
         switch filter {
         case .none:
             return posts

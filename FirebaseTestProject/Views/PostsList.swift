@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PostsList: View {
-    @StateObject var postData: PostData
+    @StateObject var viewModel: PostViewModel
     @StateObject private var navigation = NavigationViewModel()
     @State private var searchText = ""
     @Environment(\.user) private var user
@@ -19,24 +19,24 @@ struct PostsList: View {
     
     var body: some View {
         NavigationView {
-            List(postData.posts) { post in
+            List(viewModel.posts) { post in
                 if searchText.isEmpty || post.contains(searchText) {
                     PostRow(
                         post: post,
                         route: $navigation.route,
-                        favoriteAction: postData.favoriteAction(for: post),
-                        deleteAction: postData.deleteAction(for: post)
+                        favoriteAction: viewModel.favoriteAction(for: post),
+                        deleteAction: viewModel.deleteAction(for: post)
                     )
                 }
             }
             .searchable(text: $searchText)
             .refreshable {
-                await postData.loadPosts()
+                await viewModel.loadPosts()
             }
             .navigationTitle("Posts")
             .onAppear {
                 Task {
-                    await postData.loadPosts()
+                    await viewModel.loadPosts()
                 }
             }
             .background {
@@ -45,7 +45,7 @@ struct PostsList: View {
                     case .none:
                         EmptyView()
                     case let .comments(post):
-                        CommentsList(viewModel: postData.commentViewModel(for: post))
+                        CommentsList(viewModel: viewModel.commentViewModel(for: post))
                     }
                 } label: {
                     EmptyView()
@@ -66,6 +66,6 @@ struct PostsList: View {
 
 struct PostsList_Previews: PreviewProvider {
     static var previews: some View {
-        PostsList(postData: .init(user: .testUser))
+        PostsList(viewModel: PostViewModel(user: .testUser))
     }
 }
