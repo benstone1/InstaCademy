@@ -1,6 +1,6 @@
 //
-//  UserService.swift
-//  UserService
+//  AuthService.swift
+//  AuthService
 //
 //  Created by John Royal on 8/21/21.
 //
@@ -11,7 +11,7 @@ import FirebaseFirestore
 import FirebaseStorage
 import UIKit
 
-struct UserService {
+struct AuthService {
     var auth = Auth.auth()
     var imagesReference = Storage.storage().reference().child("images/users")
     

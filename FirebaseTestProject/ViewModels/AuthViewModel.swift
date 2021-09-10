@@ -11,23 +11,23 @@ import UIKit
 @MainActor class AuthViewModel: ObservableObject {
     @Published var user: User?
     
-    private let userService: UserService
+    private let authService: AuthService
     
-    init(userService: UserService = .init()) {
-        self.user = userService.currentUser()
-        self.userService = userService
+    init(authService: AuthService = AuthService()) {
+        self.user = authService.currentUser()
+        self.authService = authService
     }
     
     func createAccount(name: String, email: String, password: String) async throws {
-        user = try await userService.createAccount(name: name, email: email, password: password)
+        user = try await authService.createAccount(name: name, email: email, password: password)
     }
     
     func signIn(email: String, password: String) async throws {
-        user = try await userService.signIn(email: email, password: password)
+        user = try await authService.signIn(email: email, password: password)
     }
     
     func signOut() throws {
-        try userService.signOut()
+        try authService.signOut()
         user = nil
     }
     
@@ -35,6 +35,6 @@ import UIKit
         guard let currentUser = user else {
             preconditionFailure("Cannot update profile image because there is no authenticated user")
         }
-        user = try await userService.updateProfileImage(image, for: currentUser)
+        user = try await authService.updateProfileImage(image, for: currentUser)
     }
 }
