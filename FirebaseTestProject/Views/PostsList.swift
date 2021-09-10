@@ -46,7 +46,7 @@ struct PostsList: View {
                 }
             }
             .sheet(isPresented: $showNewPostForm) {
-                NewPostForm(submitAction: viewModel.createPost(title:content:image:))
+                NewPostForm(submitAction: viewModel.submitPost(_:))
             }
             .background {
                 NavigationLink(isActive: $navigation.isActive) {

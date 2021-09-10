@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 struct Post: Identifiable, Equatable, FirestoreConvertable {
     let title: String
@@ -51,5 +52,13 @@ struct Post: Identifiable, Equatable, FirestoreConvertable {
         }
         let matches = strings.filter { $0.contains(string.lowercased()) }
         return !matches.isEmpty
+    }
+}
+
+extension Post {
+    struct Partial {
+        var title = ""
+        var content = ""
+        var image: UIImage?
     }
 }

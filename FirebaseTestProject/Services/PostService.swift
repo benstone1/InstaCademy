@@ -8,7 +8,6 @@
 import Foundation
 import FirebaseFirestore
 import FirebaseStorage
-import UIKit
 
 // MARK: - PostServiceProtocol
 
@@ -18,7 +17,7 @@ protocol PostServiceProtocol {
     func fetchPosts() async throws -> [Post]
     func fetchFavoritePosts() async throws -> [Post]
     
-    func create(_ post: Post, with image: UIImage?) async throws -> Post
+    func create(_ post: Post.Partial) async throws -> Post
     func delete(_ post: Post) async throws
     
     func favorite(_ post: Post) async throws
@@ -88,15 +87,16 @@ struct PostService: PostServiceProtocol {
         }
     }
     
-    func create(_ post: Post, with image: UIImage?) async throws -> Post {
-        var post = post
-        post.imageURL = try await {
-            guard let image = image else { return nil }
-            let imageReference = imagesReference.child("\(post.id.uuidString)/post.jpg")
+    func create(_ post: Post.Partial) async throws -> Post {
+        let id = UUID()
+        let imageURL: URL? = try await {
+            guard let image = post.image else { return nil }
+            let imageReference = imagesReference.child("\(id.uuidString)/post.jpg")
             return try await imageReference.uploadImage(image)
         }()
+        let post = Post(title: post.title, text: post.content, author: user, id: id, imageURL: imageURL)
         
-        let postReference = postsReference.document(post.id.uuidString)
+        let postReference = postsReference.document(id.uuidString)
         try await postReference.setData(post.jsonDict)
         
         return post

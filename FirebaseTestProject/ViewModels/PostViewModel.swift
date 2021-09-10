@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import UIKit
 
 @MainActor class PostViewModel: ObservableObject {
     @Published var posts: [Post] = []
@@ -37,9 +36,8 @@ import UIKit
         CommentViewModel(commentService: CommentService(post: post, postService: postService))
     }
     
-    func createPost(title: String, content: String, image: UIImage?) async throws {
-        let initialPost = Post(title: title, text: content, author: postService.user)
-        let post = try await postService.create(initialPost, with: image)
+    func submitPost(_ post: Post.Partial) async throws {
+        let post = try await postService.create(post)
         posts.insert(post, at: 0)
     }
     

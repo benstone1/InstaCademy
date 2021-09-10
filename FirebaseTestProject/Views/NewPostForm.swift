@@ -8,11 +8,9 @@
 import SwiftUI
 
 struct NewPostForm: View {
-    let submitAction: (String, String, UIImage?) async throws -> Void
+    let submitAction: (Post.Partial) async throws -> Void
     
-    @State private var title = ""
-    @State private var content = ""
-    @State private var image: UIImage?
+    @State private var post = Post.Partial()
     
     @State private var imageSourceType: ImagePickerView.SourceType?
     @FocusState private var showingKeyboard: Bool
@@ -22,9 +20,9 @@ struct NewPostForm: View {
     
     var body: some View {
         Form {
-            TextField("Title", text: $title)
+            TextField("Title", text: $post.title)
                 .focused($showingKeyboard)
-            TextEditor(text: $content)
+            TextEditor(text: $post.content)
                 .focused($showingKeyboard)
                 .multilineTextAlignment(.leading)
                 .frame(width: 300, height: 300, alignment: .topLeading)
@@ -56,12 +54,12 @@ struct NewPostForm: View {
             Text(error.localizedDescription)
         }
         .sheet(item: $imageSourceType) {
-            ImagePickerView(sourceType: $0, selection: $image)
+            ImagePickerView(sourceType: $0, selection: $post.image)
         }
     }
     
     private var uploadedImageOrPlaceholder: Image {
-        if let image = image {
+        if let image = post.image {
             return Image(uiImage: image)
         } else {
             return Image(systemName: "photo")
@@ -71,7 +69,7 @@ struct NewPostForm: View {
     private func submitPost() {
         showingKeyboard = false
         submitTask.run {
-            try await submitAction(title, content, image)
+            try await submitAction(post)
             dismiss()
         }
     }
@@ -79,6 +77,6 @@ struct NewPostForm: View {
 
 struct NewPostForm_Previews: PreviewProvider {
     static var previews: some View {
-        NewPostForm(submitAction: { _, _, _ in })
+        NewPostForm(submitAction: { _ in })
     }
 }
