@@ -22,3 +22,9 @@ struct Comment: Identifiable, Equatable, FirestoreConvertable {
     
     static let testComment: Comment = .init(content: "Great job!", author: .testUser)
 }
+
+extension Comment {
+    struct Partial {
+        var content = ""
+    }
+}

@@ -36,9 +36,8 @@ import Foundation
         }
     }
     
-    func submitComment(content: String) async throws {
-        let comment = Comment(content: content, author: commentService.user)
-        try await commentService.create(comment)
+    func submitComment(_ comment: Comment.Partial) async throws {
+        let comment = try await commentService.create(comment)
         comments.append(comment)
     }
     

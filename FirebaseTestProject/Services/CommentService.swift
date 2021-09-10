@@ -16,7 +16,7 @@ protocol CommentServiceProtocol {
     
     func fetchComments() async throws -> [Comment]
     
-    func create(_ comment: Comment) async throws
+    func create(_ comment: Comment.Partial) async throws -> Comment
     func delete(_ comment: Comment) async throws
     
     func canDelete(_ comment: Comment) -> Bool
@@ -47,9 +47,11 @@ struct CommentService: CommentServiceProtocol {
         try await commentsReference.order(by: "timestamp", descending: true).getDocuments(as: Comment.self)
     }
     
-    func create(_ comment: Comment) async throws {
+    func create(_ comment: Comment.Partial) async throws -> Comment {
+        let comment = Comment(content: comment.content, author: user)
         let commentReference = commentsReference.document(comment.id.uuidString)
         try await commentReference.setData(comment.jsonDict)
+        return comment
     }
     
     func delete(_ comment: Comment) async throws {

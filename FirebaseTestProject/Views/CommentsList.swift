@@ -79,7 +79,7 @@ private extension CommentsList {
     
     var newCommentForm: ToolbarItem<Void, NewCommentForm> {
         ToolbarItem(placement: .bottomBar) {
-            NewCommentForm(submitAction: viewModel.submitComment(content:))
+            NewCommentForm(submitAction: viewModel.submitComment(_:))
         }
     }
 }
@@ -87,7 +87,6 @@ private extension CommentsList {
 // MARK: - Preview
 
 struct CommentsList_Previews: PreviewProvider {
-    
     static var previews: some View {
         NavigationView {
             let postService = PostService(user: .testUser)
