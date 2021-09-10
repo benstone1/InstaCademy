@@ -7,7 +7,7 @@
 
 import Foundation
 
-class TaskViewModel: ObservableObject {
+@MainActor class TaskViewModel: ObservableObject {
     @Published var isError = false
     @Published var isInProgress = false
     private(set) var error: Error?
@@ -16,20 +16,14 @@ class TaskViewModel: ObservableObject {
     
     func run(action: @escaping Action) {
         Task {
-            DispatchQueue.main.async {
-                self.isInProgress = true
-            }
+            isInProgress = true
             do {
                 try await action()
             } catch {
-                DispatchQueue.main.async {
-                    self.error = error
-                    self.isError = true
-                }
+                self.error = error
+                isError = true
             }
-            DispatchQueue.main.async {
-                self.isInProgress = false
-            }
+            isInProgress = false
         }
     }
 }
