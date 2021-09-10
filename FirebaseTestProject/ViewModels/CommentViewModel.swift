@@ -8,14 +8,7 @@
 import Foundation
 
 @MainActor class CommentViewModel: ObservableObject {
-    @Published var comments: [Comment] = []
-    @Published var state: State = .loading
-    
-    enum State {
-        case loading
-        case error
-        case loaded
-    }
+    @Published var comments: Loadable<[Comment]> = .loading
     
     private let commentService: CommentServiceProtocol
     
@@ -24,21 +17,20 @@ import Foundation
     }
     
     func loadComments() {
+        comments = .loading
         Task {
             do {
-                state = .loading
-                comments = try await commentService.fetchComments()
-                state = .loaded
+                comments = .loaded(try await commentService.fetchComments())
             } catch {
                 print("[CommentsViewModel] Cannot load comments: \(error.localizedDescription)")
-                state = .error
+                comments = .error
             }
         }
     }
     
     func submitComment(_ comment: Comment.Partial) async throws {
         let comment = try await commentService.create(comment)
-        comments.append(comment)
+        comments.value?.append(comment)
     }
     
     func deleteAction(for comment: Comment) -> (() async throws -> Void)? {
@@ -48,7 +40,7 @@ import Foundation
         return { [weak self] in
             guard let self = self else { return }
             try await self.commentService.delete(comment)
-            self.comments.removeAll { $0 == comment }
+            self.comments.value?.removeAll { $0 == comment }
         }
     }
 }
