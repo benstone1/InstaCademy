@@ -5,25 +5,41 @@
 //  Created by John Royal on 8/21/21.
 //
 
-import Foundation
 import FirebaseAuth
-import FirebaseFirestore
 import FirebaseStorage
 import UIKit
 
-struct AuthService {
+// MARK: - AuthServiceProtocol
+
+protocol AuthServiceProtocol {
+    func createAccount(name: String, email: String, password: String) async throws -> User
+    func currentUser() -> User?
+    func signIn(email: String, password: String) async throws -> User
+    func signOut() throws
+    func updateProfileImage(_ image: UIImage) async throws -> User
+}
+
+// MARK: - AuthService
+
+struct AuthService: AuthServiceProtocol {
     var auth = Auth.auth()
     var imagesReference = Storage.storage().reference().child("images/users")
     
     func createAccount(name: String, email: String, password: String) async throws -> User {
         let result = try await auth.createUser(withEmail: email, password: password)
-        let user = User(id: result.user.uid, name: name)
         
-        try await result.user.update {
-            $0.displayName = user.name
+        let profileUpdate = result.user.createProfileChangeRequest()
+        profileUpdate.displayName = name
+        try await profileUpdate.commitChanges()
+        
+        return User(from: result.user)
+    }
+    
+    func currentUser() -> User? {
+        if let user = auth.currentUser {
+            return User(from: user)
         }
-        
-        return user
+        return nil
     }
     
     func signIn(email: String, password: String) async throws -> User {
@@ -31,30 +47,23 @@ struct AuthService {
         return User(from: result.user)
     }
     
-    func currentUser() -> User? {
-        guard let currentUser = auth.currentUser else {
-            return nil
-        }
-        return User(from: currentUser)
-    }
-    
     func signOut() throws {
         try auth.signOut()
     }
     
-    func updateProfileImage(_ image: UIImage, for user: User) async throws -> User {
-        guard let currentUser = auth.currentUser, currentUser.uid == user.id else {
+    func updateProfileImage(_ image: UIImage) async throws -> User {
+        guard let user = auth.currentUser else {
             preconditionFailure("Cannot update image because there is no signed in user")
         }
         
-        let imageReference = imagesReference.child("\(user.id).jpg")
+        let imageReference = imagesReference.child("\(user.uid).jpg")
         let imageURL = try await imageReference.uploadImage(image)
         
-        try await currentUser.update {
-            $0.photoURL = imageURL
-        }
+        let profileUpdate = user.createProfileChangeRequest()
+        profileUpdate.photoURL = imageURL
+        try await profileUpdate.commitChanges()
         
-        return User(from: currentUser)
+        return User(from: user)
     }
 }
 
@@ -63,13 +72,5 @@ private extension User {
         id = user.uid
         name = user.displayName ?? "User \(user.uid)"
         imageURL = user.photoURL ?? imageURL
-    }
-}
-
-private extension FirebaseAuth.User {
-    func update(updateHandler: @escaping (UserProfileChangeRequest) -> Void) async throws {
-        let profileChangeRequest = createProfileChangeRequest()
-        updateHandler(profileChangeRequest)
-        try await profileChangeRequest.commitChanges()
     }
 }

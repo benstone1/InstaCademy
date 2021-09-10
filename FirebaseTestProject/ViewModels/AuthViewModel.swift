@@ -11,9 +11,9 @@ import UIKit
 @MainActor class AuthViewModel: ObservableObject {
     @Published var user: User?
     
-    private let authService: AuthService
+    private let authService: AuthServiceProtocol
     
-    init(authService: AuthService = AuthService()) {
+    init(authService: AuthServiceProtocol = AuthService()) {
         self.user = authService.currentUser()
         self.authService = authService
     }
@@ -32,9 +32,6 @@ import UIKit
     }
     
     func updateProfileImage(_ image: UIImage) async throws {
-        guard let currentUser = user else {
-            preconditionFailure("Cannot update profile image because there is no authenticated user")
-        }
-        user = try await authService.updateProfileImage(image, for: currentUser)
+        user = try await authService.updateProfileImage(image)
     }
 }
