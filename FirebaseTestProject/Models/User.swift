@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct User: Equatable, FirebaseConvertable {
+struct User: Equatable, FirestoreConvertable {
     let id: String
     var name: String
     var imageURL: URL {

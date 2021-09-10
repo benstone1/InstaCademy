@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Comment: Identifiable, Equatable, FirebaseConvertable {
+struct Comment: Identifiable, Equatable, FirestoreConvertable {
     let content: String
     let author: User
     let id: UUID

@@ -93,7 +93,7 @@ struct PostService {
     }
 }
 
-private struct Favorite: FirebaseConvertable {
+private struct Favorite: FirestoreConvertable {
     let postID: UUID
     let userID: String
 }
