@@ -8,23 +8,16 @@
 import SwiftUI
 
 struct MainTabView: View {
-    @StateObject private var auth = AuthViewModel()
+    let user: User
+    let auth: AuthViewModel
     
     var body: some View {
-        if let user = auth.user {
-            authenticatedView(user)
-        } else {
-            unauthenticatedView
-        }
-    }
-    
-    private func authenticatedView(_ user: User) -> some View {
         TabView {
-            PostsList(viewModel: makePostViewModel(user: user))
+            PostsList(viewModel: makePostViewModel())
                 .tabItem {
                     Label("Posts", systemImage: "list.dash")
                 }
-            PostsList(viewModel: makePostViewModel(user: user, filter: .favorites))
+            PostsList(viewModel: makePostViewModel(filter: .favorites))
                 .tabItem {
                     Label("Favorites", systemImage: "heart")
                 }
@@ -36,14 +29,7 @@ struct MainTabView: View {
         .environment(\.user, user)
     }
     
-    private var unauthenticatedView: some View {
-        SignInView(
-            action: auth.signIn(email:password:),
-            createAccountView: SignUpView(action: auth.createAccount(name:email:password:))
-        )
-    }
-    
-    private func makePostViewModel(user: User, filter: PostFilter? = nil) -> PostViewModel {
+    private func makePostViewModel(filter: PostFilter? = nil) -> PostViewModel {
         let postService = PostService(user: user)
         return PostViewModel(postService: postService, filter: filter)
     }
@@ -62,6 +48,6 @@ extension EnvironmentValues {
 
 struct MainTabView_Previews: PreviewProvider {
     static var previews: some View {
-        MainTabView()
+        MainTabView(user: .testUser, auth: AuthViewModel())
     }
 }
