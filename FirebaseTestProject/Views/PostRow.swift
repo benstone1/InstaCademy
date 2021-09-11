@@ -17,12 +17,9 @@ struct PostRow: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            VStack(alignment: .leading) {
-                Text(post.title)
-                    .font(.headline)
-                Text(post.author.name)
-                    .font(.caption)
-            }
+            PostHeader(author: post.author, action: {
+                route = .author(post.author)
+            })
             if let imageURL = post.imageURL {
                 PostImage(url: imageURL)
             }
@@ -49,6 +46,39 @@ struct PostRow: View {
 }
 
 private extension PostRow {
+    struct PostHeader: View {
+        let author: User
+        let action: () -> Void
+        
+        var body: some View {
+            Button(action: action) {
+                HStack {
+                    AsyncImage(url: author.imageURL, content: { phase in
+                        switch phase {
+                        case .empty, .failure(_):
+                            Circle()
+                                .fill(Color.gray)
+                                .frame(width: 25, height: 25)
+                        case let .success(image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 25, height: 25)
+                                .clipShape(Circle())
+                        @unknown default:
+                            fatalError()
+                        }
+                    })
+                    Text(author.name)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                }
+                .accessibilityElement(children: .combine)
+            }
+            .buttonStyle(.plain)
+        }
+    }
+    
     struct PostImage: View {
         let url: URL
         

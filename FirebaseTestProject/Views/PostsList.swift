@@ -17,7 +17,7 @@ struct PostsList: View {
     @State private var route: Route?
     
     enum Route: Equatable {
-        case comments(Post)
+        case author(User), comments(Post)
     }
     
     var body: some View {
@@ -85,6 +85,8 @@ private struct RouterView: View {
             switch route {
             case .none:
                 EmptyView()
+            case let .author(author):
+                PostsList(viewModel: makePostViewModel(for: author))
             case let .comments(post):
                 CommentsList(viewModel: makeCommentViewModel(for: post))
             }
@@ -103,6 +105,11 @@ private struct RouterView: View {
         let postService = PostService(user: user)
         let commentService = CommentService(post: post, postService: postService)
         return CommentViewModel(commentService: commentService)
+    }
+    
+    private func makePostViewModel(for author: User) -> PostViewModel {
+        let postService = PostService(user: user)
+        return PostViewModel(postService: postService, filter: .author(author))
     }
 }
 

@@ -15,6 +15,7 @@ protocol PostServiceProtocol {
     var user: User { get }
     
     func fetchPosts() async throws -> [Post]
+    func fetchPosts(by author: User) async throws -> [Post]
     func fetchFavoritePosts() async throws -> [Post]
     
     func create(_ post: Post.Partial) async throws -> Post
@@ -35,6 +36,7 @@ extension PostServiceProtocol {
 // MARK: - PostFilter
 
 enum PostFilter {
+    case author(User)
     case favorites
 }
 
@@ -43,6 +45,8 @@ extension PostServiceProtocol {
         switch filter {
         case .none:
             return try await fetchPosts()
+        case let .author(author):
+            return try await fetchPosts(by: author)
         case .favorites:
             return try await fetchFavoritePosts()
         }
@@ -60,6 +64,21 @@ struct PostService: PostServiceProtocol {
     func fetchPosts() async throws -> [Post] {
         async let postsTask = postsReference
             .order(by: "timestamp", descending: true)
+            .getDocuments(as: Post.self)
+        
+        let (posts, favorites) = try await (postsTask, favoritesTask)
+        
+        return posts.map {
+            var post = $0
+            post.isFavorite = favorites.contains($0.id)
+            return post
+        }
+    }
+    
+    func fetchPosts(by author: User) async throws -> [Post] {
+        async let postsTask = postsReference
+            .order(by: "timestamp", descending: true)
+            .whereField("author.id", isEqualTo: author.id)
             .getDocuments(as: Post.self)
         
         let (posts, favorites) = try await (postsTask, favoritesTask)
