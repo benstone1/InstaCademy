@@ -14,20 +14,14 @@ struct MainTabView: View {
     
     var body: some View {
         TabView {
-            NavigationView {
-                PostsList(viewModel: makePostViewModel())
-                    .navigationTitle("Posts")
-            }
-            .tabItem {
-                Label("Posts", systemImage: "list.dash")
-            }
-            NavigationView {
-                PostsList(viewModel: makePostViewModel(filter: .favorites))
-                    .navigationTitle("Favorites")
-            }
-            .tabItem {
-                Label("Favorites", systemImage: "heart")
-            }
+            PostsList.MainView(viewModel: makePostViewModel())
+                .tabItem {
+                    Label("Posts", systemImage: "list.dash")
+                }
+            PostsList.FavoritesView(viewModel: makePostViewModel(filter: .favorites))
+                .tabItem {
+                    Label("Favorites", systemImage: "heart")
+                }
             ProfileView(user: user, updateImageAction: auth.updateProfileImage(_:), signOutAction: auth.signOut)
                 .tabItem {
                     Label("Profile", systemImage: "gear")
