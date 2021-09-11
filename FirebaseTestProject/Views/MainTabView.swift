@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@MainActor
 struct MainTabView: View {
     let user: User
     let auth: AuthViewModel
