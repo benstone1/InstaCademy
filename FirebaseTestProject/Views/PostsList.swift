@@ -14,11 +14,7 @@ struct PostsList: View {
     
     @State private var searchText = ""
     @State private var showNewPostForm = false
-    
-    @State private var route: Route? {
-        didSet { hasActiveRoute = route != nil }
-    }
-    @State private var hasActiveRoute = false
+    @State private var route: Route?
     
     enum Route: Equatable {
         case comments(Post)
@@ -53,13 +49,13 @@ struct PostsList: View {
                             )
                         }
                     }
+                    .refreshable {
+                        await viewModel.refreshPosts()
+                    }
+                    .searchable(text: $searchText)
                 }
             }
             .navigationTitle("Posts")
-            .searchable(text: $searchText)
-            .refreshable {
-                await viewModel.refreshPosts()
-            }
             .toolbar {
                 Button {
                     showNewPostForm = true
@@ -71,17 +67,35 @@ struct PostsList: View {
                 NewPostForm(submitAction: viewModel.submitPost(_:))
             }
             .background {
-                NavigationLink(isActive: $hasActiveRoute) {
-                    switch route {
-                    case .none:
-                        EmptyView()
-                    case let .comments(post):
-                        CommentsList(viewModel: makeCommentViewModel(for: post))
-                    }
-                } label: {
-                    EmptyView()
-                }
+                RouterView(route: $route)
             }
+        }
+    }
+}
+
+@MainActor
+private struct RouterView: View {
+    @Binding var route: PostsList.Route?
+    @State private var isActive = false
+    
+    @Environment(\.user) private var user
+    
+    var body: some View {
+        NavigationLink(isActive: $isActive) {
+            switch route {
+            case .none:
+                EmptyView()
+            case let .comments(post):
+                CommentsList(viewModel: makeCommentViewModel(for: post))
+            }
+        } label: {
+            EmptyView()
+        }
+        .onChange(of: route) { route in
+            isActive = route != nil
+        }
+        .onChange(of: isActive) { isActive in
+            route = isActive ? route : nil
         }
     }
     
