@@ -9,10 +9,16 @@ import SwiftUI
 
 struct PostsList: View {
     @StateObject var viewModel: PostViewModel
-    @StateObject private var navigation = NavigationViewModel()
+    
+    @Environment(\.user) private var user
+    
     @State private var searchText = ""
     @State private var showNewPostForm = false
-    @Environment(\.user) private var user
+    
+    @State private var route: Route? {
+        didSet { hasActiveRoute = route != nil }
+    }
+    @State private var hasActiveRoute = false
     
     enum Route: Equatable {
         case comments(Post)
@@ -20,23 +26,39 @@ struct PostsList: View {
     
     var body: some View {
         NavigationView {
-            List(viewModel.posts) { post in
-                if searchText.isEmpty || post.contains(searchText) {
-                    PostRow(
-                        post: post,
-                        route: $navigation.route,
-                        favoriteAction: viewModel.favoriteAction(for: post),
-                        deleteAction: viewModel.deleteAction(for: post)
+            Group {
+                switch viewModel.posts {
+                case .loading:
+                    ProgressView()
+                        .onAppear {
+                            viewModel.loadPosts()
+                        }
+                case .error:
+                    ErrorView(title: "Cannot Load Posts", retryAction: {
+                        viewModel.loadPosts()
+                    })
+                case let .loaded(posts) where posts.isEmpty:
+                    EmptyListView(
+                        title: "No Posts",
+                        message: "There aren’t any posts here."
                     )
+                case let .loaded(posts):
+                    List(posts) { post in
+                        if searchText.isEmpty || post.contains(searchText) {
+                            PostRow(
+                                post: post,
+                                route: $route,
+                                favoriteAction: viewModel.favoriteAction(for: post),
+                                deleteAction: viewModel.deleteAction(for: post)
+                            )
+                        }
+                    }
                 }
             }
+            .navigationTitle("Posts")
             .searchable(text: $searchText)
             .refreshable {
                 await viewModel.refreshPosts()
-            }
-            .navigationTitle("Posts")
-            .onAppear {
-                viewModel.loadPosts()
             }
             .toolbar {
                 Button {
@@ -49,8 +71,8 @@ struct PostsList: View {
                 NewPostForm(submitAction: viewModel.submitPost(_:))
             }
             .background {
-                NavigationLink(isActive: $navigation.isActive) {
-                    switch navigation.route {
+                NavigationLink(isActive: $hasActiveRoute) {
+                    switch route {
                     case .none:
                         EmptyView()
                     case let .comments(post):
@@ -67,15 +89,6 @@ struct PostsList: View {
         let postService = PostService(user: user)
         let commentService = CommentService(post: post, postService: postService)
         return CommentViewModel(commentService: commentService)
-    }
-    
-    private class NavigationViewModel: ObservableObject {
-        @Published var route: Route? {
-            didSet {
-                isActive = route != nil
-            }
-        }
-        @Published var isActive = false
     }
 }
 
