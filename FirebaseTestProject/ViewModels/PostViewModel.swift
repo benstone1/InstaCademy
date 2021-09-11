@@ -8,7 +8,8 @@
 import Foundation
 
 @MainActor class PostViewModel: ObservableObject {
-    @Published var posts: Loadable<[Post]> = .loading
+    @Published var posts: [Post] = []
+    @Published var state: LoadingState = .loading
     
     private let postService: PostServiceProtocol
     private let filter: PostFilter?
@@ -19,7 +20,7 @@ import Foundation
     }
     
     func loadPosts() {
-        posts = .loading
+        state = .loading
         Task {
             await refreshPosts()
         }
@@ -27,17 +28,17 @@ import Foundation
     
     func refreshPosts() async {
         do {
-            posts = .loaded(try await postService.fetchPosts(matching: filter))
+            posts = try await postService.fetchPosts(matching: filter)
+            state = .loaded
         } catch {
             print("[PostViewModel] Cannot load posts: \(error.localizedDescription)")
-            posts = .error
+            state = .error
         }
     }
     
     func submitPost(_ post: Post.Partial) async throws {
         let post = try await postService.create(post)
-        posts.value = posts.value ?? []
-        posts.value?.insert(post, at: 0)
+        posts.insert(post, at: 0)
     }
     
     func deleteAction(for post: Post) -> (() async throws -> Void)? {
@@ -46,14 +47,14 @@ import Foundation
         }
         return { [self] in
             try await postService.delete(post)
-            posts.value?.removeAll { $0.id == post.id }
+            posts.removeAll { $0.id == post.id }
         }
     }
     
     func favoriteAction(for post: Post) -> (() async throws -> Void) {
         return { [self] in
-            if let i = posts.value?.firstIndex(of: post) {
-                posts.value?[i].isFavorite = !post.isFavorite
+            if let i = posts.firstIndex(of: post) {
+                posts[i].isFavorite = !post.isFavorite
             }
             try await (post.isFavorite ? postService.unfavorite(post) : postService.favorite(post))
         }

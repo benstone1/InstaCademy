@@ -22,7 +22,7 @@ struct PostsList: View {
     
     var body: some View {
         Group {
-            switch viewModel.posts {
+            switch viewModel.state {
             case .loading:
                 ProgressView()
                     .onAppear {
@@ -32,13 +32,13 @@ struct PostsList: View {
                 ErrorView(title: "Cannot Load Posts", retryAction: {
                     viewModel.loadPosts()
                 })
-            case let .loaded(posts) where posts.isEmpty:
+            case .loaded where viewModel.posts.isEmpty:
                 EmptyListView(
                     title: "No Posts",
                     message: "There aren’t any posts here."
                 )
-            case let .loaded(posts):
-                List(posts) { post in
+            case .loaded:
+                List(viewModel.posts) { post in
                     if searchText.isEmpty || post.contains(searchText) {
                         PostRow(
                             post: post,

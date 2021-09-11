@@ -12,7 +12,7 @@ struct CommentsList: View {
     
     var body: some View {
         Group {
-            switch viewModel.comments {
+            switch viewModel.state {
             case .loading:
                 ProgressView()
                     .onAppear {
@@ -22,13 +22,13 @@ struct CommentsList: View {
                 ErrorView(title: "Cannot Load Comments", retryAction: {
                     viewModel.loadComments()
                 })
-            case let .loaded(comments) where comments.isEmpty:
+            case .loaded where viewModel.comments.isEmpty:
                 EmptyListView(
                     title: "No Comments",
                     message: "Be the first to leave a comment."
                 )
-            case let .loaded(comments):
-                List(comments) { comment in
+            case .loaded:
+                List(viewModel.comments) { comment in
                     CommentRow(comment: comment, deleteAction: viewModel.deleteAction(for: comment))
                 }
                 .refreshable {
