@@ -19,12 +19,16 @@ import Foundation
     func loadComments() {
         comments = .loading
         Task {
-            do {
-                comments = .loaded(try await commentService.fetchComments())
-            } catch {
-                print("[CommentsViewModel] Cannot load comments: \(error.localizedDescription)")
-                comments = .error
-            }
+            await refreshComments()
+        }
+    }
+    
+    func refreshComments() async {
+        do {
+            comments = .loaded(try await commentService.fetchComments())
+        } catch {
+            print("[CommentsViewModel] Cannot load comments: \(error.localizedDescription)")
+            comments = .error
         }
     }
     

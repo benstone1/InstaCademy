@@ -31,6 +31,9 @@ struct CommentsList: View {
                 List(comments) { comment in
                     CommentRow(comment: comment, deleteAction: viewModel.deleteAction(for: comment))
                 }
+                .refreshable {
+                    await viewModel.refreshComments()
+                }
             }
         }
         .navigationTitle("Comments")
