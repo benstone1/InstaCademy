@@ -54,7 +54,6 @@ struct PostsList: View {
                 .searchable(text: $searchText)
             }
         }
-        .navigationTitle("Posts")
         .toolbar {
             Button {
                 showNewPostForm = true
@@ -85,6 +84,7 @@ private struct RouterView: View {
                 EmptyView()
             case let .author(author):
                 PostsList(viewModel: makePostViewModel(for: author))
+                    .navigationTitle("\(author.name)’s Posts")
             case let .comments(post):
                 CommentsList(viewModel: makeCommentViewModel(for: post))
             }
@@ -115,6 +115,7 @@ struct PostsList_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             PostsList(viewModel: PostViewModel(postService: PostService(user: .testUser)))
+                .navigationTitle("Posts")
         }
     }
 }

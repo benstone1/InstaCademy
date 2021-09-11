@@ -16,12 +16,14 @@ struct MainTabView: View {
         TabView {
             NavigationView {
                 PostsList(viewModel: makePostViewModel())
+                    .navigationTitle("Posts")
             }
             .tabItem {
                 Label("Posts", systemImage: "list.dash")
             }
             NavigationView {
                 PostsList(viewModel: makePostViewModel(filter: .favorites))
+                    .navigationTitle("Favorites")
             }
             .tabItem {
                 Label("Favorites", systemImage: "heart")
