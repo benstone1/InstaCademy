@@ -118,8 +118,8 @@ struct PostService: PostServiceProtocol {
             .whereField("postID", isEqualTo: post.id.uuidString)
             .whereField("userID", isEqualTo: user.id)
             .getDocuments()
-        guard let favoriteReference = snapshot.documents.first?.reference else { return }
         assert(snapshot.count == 1, "Expected 1 favorite reference but found \(snapshot.count)")
+        guard let favoriteReference = snapshot.documents.first?.reference else { return }
         try await favoriteReference.delete()
     }
     
