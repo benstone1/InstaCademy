@@ -54,13 +54,19 @@ struct PostsList: View {
                     case .none:
                         EmptyView()
                     case let .comments(post):
-                        CommentsList(viewModel: viewModel.commentViewModel(for: post))
+                        CommentsList(viewModel: makeCommentViewModel(for: post))
                     }
                 } label: {
                     EmptyView()
                 }
             }
         }
+    }
+    
+    private func makeCommentViewModel(for post: Post) -> CommentViewModel {
+        let postService = PostService(user: user)
+        let commentService = CommentService(post: post, postService: postService)
+        return CommentViewModel(commentService: commentService)
     }
     
     private class NavigationViewModel: ObservableObject {
@@ -75,6 +81,6 @@ struct PostsList: View {
 
 struct PostsList_Previews: PreviewProvider {
     static var previews: some View {
-        PostsList(viewModel: PostViewModel(user: .testUser))
+        PostsList(viewModel: PostViewModel(postService: PostService(user: .testUser)))
     }
 }

@@ -20,11 +20,11 @@ struct MainTabView: View {
     
     private func authenticatedView(_ user: User) -> some View {
         TabView {
-            PostsList(viewModel: PostViewModel(user: user))
+            PostsList(viewModel: makePostViewModel(user: user))
                 .tabItem {
                     Label("Posts", systemImage: "list.dash")
                 }
-            PostsList(viewModel: PostViewModel(user: user, filter: .favorites))
+            PostsList(viewModel: makePostViewModel(user: user, filter: .favorites))
                 .tabItem {
                     Label("Favorites", systemImage: "heart")
                 }
@@ -41,6 +41,11 @@ struct MainTabView: View {
             action: auth.signIn(email:password:),
             createAccountView: SignUpView(action: auth.createAccount(name:email:password:))
         )
+    }
+    
+    private func makePostViewModel(user: User, filter: PostFilter? = nil) -> PostViewModel {
+        let postService = PostService(user: user)
+        return PostViewModel(postService: postService, filter: filter)
     }
 }
 

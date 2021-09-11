@@ -10,12 +10,12 @@ import Foundation
 @MainActor class PostViewModel: ObservableObject {
     @Published var posts: [Post] = []
     
+    private let postService: PostServiceProtocol
     private let filter: PostFilter?
-    private let postService: PostService
     
-    init(user: User, filter: PostFilter? = nil) {
+    init(postService: PostServiceProtocol, filter: PostFilter? = nil) {
+        self.postService = postService
         self.filter = filter
-        self.postService = PostService(user: user)
     }
     
     func loadPosts() {
@@ -30,10 +30,6 @@ import Foundation
         } catch {
             print("[PostViewModel] Cannot load posts: \(error.localizedDescription)")
         }
-    }
-    
-    func commentViewModel(for post: Post) -> CommentViewModel {
-        CommentViewModel(commentService: CommentService(post: post, postService: postService))
     }
     
     func submitPost(_ post: Post.Partial) async throws {
