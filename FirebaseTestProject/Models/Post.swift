@@ -35,7 +35,13 @@ struct Post: Identifiable, Equatable, FirestoreConvertable {
         self.isFavorite = isFavorite
     }
     
-    static let testPost = Post(title: "Test post title", text: "This post has some content!", author: .testUser)
+    static let testPost = Post(
+        title: "Lorem ipsum",
+        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        author: .testUser,
+        imageURL: URL(string: "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"),
+        isFavorite: true
+    )
     
     enum CodingKeys: CodingKey {
         case id, title, text, author, timestamp, imageURLString

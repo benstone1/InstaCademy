@@ -16,6 +16,7 @@
 		5230FE9526D996D800BC956C /* CommentsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5230FE9226D996D800BC956C /* CommentsList.swift */; };
 		5230FE9726D9972100BC956C /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5230FE9626D9972100BC956C /* Comment.swift */; };
 		525B63A426ED512B0099F800 /* LoadingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525B63A326ED512B0099F800 /* LoadingState.swift */; };
+		525B63B626ED81D40099F800 /* UserImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525B63B526ED81D40099F800 /* UserImageView.swift */; };
 		5284827E26EBC7B400F3E98D /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5284827D26EBC7B400F3E98D /* ErrorView.swift */; };
 		5284828026EBC7C800F3E98D /* EmptyListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5284827F26EBC7C700F3E98D /* EmptyListView.swift */; };
 		52917CC226D162B20061E69F /* Firestore+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52917CC126D162B20061E69F /* Firestore+Extensions.swift */; };
@@ -28,7 +29,6 @@
 		52B95FF726EA89900010F906 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 52B95FF626EA89900010F906 /* FirebaseFirestore */; };
 		52B95FF926EA89900010F906 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 52B95FF826EA89900010F906 /* FirebaseStorage */; };
 		52B95FFB26EA8A1F0010F906 /* ImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B95FFA26EA8A1F0010F906 /* ImagePickerView.swift */; };
-		52B95FFD26EA96310010F906 /* ProfileImagePlaceholder.png in Resources */ = {isa = PBXBuildFile; fileRef = 52B95FFC26EA96310010F906 /* ProfileImagePlaceholder.png */; };
 		52C50B2726DD52F6006FB364 /* CommentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C50B2626DD52F6006FB364 /* CommentService.swift */; };
 		52E308D826DDAA6F0082EC98 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E308D726DDAA6F0082EC98 /* AuthViewModel.swift */; };
 		52F56A7926EBBC4F00160ED7 /* Storage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52F56A7826EBBC4F00160ED7 /* Storage+Extensions.swift */; };
@@ -75,6 +75,7 @@
 		5230FE9226D996D800BC956C /* CommentsList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentsList.swift; sourceTree = "<group>"; };
 		5230FE9626D9972100BC956C /* Comment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		525B63A326ED512B0099F800 /* LoadingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingState.swift; sourceTree = "<group>"; };
+		525B63B526ED81D40099F800 /* UserImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserImageView.swift; sourceTree = "<group>"; };
 		5284827D26EBC7B400F3E98D /* ErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorView.swift; sourceTree = "<group>"; };
 		5284827F26EBC7C700F3E98D /* EmptyListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyListView.swift; sourceTree = "<group>"; };
 		52917CC126D162B20061E69F /* Firestore+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firestore+Extensions.swift"; sourceTree = "<group>"; };
@@ -84,7 +85,6 @@
 		529271FE26D7003500A35315 /* TaskViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskViewModel.swift; sourceTree = "<group>"; };
 		52A557FE26ED3F450065DACA /* AppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppView.swift; sourceTree = "<group>"; };
 		52B95FFA26EA8A1F0010F906 /* ImagePickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerView.swift; sourceTree = "<group>"; };
-		52B95FFC26EA96310010F906 /* ProfileImagePlaceholder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ProfileImagePlaceholder.png; sourceTree = "<group>"; };
 		52C50B2626DD52F6006FB364 /* CommentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentService.swift; sourceTree = "<group>"; };
 		52E308D726DDAA6F0082EC98 /* AuthViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
 		52F56A7826EBBC4F00160ED7 /* Storage+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+Extensions.swift"; sourceTree = "<group>"; };
@@ -159,6 +159,7 @@
 				5284827F26EBC7C700F3E98D /* EmptyListView.swift */,
 				5284827D26EBC7B400F3E98D /* ErrorView.swift */,
 				52B95FFA26EA8A1F0010F906 /* ImagePickerView.swift */,
+				525B63B526ED81D40099F800 /* UserImageView.swift */,
 			);
 			path = "Supporting Views";
 			sourceTree = "<group>";
@@ -195,7 +196,6 @@
 				52917CC326D162E00061E69F /* Services */,
 				52917CC026D162910061E69F /* Utilities */,
 				F2576EAD26C18A1A00D3F344 /* Assets.xcassets */,
-				52B95FFC26EA96310010F906 /* ProfileImagePlaceholder.png */,
 				F2576EAF26C18A1A00D3F344 /* Preview Content */,
 			);
 			path = FirebaseTestProject;
@@ -377,7 +377,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F2576EB126C18A1A00D3F344 /* Preview Assets.xcassets in Resources */,
-				52B95FFD26EA96310010F906 /* ProfileImagePlaceholder.png in Resources */,
 				F2576EAE26C18A1A00D3F344 /* Assets.xcassets in Resources */,
 				F2576ED226C18AD100D3F344 /* GoogleService-Info.plist in Resources */,
 			);
@@ -430,6 +429,7 @@
 				5230FE9726D9972100BC956C /* Comment.swift in Sources */,
 				41CF7E7226CC312A0043EB96 /* SignInView.swift in Sources */,
 				F2576EE326C1A1A600D3F344 /* MainTabView.swift in Sources */,
+				525B63B626ED81D40099F800 /* UserImageView.swift in Sources */,
 				52A557FF26ED3F450065DACA /* AppView.swift in Sources */,
 				529271FF26D7003500A35315 /* TaskViewModel.swift in Sources */,
 				52917CCD26D16AF00061E69F /* User.swift in Sources */,

@@ -7,23 +7,28 @@
 
 import Foundation
 
-struct User: Equatable, FirestoreConvertable {
+struct User: Identifiable, Equatable, FirestoreConvertable {
     let id: String
     var name: String
-    var imageURL: URL {
+    var imageURL: URL? {
         get {
-            URL(string: imageURLString) ?? Bundle.main.url(forResource: "ProfileImagePlaceholder", withExtension: "png")!
+            URL(string: imageURLString)
         }
         set {
-            imageURLString = newValue.absoluteString
+            imageURLString = newValue?.absoluteString ?? ""
         }
     }
     private var imageURLString = ""
     
-    init(id: String, name: String) {
+    init(id: String, name: String, imageURL: URL? = nil) {
         self.id = id
         self.name = name
+        self.imageURL = imageURL
     }
     
-    static let testUser = User(id: "0000000000000000000000000000", name: "Jane Doe")
+    static let testUser = User(
+        id: "0000000000000000000000000000",
+        name: "Jamie Harris",
+        imageURL: URL(string: "https://images.unsplash.com/photo-1578916045370-25461e0cf390?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1288&q=80")
+    )
 }

@@ -21,24 +21,9 @@ struct ProfileView: View {
     var body: some View {
         VStack{
             Spacer()
-            AsyncImage(url: user.imageURL) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 300, height: 300)
-                    .clipShape(Circle())
-                    .overlay(Circle().stroke(Color.white, lineWidth: 4))
-                    .shadow(radius: 10)
-            } placeholder: {
-                VStack {
-                    Image(systemName: "icloud.and.arrow.down")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 75, height: 50)
-                    Text("Image downloading...")
-                        .font(.caption)
-                }
-            }
+            UserImageView(url: user.imageURL, transaction: Transaction(animation: .default))
+                .frame(width: 300, height: 300)
+                .overlay(Circle().stroke(Color(uiColor: .systemGray5), lineWidth: 2))
             Button("Change Photo", action: {
                 showChooseImageSource = true
             })

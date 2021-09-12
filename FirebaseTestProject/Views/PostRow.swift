@@ -42,6 +42,7 @@ struct PostRow: View {
             .buttonStyle(.plain)
             .labelStyle(.iconOnly)
         }
+        .padding(.vertical, 10)
     }
 }
 
@@ -53,22 +54,9 @@ private extension PostRow {
         var body: some View {
             Button(action: action) {
                 HStack {
-                    AsyncImage(url: author.imageURL, content: { phase in
-                        switch phase {
-                        case .empty, .failure(_):
-                            Circle()
-                                .fill(Color.gray)
-                                .frame(width: 25, height: 25)
-                        case let .success(image):
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 25, height: 25)
-                                .clipShape(Circle())
-                        @unknown default:
-                            fatalError()
-                        }
-                    })
+                    UserImageView(url: author.imageURL)
+                        .frame(width: 30, height: 30)
+                        .overlay(Circle().stroke(Color(uiColor: .systemGray5), lineWidth: 1))
                     Text(author.name)
                         .font(.subheadline)
                         .fontWeight(.medium)
@@ -88,16 +76,11 @@ private extension PostRow {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
-                    .frame(width: 300, height: 200)
             } placeholder: {
-                VStack {
-                    ProgressView()
-                    Text("Loading Image")
-                        .font(.caption)
-                }
-                .frame(width: 300, height: 200)
+                Color.clear
             }
-            .padding(.horizontal)
+            .frame(height: 200)
+            .frame(maxWidth: .infinity)
         }
     }
     
