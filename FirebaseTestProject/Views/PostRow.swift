@@ -1,6 +1,6 @@
 //
-//  PostView.swift
-//  PostView
+//  PostRow.swift
+//  PostRow
 //
 //  Created by Ben Stone on 8/9/21.
 //
@@ -17,9 +17,12 @@ struct PostRow: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            PostHeader(author: post.author, action: {
+            PostAuthor(author: post.author, action: {
                 route = .author(post.author)
             })
+            Text(post.title)
+                .font(.title3)
+                .fontWeight(.semibold)
             if let imageURL = post.imageURL {
                 PostImage(url: imageURL)
             }
@@ -47,7 +50,7 @@ struct PostRow: View {
 }
 
 private extension PostRow {
-    struct PostHeader: View {
+    struct PostAuthor: View {
         let author: User
         let action: () -> Void
         
