@@ -20,7 +20,7 @@ struct Comment: Identifiable, Equatable, FirestoreConvertable {
         self.timestamp = timestamp
     }
     
-    static let testComment: Comment = .init(content: "Great job!", author: .testUser)
+    static let testComment = Comment(content: "Great job!", author: .testUser)
 }
 
 extension Comment {

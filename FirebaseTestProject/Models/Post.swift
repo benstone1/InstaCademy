@@ -48,15 +48,10 @@ struct Post: Identifiable, Equatable, FirestoreConvertable {
     }
     
     func contains(_ string: String) -> Bool {
-        let strings = jsonDict.values.compactMap { value -> String? in
-            if let value = value as? String {
-                return value.lowercased()
-            } else if let value = value as? Date {
-                return value.formatted()
-            }
-            return nil
-        }
-        let matches = strings.filter { $0.contains(string.lowercased()) }
+        let content = [title, text, author.name].map { $0.lowercased() }
+        let query = string.lowercased()
+        
+        let matches = content.filter { $0.contains(query) }
         return !matches.isEmpty
     }
 }
