@@ -54,7 +54,7 @@ struct CommentRow: View {
     
     private func deleteButton(with deleteAction: @escaping DeleteAction) -> some View {
         Button(role: .destructive) {
-            deleteTask.request(with: deleteAction)
+            deleteTask.request(deleteAction)
         } label: {
             Label("Delete", systemImage: "trash")
                 .labelStyle(IconOnlyLabelStyle())

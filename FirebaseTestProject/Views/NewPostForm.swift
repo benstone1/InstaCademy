@@ -45,7 +45,7 @@ struct NewPostForm: View {
     
     private func submitPost() {
         isShowingKeyboard = false
-        submitTask.run {
+        submitTask.perform {
             try await submitAction(post)
             dismiss()
         }

@@ -61,7 +61,7 @@ struct ProfileView: View {
         }
         .sheet(item: $imageSourceType, onDismiss: {
             guard let image = newImageCandidate else { return }
-            task.run {
+            task.perform {
                 try await updateImageAction(image)
                 newImageCandidate = nil
             }
@@ -71,7 +71,7 @@ struct ProfileView: View {
     }
     
     private func signOut() {
-        task.run(action: signOutAction)
+        task.perform(signOutAction)
     }
 }
 

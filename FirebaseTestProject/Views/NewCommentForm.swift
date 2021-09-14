@@ -33,7 +33,7 @@ struct NewCommentForm: View {
     }
     
     private func handleSubmit() {
-        submitTask.run {
+        submitTask.perform {
             try await submitAction(comment)
             comment = .init()
         }

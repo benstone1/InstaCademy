@@ -57,7 +57,7 @@ struct SignUpView: View {
     }
     
     private func createAccount() {
-        createAccountTask.run {
+        createAccountTask.perform {
             try await action(name, email, password)
         }
     }

@@ -95,7 +95,7 @@ private extension PostRow {
         
         var body: some View {
             Button {
-                task.run(action: action)
+                task.perform(action)
             } label: {
                 if isFavorite {
                     Label("Remove from Favorites", systemImage: "heart.fill")
@@ -110,11 +110,11 @@ private extension PostRow {
     struct DeleteButton: View {
         let action: Action
         
-        @StateObject var task = DeleteTaskViewModel()
+        @StateObject private var task = DeleteTaskViewModel()
         
         var body: some View {
             Button(role: .destructive) {
-                task.request(with: action)
+                task.request(action)
             } label: {
                 Label("Delete", systemImage: "trash")
                     .foregroundColor(.red)
