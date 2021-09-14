@@ -43,9 +43,10 @@ import Foundation
         guard commentService.canDelete(comment) else {
             return nil
         }
-        return { [self] in
-            try await commentService.delete(comment)
-            comments.removeAll { $0 == comment }
+        return { [weak self] in
+            guard let self = self else { return }
+            try await self.commentService.delete(comment)
+            self.comments.removeAll { $0 == comment }
         }
     }
 }

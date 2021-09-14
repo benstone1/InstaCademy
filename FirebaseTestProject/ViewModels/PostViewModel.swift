@@ -45,18 +45,26 @@ import Foundation
         guard postService.canDelete(post) else {
             return nil
         }
-        return { [self] in
-            try await postService.delete(post)
-            posts.removeAll { $0.id == post.id }
+        return { [weak self] in
+            guard let self = self else { return }
+            try await self.postService.delete(post)
+            self.posts.removeAll { $0.id == post.id }
         }
     }
     
     func favoriteAction(for post: Post) -> (() async throws -> Void) {
-        return { [self] in
-            if let i = posts.firstIndex(of: post) {
-                posts[i].isFavorite = !post.isFavorite
+        return { [weak self] in
+            guard let self = self,
+                  let i = self.posts.firstIndex(of: post) else {
+                      return
+                  }
+            if post.isFavorite {
+                try await self.postService.unfavorite(post)
+                self.posts[i].isFavorite = false
+            } else {
+                try await self.postService.favorite(post)
+                self.posts[i].isFavorite = true
             }
-            try await (post.isFavorite ? postService.unfavorite(post) : postService.favorite(post))
         }
     }
 }
