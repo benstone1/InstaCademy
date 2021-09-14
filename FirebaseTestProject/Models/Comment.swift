@@ -12,10 +12,10 @@ import Foundation
 struct Comment: Identifiable, Equatable, FirestoreConvertable {
     let content: String
     let author: User
-    let id: UUID
+    let id: String
     let timestamp: Date
     
-    init(content: String, author: User, id: UUID = UUID(), timestamp: Date = Date()) {
+    init(content: String, author: User, id: String, timestamp: Date = Date()) {
         self.content = content
         self.author = author
         self.id = id
@@ -28,7 +28,8 @@ struct Comment: Identifiable, Equatable, FirestoreConvertable {
 extension Comment {
     static let testComment = Comment(
         content: "Great job!",
-        author: .testUser
+        author: .testUser,
+        id: "00000000000000000000"
     )
 }
 

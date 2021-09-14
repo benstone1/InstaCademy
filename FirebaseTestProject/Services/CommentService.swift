@@ -39,7 +39,7 @@ struct CommentService: CommentServiceProtocol {
         self.post = post
         self.user = postService.user
         
-        let postReference = postService.postsReference.document(post.id.uuidString)
+        let postReference = postService.postsReference.document(post.id)
         self.commentsReference = postReference.collection("comments")
     }
     
@@ -48,15 +48,19 @@ struct CommentService: CommentServiceProtocol {
     }
     
     func create(_ comment: Comment.Partial) async throws -> Comment {
-        let comment = Comment(content: comment.content, author: user)
-        let commentReference = commentsReference.document(comment.id.uuidString)
+        let commentReference = commentsReference.document()
+        let comment = Comment(
+            content: comment.content,
+            author: user,
+            id: commentReference.documentID
+        )
         try await commentReference.setData(comment.jsonDict)
         return comment
     }
     
     func delete(_ comment: Comment) async throws {
         precondition(canDelete(comment), "User not authorized to delete comment")
-        let commentReference = commentsReference.document(comment.id.uuidString)
+        let commentReference = commentsReference.document(comment.id)
         try await commentReference.delete()
     }
 }

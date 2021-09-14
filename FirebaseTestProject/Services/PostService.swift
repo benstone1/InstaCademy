@@ -96,7 +96,7 @@ struct PostService: PostServiceProtocol {
         
         let posts = try await postsReference
             .order(by: "timestamp", descending: true)
-            .whereField("id", in: favorites.map(\.uuidString))
+            .whereField("id", in: favorites)
             .getDocuments(as: Post.self)
         
         return posts.map {
@@ -107,23 +107,26 @@ struct PostService: PostServiceProtocol {
     }
     
     func create(_ post: Post.Partial) async throws -> Post {
-        let id = UUID()
+        let postReference = postsReference.document()
         let imageURL: URL? = try await {
             guard let image = post.image else { return nil }
-            let imageReference = imagesReference.child("\(id.uuidString)/post.jpg")
+            let imageReference = imagesReference.child("\(postReference.documentID)/post.jpg")
             return try await imageReference.uploadImage(image)
         }()
-        let post = Post(title: post.title, text: post.content, author: user, id: id, imageURL: imageURL)
-        
-        let postReference = postsReference.document(id.uuidString)
+        let post = Post(
+            title: post.title,
+            text: post.content,
+            author: user,
+            id: postReference.documentID,
+            imageURL: imageURL
+        )
         try await postReference.setData(post.jsonDict)
-        
         return post
     }
     
     func delete(_ post: Post) async throws {
         precondition(canDelete(post), "User not authorized to delete post")
-        let postReference = postsReference.document(post.id.uuidString)
+        let postReference = postsReference.document(post.id)
         try await postReference.delete()
     }
     
@@ -134,7 +137,7 @@ struct PostService: PostServiceProtocol {
     
     func unfavorite(_ post: Post) async throws {
         let snapshot = try await favoritesReference
-            .whereField("postID", isEqualTo: post.id.uuidString)
+            .whereField("postID", isEqualTo: post.id)
             .whereField("userID", isEqualTo: user.id)
             .getDocuments()
         assert(snapshot.count == 1, "Expected 1 favorite reference but found \(snapshot.count)")

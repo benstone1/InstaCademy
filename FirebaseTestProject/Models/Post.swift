@@ -14,7 +14,7 @@ struct Post: Identifiable, Equatable, FirestoreConvertable {
     let title: String
     let text: String
     let author: User
-    let id: UUID
+    let id: String
     let timestamp: Date
     var imageURL: URL? {
         get {
@@ -28,7 +28,7 @@ struct Post: Identifiable, Equatable, FirestoreConvertable {
     
     private var imageURLString = ""
     
-    init(title: String, text: String, author: User, id: UUID = UUID(), timestamp: Date = Date(), imageURL: URL? = nil, isFavorite: Bool = false) {
+    init(title: String, text: String, author: User, id: String, timestamp: Date = Date(), imageURL: URL? = nil, isFavorite: Bool = false) {
         self.title = title
         self.text = text
         self.author = author
@@ -54,6 +54,7 @@ extension Post {
         title: "Lorem ipsum",
         text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
         author: .testUser,
+        id: "00000000000000000000",
         imageURL: URL(string: "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"),
         isFavorite: true
     )
