@@ -115,7 +115,7 @@ struct PostService: PostServiceProtocol {
         }()
         let post = Post(
             title: post.title,
-            text: post.content,
+            content: post.content,
             author: user,
             id: postReference.documentID,
             imageURL: imageURL

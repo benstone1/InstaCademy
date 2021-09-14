@@ -26,7 +26,7 @@ struct PostRow: View {
             if let imageURL = post.imageURL {
                 PostImage(url: imageURL)
             }
-            Text(post.text)
+            Text(post.content)
             HStack(alignment: .center, spacing: 10) {
                 Text(post.timestamp.formatted())
                     .font(.caption)
