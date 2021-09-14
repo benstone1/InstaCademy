@@ -8,6 +8,8 @@
 import Foundation
 import UIKit
 
+// MARK: - Post
+
 struct Post: Identifiable, Equatable, FirestoreConvertable {
     let title: String
     let text: String
@@ -22,8 +24,9 @@ struct Post: Identifiable, Equatable, FirestoreConvertable {
             imageURLString = newValue?.absoluteString ?? ""
         }
     }
-    private var imageURLString = ""
     var isFavorite = false
+    
+    private var imageURLString = ""
     
     init(title: String, text: String, author: User, id: UUID = UUID(), timestamp: Date = Date(), imageURL: URL? = nil, isFavorite: Bool = false) {
         self.title = title
@@ -35,18 +38,6 @@ struct Post: Identifiable, Equatable, FirestoreConvertable {
         self.isFavorite = isFavorite
     }
     
-    static let testPost = Post(
-        title: "Lorem ipsum",
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        author: .testUser,
-        imageURL: URL(string: "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"),
-        isFavorite: true
-    )
-    
-    enum CodingKeys: CodingKey {
-        case id, title, text, author, timestamp, imageURLString
-    }
-    
     func contains(_ string: String) -> Bool {
         let content = [title, text, author.name].map { $0.lowercased() }
         let query = string.lowercased()
@@ -55,6 +46,28 @@ struct Post: Identifiable, Equatable, FirestoreConvertable {
         return !matches.isEmpty
     }
 }
+
+// MARK: - Test
+
+extension Post {
+    static let testPost = Post(
+        title: "Lorem ipsum",
+        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        author: .testUser,
+        imageURL: URL(string: "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"),
+        isFavorite: true
+    )
+}
+
+// MARK: - CodingKeys
+
+extension Post {
+    enum CodingKeys: CodingKey {
+        case title, text, author, id, timestamp, imageURLString
+    }
+}
+
+// MARK: - Partial
 
 extension Post {
     struct Partial {

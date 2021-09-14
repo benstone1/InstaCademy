@@ -7,6 +7,8 @@
 
 import Foundation
 
+// MARK: - User
+
 struct User: Identifiable, Equatable, FirestoreConvertable {
     let id: String
     var name: String
@@ -18,6 +20,7 @@ struct User: Identifiable, Equatable, FirestoreConvertable {
             imageURLString = newValue?.absoluteString ?? ""
         }
     }
+    
     private var imageURLString = ""
     
     init(id: String, name: String, imageURL: URL? = nil) {
@@ -25,7 +28,11 @@ struct User: Identifiable, Equatable, FirestoreConvertable {
         self.name = name
         self.imageURL = imageURL
     }
-    
+}
+
+// MARK: - Test
+
+extension User {
     static let testUser = User(
         id: "0000000000000000000000000000",
         name: "Jamie Harris",

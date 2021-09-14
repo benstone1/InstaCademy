@@ -7,6 +7,8 @@
 
 import Foundation
 
+// MARK: - Comment
+
 struct Comment: Identifiable, Equatable, FirestoreConvertable {
     let content: String
     let author: User
@@ -19,9 +21,18 @@ struct Comment: Identifiable, Equatable, FirestoreConvertable {
         self.id = id
         self.timestamp = timestamp
     }
-    
-    static let testComment = Comment(content: "Great job!", author: .testUser)
 }
+
+// MARK: - Test
+
+extension Comment {
+    static let testComment = Comment(
+        content: "Great job!",
+        author: .testUser
+    )
+}
+
+// MARK: - Partial
 
 extension Comment {
     struct Partial {

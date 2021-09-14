@@ -152,7 +152,7 @@ struct PostService: PostServiceProtocol {
     }
     
     private struct Favorite: FirestoreConvertable {
-        let postID: UUID
-        let userID: String
+        let postID: Post.ID
+        let userID: User.ID
     }
 }
