@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-@MainActor
-struct MainTabView: View {
-    let user: User
+@MainActor struct MainTabView: View {
     let auth: AuthViewModel
+    
+    @Environment(\.user) private var user
     
     var body: some View {
         TabView {
@@ -27,7 +27,6 @@ struct MainTabView: View {
                     Label("Profile", systemImage: "gear")
                 }
         }
-        .environment(\.user, user)
     }
     
     private func makePostViewModel(filter: PostFilter? = nil) -> PostViewModel {
@@ -36,19 +35,8 @@ struct MainTabView: View {
     }
 }
 
-struct UserEnvironmentKey: EnvironmentKey {
-    static let defaultValue = User.testUser
-}
-
-extension EnvironmentValues {
-    var user: User {
-        get { self[UserEnvironmentKey.self] }
-        set { self[UserEnvironmentKey.self] = newValue }
-    }
-}
-
 struct MainTabView_Previews: PreviewProvider {
     static var previews: some View {
-        MainTabView(user: .testUser, auth: AuthViewModel())
+        MainTabView(auth: AuthViewModel())
     }
 }

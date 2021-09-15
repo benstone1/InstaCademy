@@ -12,7 +12,8 @@ struct AppView: View {
     
     var body: some View {
         if let user = auth.user {
-            MainTabView(user: user, auth: auth)
+            MainTabView(auth: auth)
+                .environment(\.user, user)
         } else {
             SignInView(
                 action: auth.signIn(email:password:),
@@ -21,6 +22,21 @@ struct AppView: View {
         }
     }
 }
+
+// MARK: - EnvironmentValues
+
+extension EnvironmentValues {
+    var user: User {
+        get { self[UserEnvironmentKey.self] }
+        set { self[UserEnvironmentKey.self] = newValue }
+    }
+    
+    private struct UserEnvironmentKey: EnvironmentKey {
+        static let defaultValue = User.testUser
+    }
+}
+
+// MARK: - Preview
 
 struct AppView_Previews: PreviewProvider {
     static var previews: some View {
