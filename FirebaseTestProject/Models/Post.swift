@@ -10,7 +10,7 @@ import UIKit
 
 // MARK: - Post
 
-struct Post: Identifiable, Equatable, FirestoreConvertable {
+struct Post: Identifiable, Equatable {
     let title: String
     let content: String
     let author: User
@@ -60,9 +60,9 @@ extension Post {
     )
 }
 
-// MARK: - CodingKeys
+// MARK: - FirestoreConvertable
 
-extension Post {
+extension Post: FirestoreConvertable {
     enum CodingKeys: CodingKey {
         case title, content, author, id, timestamp, imageURLString
     }
