@@ -40,8 +40,12 @@ import Foundation
         let post = try await postService.create(editablePost)
         posts.insert(post, at: 0)
     }
+}
+
+extension PostViewModel {
+    typealias Action = () async throws -> Void
     
-    func deleteAction(for post: Post) -> (() async throws -> Void)? {
+    func deleteAction(for post: Post) -> Action? {
         guard postService.canDelete(post) else {
             return nil
         }
@@ -52,7 +56,7 @@ import Foundation
         }
     }
     
-    func favoriteAction(for post: Post) -> (() async throws -> Void) {
+    func favoriteAction(for post: Post) -> Action {
         return { [weak self] in
             guard let self = self,
                   let i = self.posts.firstIndex(of: post) else {
