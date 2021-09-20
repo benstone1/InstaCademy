@@ -31,11 +31,17 @@ struct CommentRow: View {
                 .fontWeight(.regular)
         }
         .padding(5)
-        .modifier(DeleteViewModifier(action: deleteAction))
+        .deletable(action: deleteAction)
     }
 }
 
 // MARK: - DeleteViewModifier
+
+private extension View {
+    func deletable(action: CommentRow.DeleteAction?) -> some View {
+        modifier(CommentRow.DeleteViewModifier(action: action))
+    }
+}
 
 private extension CommentRow {
     struct DeleteViewModifier: ViewModifier {
