@@ -7,6 +7,7 @@
 
 import Foundation
 import FirebaseFirestore
+import FirebaseFirestoreSwift
 import FirebaseStorage
 
 // MARK: - PostServiceProtocol
@@ -57,8 +58,8 @@ extension PostServiceProtocol {
 
 struct PostService: PostServiceProtocol {
     let user: User
-    var postsReference = Firestore.firestore().collection("posts")
-    var favoritesReference = Firestore.firestore().collection("favorites")
+    var postsReference = Firestore.firestore().collection("posts-dev")
+    var favoritesReference = Firestore.firestore().collection("favorites-dev")
     var imagesReference = Storage.storage().reference().child("images/posts")
 
     func fetchPosts() async throws -> [Post] {
@@ -101,7 +102,7 @@ struct PostService: PostServiceProtocol {
             id: postReference.documentID,
             imageURL: imageURL
         )
-        try await postReference.setData(post.jsonDict)
+        try postReference.setData(from: post)
         return post
     }
     
@@ -113,7 +114,7 @@ struct PostService: PostServiceProtocol {
     
     func favorite(_ post: Post) async throws {
         let favorite = Favorite(postID: post.id, userID: user.id)
-        try await favoritesReference.document().setData(favorite.jsonDict)
+        try favoritesReference.document().setData(from: favorite)
     }
     
     func unfavorite(_ post: Post) async throws {
@@ -143,7 +144,7 @@ private extension PostService {
             .map(\.postID)
     }
     
-    struct Favorite: FirestoreConvertable {
+    struct Favorite: Codable {
         let postID: Post.ID
         let userID: User.ID
     }

@@ -9,25 +9,10 @@ import Foundation
 
 // MARK: - User
 
-struct User: Identifiable, Equatable, FirestoreConvertable {
+struct User: Identifiable, Equatable, Codable {
     let id: String
     var name: String
-    var imageURL: URL? {
-        get {
-            URL(string: imageURLString)
-        }
-        set {
-            imageURLString = newValue?.absoluteString ?? ""
-        }
-    }
-    
-    private var imageURLString = ""
-    
-    init(id: String, name: String, imageURL: URL? = nil) {
-        self.id = id
-        self.name = name
-        self.imageURL = imageURL
-    }
+    var imageURL: URL?
 }
 
 // MARK: - Test

@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Comment
 
-struct Comment: Identifiable, Equatable, FirestoreConvertable {
+struct Comment: Identifiable, Equatable, Codable {
     let content: String
     let author: User
     let id: String

@@ -7,6 +7,7 @@
 
 import Foundation
 import FirebaseFirestore
+import FirebaseFirestoreSwift
 
 // MARK: - CommentServiceProtocol
 
@@ -46,7 +47,7 @@ struct CommentService: CommentServiceProtocol {
             author: user,
             id: commentReference.documentID
         )
-        try await commentReference.setData(comment.jsonDict)
+        try commentReference.setData(from: comment)
         return comment
     }
     

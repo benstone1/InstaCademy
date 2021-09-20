@@ -16,17 +16,8 @@ struct Post: Identifiable, Equatable {
     let author: User
     let id: String
     let timestamp: Date
-    var imageURL: URL? {
-        get {
-            URL(string: imageURLString)
-        }
-        set {
-            imageURLString = newValue?.absoluteString ?? ""
-        }
-    }
+    let imageURL: URL?
     var isFavorite = false
-    
-    private var imageURLString = ""
     
     init(title: String, content: String, author: User, id: String, timestamp: Date = Date(), imageURL: URL? = nil, isFavorite: Bool = false) {
         self.title = title
@@ -47,6 +38,14 @@ struct Post: Identifiable, Equatable {
     }
 }
 
+// MARK: - Codable
+
+extension Post: Codable {
+    enum CodingKeys: CodingKey {
+        case title, content, author, id, timestamp, imageURL
+    }
+}
+
 // MARK: - Test
 
 extension Post {
@@ -58,14 +57,6 @@ extension Post {
         imageURL: URL(string: "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"),
         isFavorite: true
     )
-}
-
-// MARK: - FirestoreConvertable
-
-extension Post: FirestoreConvertable {
-    enum CodingKeys: CodingKey {
-        case title, content, author, id, timestamp, imageURLString
-    }
 }
 
 // MARK: - Partial
