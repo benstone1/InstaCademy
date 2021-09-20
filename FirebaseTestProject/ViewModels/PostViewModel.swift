@@ -36,8 +36,8 @@ import Foundation
         }
     }
     
-    func submitPost(_ post: Post.Partial) async throws {
-        let post = try await postService.create(post)
+    func submitPost(_ editablePost: Post.EditableFields) async throws {
+        let post = try await postService.create(editablePost)
         posts.insert(post, at: 0)
     }
     

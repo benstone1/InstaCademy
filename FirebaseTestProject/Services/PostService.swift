@@ -18,7 +18,7 @@ protocol PostServiceProtocol {
     func fetchPosts(by author: User) async throws -> [Post]
     func fetchFavoritePosts() async throws -> [Post]
     
-    func create(_ post: Post.Partial) async throws -> Post
+    func create(_ editablePost: Post.EditableFields) async throws -> Post
     func delete(_ post: Post) async throws
     
     func favorite(_ post: Post) async throws
@@ -87,16 +87,16 @@ struct PostService: PostServiceProtocol {
             }
     }
     
-    func create(_ post: Post.Partial) async throws -> Post {
+    func create(_ editablePost: Post.EditableFields) async throws -> Post {
         let postReference = postsReference.document()
         let imageURL: URL? = try await {
-            guard let image = post.image else { return nil }
+            guard let image = editablePost.image else { return nil }
             let imageReference = imagesReference.child("\(postReference.documentID)/post.jpg")
             return try await imageReference.uploadImage(image)
         }()
         let post = Post(
-            title: post.title,
-            content: post.content,
+            title: editablePost.title,
+            content: editablePost.content,
             author: user,
             id: postReference.documentID,
             imageURL: imageURL

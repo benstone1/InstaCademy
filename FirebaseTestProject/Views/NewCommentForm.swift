@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct NewCommentForm: View {
-    let submitAction: (Comment.Partial) async throws -> Void
+    let submitAction: (Comment.EditableFields) async throws -> Void
     
-    @State private var comment = Comment.Partial()
+    @State private var comment = Comment.EditableFields()
     @StateObject private var submitTask = TaskViewModel()
     
     var body: some View {
@@ -35,7 +35,7 @@ struct NewCommentForm: View {
     private func handleSubmit() {
         submitTask.perform {
             try await submitAction(comment)
-            comment = .init()
+            comment = Comment.EditableFields()
         }
     }
 }

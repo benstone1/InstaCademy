@@ -71,7 +71,7 @@ extension Post: FirestoreConvertable {
 // MARK: - Partial
 
 extension Post {
-    struct Partial {
+    struct EditableFields {
         var title = ""
         var content = ""
         var image: UIImage?

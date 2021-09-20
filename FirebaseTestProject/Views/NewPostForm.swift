@@ -10,9 +10,9 @@ import SwiftUI
 // MARK: - NewPostForm
 
 struct NewPostForm: View {
-    let submitAction: (Post.Partial) async throws -> Void
+    let submitAction: (Post.EditableFields) async throws -> Void
     
-    @State private var post = Post.Partial()
+    @State private var post = Post.EditableFields()
     @StateObject private var submitTask = TaskViewModel()
     @FocusState private var isShowingKeyboard: Bool
     @Environment(\.dismiss) private var dismiss
@@ -115,17 +115,17 @@ private extension NewPostForm {
 
 struct NewPostForm_Previews: PreviewProvider {
     static var previews: some View {
-        NewPostForm(previewPost: Post.Partial(
+        NewPostForm(previewPost: Post.EditableFields(
             title: "Lorem ipsum",
             content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
             image: UIImage(named: "ProfileImagePlaceholder")
         ))
-        NewPostForm(previewPost: Post.Partial())
+        NewPostForm(previewPost: Post.EditableFields())
     }
 }
 
 private extension NewPostForm {
-    init(previewPost: Post.Partial) {
+    init(previewPost: Post.EditableFields) {
         self.submitAction = { _ in await Task.sleep(1_000_000_000) }
         self.post = previewPost
     }

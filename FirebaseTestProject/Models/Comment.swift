@@ -36,7 +36,7 @@ extension Comment {
 // MARK: - Partial
 
 extension Comment {
-    struct Partial {
+    struct EditableFields {
         var content = ""
     }
 }

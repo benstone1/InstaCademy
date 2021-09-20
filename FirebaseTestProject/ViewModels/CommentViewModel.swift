@@ -34,8 +34,8 @@ import Foundation
         }
     }
     
-    func submitComment(_ comment: Comment.Partial) async throws {
-        let comment = try await commentService.create(comment)
+    func submitComment(_ editableComment: Comment.EditableFields) async throws {
+        let comment = try await commentService.create(editableComment)
         comments.append(comment)
     }
     
