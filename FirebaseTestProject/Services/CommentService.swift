@@ -35,14 +35,6 @@ struct CommentService: CommentServiceProtocol {
     let user: User
     let commentsReference: CollectionReference
     
-    init(post: Post, postService: PostService) {
-        self.post = post
-        self.user = postService.user
-        
-        let postReference = postService.postsReference.document(post.id)
-        self.commentsReference = postReference.collection("comments")
-    }
-    
     func fetchComments() async throws -> [Comment] {
         try await commentsReference.order(by: "timestamp", descending: true).getDocuments(as: Comment.self)
     }
@@ -62,5 +54,15 @@ struct CommentService: CommentServiceProtocol {
         precondition(canDelete(comment), "User not authorized to delete comment")
         let commentReference = commentsReference.document(comment.id)
         try await commentReference.delete()
+    }
+}
+
+extension CommentService {
+    init(post: Post, user: User) {
+        self.post = post
+        self.user = user
+        
+        let postReference = PostService(user: user).postsReference.document(post.id)
+        self.commentsReference = postReference.collection("comments")
     }
 }

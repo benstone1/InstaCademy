@@ -49,8 +49,7 @@ struct CommentsList: View {
 struct CommentsList_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            let postService = PostService(user: .testUser)
-            let commentService = CommentService(post: .testPost, postService: postService)
+            let commentService = CommentService(post: .testPost, user: .testUser)
             let viewModel = CommentViewModel(commentService: commentService)
             CommentsList(viewModel: viewModel)
         }

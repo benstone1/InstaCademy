@@ -128,8 +128,7 @@ private extension PostsList {
         }
         
         private func makeCommentViewModel(for post: Post) -> CommentViewModel {
-            let postService = PostService(user: user)
-            let commentService = CommentService(post: post, postService: postService)
+            let commentService = CommentService(post: post, user: user)
             return CommentViewModel(commentService: commentService)
         }
         
