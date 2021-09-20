@@ -69,8 +69,8 @@ struct AuthService: AuthServiceProtocol {
 
 private extension User {
     init(from user: FirebaseAuth.User) {
-        id = user.uid
-        name = user.displayName ?? "User \(user.uid)"
-        imageURL = user.photoURL ?? imageURL
+        self.id = user.uid
+        self.name = user.displayName ?? "User \(user.uid)"
+        self.imageURL = user.photoURL
     }
 }
