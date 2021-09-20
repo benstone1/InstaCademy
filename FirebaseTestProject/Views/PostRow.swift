@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+// MARK: - PostRow
+
 struct PostRow: View {
     let post: Post
     @Binding var route: PostsList.Route?
@@ -17,14 +19,14 @@ struct PostRow: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            PostAuthor(author: post.author, action: {
+            PostAuthorView(author: post.author, action: {
                 route = .author(post.author)
             })
             Text(post.title)
                 .font(.title3)
                 .fontWeight(.semibold)
             if let imageURL = post.imageURL {
-                PostImage(url: imageURL)
+                PostImageView(url: imageURL)
             }
             Text(post.content)
             HStack(alignment: .center, spacing: 10) {
@@ -49,8 +51,10 @@ struct PostRow: View {
     }
 }
 
+// MARK: - Subviews
+
 private extension PostRow {
-    struct PostAuthor: View {
+    struct PostAuthorView: View {
         let author: User
         let action: () -> Void
         
@@ -70,7 +74,7 @@ private extension PostRow {
         }
     }
     
-    struct PostImage: View {
+    struct PostImageView: View {
         let url: URL
         
         var body: some View {
@@ -130,9 +134,12 @@ private extension PostRow {
     }
 }
 
+// MARK: - Previews
+
 struct PostRow_Previews: PreviewProvider {
     static var previews: some View {
         List {
+            PostRow(post: .testPost, route: .constant(nil), favoriteAction: {}, deleteAction: nil)
             PostRow(post: .testPost, route: .constant(nil), favoriteAction: {}, deleteAction: {})
         }
     }
