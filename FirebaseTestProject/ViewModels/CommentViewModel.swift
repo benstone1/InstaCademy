@@ -9,36 +9,33 @@ import Foundation
 
 @MainActor class CommentViewModel: ObservableObject {
     @Published var comments: [Comment] = []
-    @Published var state: State = .loading
+    @Published var state: LoadingState = .loading
     
-    enum State {
-        case loading
-        case error
-        case loaded
-    }
+    private let commentService: CommentServiceProtocol
     
-    private let commentService: CommentService
-    
-    init(commentService: CommentService) {
+    init(commentService: CommentServiceProtocol) {
         self.commentService = commentService
     }
     
     func loadComments() {
+        state = .loading
         Task {
-            do {
-                state = .loading
-                comments = try await commentService.comments()
-                state = .loaded
-            } catch {
-                print("[CommentsViewModel] Cannot load comments: \(error.localizedDescription)")
-                state = .error
-            }
+            await refreshComments()
         }
     }
     
-    func submitComment(content: String) async throws {
-        let comment = Comment(content: content, author: commentService.user)
-        try await commentService.create(comment)
+    func refreshComments() async {
+        do {
+            comments = try await commentService.fetchComments()
+            state = .loaded
+        } catch {
+            print("[CommentsViewModel] Cannot load comments: \(error.localizedDescription)")
+            state = .error
+        }
+    }
+    
+    func submitComment(_ editableComment: Comment.EditableFields) async throws {
+        let comment = try await commentService.create(editableComment)
         comments.append(comment)
     }
     

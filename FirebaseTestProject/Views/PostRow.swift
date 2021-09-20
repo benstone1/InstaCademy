@@ -1,11 +1,13 @@
 //
-//  PostView.swift
-//  PostView
+//  PostRow.swift
+//  PostRow
 //
 //  Created by Ben Stone on 8/9/21.
 //
 
 import SwiftUI
+
+// MARK: - PostRow
 
 struct PostRow: View {
     let post: Post
@@ -17,16 +19,16 @@ struct PostRow: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            VStack(alignment: .leading) {
-                Text(post.title)
-                    .font(.headline)
-                Text(post.author.name)
-                    .font(.caption)
-            }
+            PostAuthorView(author: post.author, action: {
+                route = .author(post.author)
+            })
+            Text(post.title)
+                .font(.title3)
+                .fontWeight(.semibold)
             if let imageURL = post.imageURL {
-                PostImage(url: imageURL)
+                PostImageView(url: imageURL)
             }
-            Text(post.text)
+            Text(post.content)
             HStack(alignment: .center, spacing: 10) {
                 Text(post.timestamp.formatted())
                     .font(.caption)
@@ -45,11 +47,34 @@ struct PostRow: View {
             .buttonStyle(.plain)
             .labelStyle(.iconOnly)
         }
+        .padding(.vertical, 10)
     }
 }
 
+// MARK: - Subviews
+
 private extension PostRow {
-    struct PostImage: View {
+    struct PostAuthorView: View {
+        let author: User
+        let action: () -> Void
+        
+        var body: some View {
+            Button(action: action) {
+                HStack {
+                    UserImageView(url: author.imageURL)
+                        .frame(width: 30, height: 30)
+                        .overlay(Circle().stroke(Color(uiColor: .systemGray5), lineWidth: 1))
+                    Text(author.name)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                }
+                .accessibilityElement(children: .combine)
+            }
+            .buttonStyle(.plain)
+        }
+    }
+    
+    struct PostImageView: View {
         let url: URL
         
         var body: some View {
@@ -58,16 +83,11 @@ private extension PostRow {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
-                    .frame(width: 300, height: 200)
             } placeholder: {
-                VStack {
-                    ProgressView()
-                    Text("Loading Image")
-                        .font(.caption)
-                }
-                .frame(width: 300, height: 200)
+                Color.clear
             }
-            .padding(.horizontal)
+            .frame(height: 200)
+            .frame(maxWidth: .infinity)
         }
     }
     
@@ -79,7 +99,7 @@ private extension PostRow {
         
         var body: some View {
             Button {
-                task.run(action: action)
+                task.perform(action)
             } label: {
                 if isFavorite {
                     Label("Remove from Favorites", systemImage: "heart.fill")
@@ -94,11 +114,11 @@ private extension PostRow {
     struct DeleteButton: View {
         let action: Action
         
-        @StateObject var task = DeleteTaskViewModel()
+        @StateObject private var task = DeleteTaskViewModel()
         
         var body: some View {
             Button(role: .destructive) {
-                task.request(with: action)
+                task.request(action)
             } label: {
                 Label("Delete", systemImage: "trash")
                     .foregroundColor(.red)
@@ -114,9 +134,12 @@ private extension PostRow {
     }
 }
 
+// MARK: - Previews
+
 struct PostRow_Previews: PreviewProvider {
     static var previews: some View {
         List {
+            PostRow(post: .testPost, route: .constant(nil), favoriteAction: {}, deleteAction: nil)
             PostRow(post: .testPost, route: .constant(nil), favoriteAction: {}, deleteAction: {})
         }
     }

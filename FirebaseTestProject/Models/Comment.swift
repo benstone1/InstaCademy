@@ -7,18 +7,36 @@
 
 import Foundation
 
-struct Comment: Identifiable, Equatable, FirebaseConvertable {
+// MARK: - Comment
+
+struct Comment: Identifiable, Equatable, Codable {
     let content: String
     let author: User
-    let id: UUID
+    let id: String
     let timestamp: Date
     
-    init(content: String, author: User, id: UUID = UUID(), timestamp: Date = Date()) {
+    init(content: String, author: User, id: String, timestamp: Date = Date()) {
         self.content = content
         self.author = author
         self.id = id
         self.timestamp = timestamp
     }
-    
-    static let testComment: Comment = .init(content: "Great job!", author: .testUser)
+}
+
+// MARK: - Test
+
+extension Comment {
+    static let testComment = Comment(
+        content: "Great job!",
+        author: .testUser,
+        id: "00000000000000000000"
+    )
+}
+
+// MARK: - Partial
+
+extension Comment {
+    struct EditableFields {
+        var content = ""
+    }
 }

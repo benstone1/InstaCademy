@@ -7,29 +7,23 @@
 
 import Foundation
 
-class TaskViewModel: ObservableObject {
-    @Published var isError = false
-    @Published var isInProgress = false
-    private(set) var error: Error?
-    
+@MainActor class TaskViewModel: ObservableObject {
     typealias Action = () async throws -> Void
     
-    func run(action: @escaping Action) {
+    @Published var isInProgress = false
+    @Published var isError = false
+    @Published private(set) var error: Error?
+    
+    func perform(_ action: @escaping Action) {
         Task {
-            DispatchQueue.main.async {
-                self.isInProgress = true
-            }
+            isInProgress = true
             do {
                 try await action()
             } catch {
-                DispatchQueue.main.async {
-                    self.error = error
-                    self.isError = true
-                }
+                self.error = error
+                isError = true
             }
-            DispatchQueue.main.async {
-                self.isInProgress = false
-            }
+            isInProgress = false
         }
     }
 }
@@ -37,12 +31,25 @@ class TaskViewModel: ObservableObject {
 class DeleteTaskViewModel: TaskViewModel {
     @Published var isPending = false
     
-    private(set) var confirmAction: (() -> Void)?
-    
-    func request(with deleteAction: @escaping Action) {
-        confirmAction = { [weak self] in
-            self?.run(action: deleteAction)
+    var confirmAction: (() -> Void)? {
+        guard let action = pendingAction else {
+            return nil
         }
+        return {
+            super.perform { [weak self] in
+                try await action()
+                self?.pendingAction = nil
+            }
+        }
+    }
+    private var pendingAction: Action?
+    
+    func request(_ action: @escaping Action) {
+        pendingAction = action
         isPending = true
+    }
+    
+    override func perform(_ action: @escaping Action) {
+        fatalError("Cannot call perform(_:) directly on DeleteTaskViewModel")
     }
 }

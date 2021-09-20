@@ -8,21 +8,21 @@
 import SwiftUI
 
 struct NewCommentForm: View {
-    let submitAction: (String) async throws -> Void
+    let submitAction: (Comment.EditableFields) async throws -> Void
     
-    @State private var comment = ""
+    @State private var comment = Comment.EditableFields()
     @StateObject private var submitTask = TaskViewModel()
     
     var body: some View {
         HStack {
-            TextField("Comment", text: $comment)
+            TextField("Comment", text: $comment.content)
             if submitTask.isInProgress {
                 ProgressView()
             } else {
                 Button(action: handleSubmit) {
                     Label("Post", systemImage: "paperplane")
                 }
-                .disabled(comment.isEmpty)
+                .disabled(comment.content.isEmpty)
             }
         }
         .disabled(submitTask.isInProgress)
@@ -33,9 +33,9 @@ struct NewCommentForm: View {
     }
     
     private func handleSubmit() {
-        submitTask.run {
+        submitTask.perform {
             try await submitAction(comment)
-            comment = ""
+            comment = Comment.EditableFields()
         }
     }
 }
