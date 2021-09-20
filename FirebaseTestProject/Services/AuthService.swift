@@ -28,9 +28,9 @@ struct AuthService: AuthServiceProtocol {
     func createAccount(name: String, email: String, password: String) async throws -> User {
         let result = try await auth.createUser(withEmail: email, password: password)
         
-        let profileUpdate = result.user.createProfileChangeRequest()
-        profileUpdate.displayName = name
-        try await profileUpdate.commitChanges()
+        let changeRequest = result.user.createProfileChangeRequest()
+        changeRequest.displayName = name
+        try await changeRequest.commitChanges()
         
         return User(from: result.user)
     }
@@ -59,9 +59,9 @@ struct AuthService: AuthServiceProtocol {
         let imageReference = imagesReference.child("\(user.uid).jpg")
         let imageURL = try await imageReference.uploadImage(image)
         
-        let profileUpdate = user.createProfileChangeRequest()
-        profileUpdate.photoURL = imageURL
-        try await profileUpdate.commitChanges()
+        let changeRequest = user.createProfileChangeRequest()
+        changeRequest.photoURL = imageURL
+        try await changeRequest.commitChanges()
         
         return User(from: user)
     }
