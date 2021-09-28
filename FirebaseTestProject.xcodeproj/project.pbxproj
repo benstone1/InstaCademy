@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		41CF7E7126CC312A0043EB96 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41CF7E6E26CC312A0043EB96 /* ProfileView.swift */; };
 		520B60B626FBDB1B00461F0F /* MainTabViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520B60B526FBDB1B00461F0F /* MainTabViewModel.swift */; };
+		520B60BA26FBDD6300461F0F /* Loadable+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520B60B926FBDD6300461F0F /* Loadable+Preview.swift */; };
 		520B60BC26FBDEE700461F0F /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520B60BB26FBDEE700461F0F /* ProfileViewModel.swift */; };
 		520B60BE26FCECBC00461F0F /* CommentRowViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520B60BD26FCECBC00461F0F /* CommentRowViewModel.swift */; };
 		520B60C026FCF0BF00461F0F /* Optional+Exists.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520B60BF26FCF0BF00461F0F /* Optional+Exists.swift */; };
@@ -34,6 +35,8 @@
 		52CD095D270276D30094D5A4 /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52CD095C270276D30094D5A4 /* AuthView.swift */; };
 		52CD095F270286840094D5A4 /* FormViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52CD095E270286840094D5A4 /* FormViewModel.swift */; };
 		52E308D826DDAA6F0082EC98 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E308D726DDAA6F0082EC98 /* AuthViewModel.swift */; };
+		52EF637127029515006B6850 /* Services+Stub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EF637027029515006B6850 /* Services+Stub.swift */; };
+		52EF637327029D90006B6850 /* Models+TestContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EF637227029D90006B6850 /* Models+TestContent.swift */; };
 		52F303F72701504000D4E979 /* ProminentButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52F303F62701504000D4E979 /* ProminentButtonStyle.swift */; };
 		52F56A7926EBBC4F00160ED7 /* Storage+UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52F56A7826EBBC4F00160ED7 /* Storage+UIImage.swift */; };
 		F2576EAA26C18A1700D3F344 /* FirebaseTestProjectApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2576EA926C18A1700D3F344 /* FirebaseTestProjectApp.swift */; };
@@ -72,6 +75,7 @@
 /* Begin PBXFileReference section */
 		41CF7E6E26CC312A0043EB96 /* ProfileView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		520B60B526FBDB1B00461F0F /* MainTabViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabViewModel.swift; sourceTree = "<group>"; };
+		520B60B926FBDD6300461F0F /* Loadable+Preview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Loadable+Preview.swift"; sourceTree = "<group>"; };
 		520B60BB26FBDEE700461F0F /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
 		520B60BD26FCECBC00461F0F /* CommentRowViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentRowViewModel.swift; sourceTree = "<group>"; };
 		520B60BF26FCF0BF00461F0F /* Optional+Exists.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Exists.swift"; sourceTree = "<group>"; };
@@ -93,6 +97,8 @@
 		52CD095C270276D30094D5A4 /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		52CD095E270286840094D5A4 /* FormViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormViewModel.swift; sourceTree = "<group>"; };
 		52E308D726DDAA6F0082EC98 /* AuthViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		52EF637027029515006B6850 /* Services+Stub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services+Stub.swift"; sourceTree = "<group>"; };
+		52EF637227029D90006B6850 /* Models+TestContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models+TestContent.swift"; sourceTree = "<group>"; };
 		52F303F62701504000D4E979 /* ProminentButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProminentButtonStyle.swift; sourceTree = "<group>"; };
 		52F56A7826EBBC4F00160ED7 /* Storage+UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+UIImage.swift"; sourceTree = "<group>"; };
 		F2576EA626C18A1700D3F344 /* FirebaseTestProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FirebaseTestProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -213,6 +219,9 @@
 		F2576EAF26C18A1A00D3F344 /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
+				52EF637227029D90006B6850 /* Models+TestContent.swift */,
+				52EF637027029515006B6850 /* Services+Stub.swift */,
+				520B60B926FBDD6300461F0F /* Loadable+Preview.swift */,
 				F2576EB026C18A1A00D3F344 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
@@ -418,6 +427,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F2576EEE26C1B67E00D3F344 /* PostRow.swift in Sources */,
+				52EF637127029515006B6850 /* Services+Stub.swift in Sources */,
 				5230FE9326D996D800BC956C /* NewCommentForm.swift in Sources */,
 				F2576EDB26C19A3C00D3F344 /* Post.swift in Sources */,
 				52F303F72701504000D4E979 /* ProminentButtonStyle.swift in Sources */,
@@ -427,9 +437,11 @@
 				5230FE8F26D996C600BC956C /* CommentViewModel.swift in Sources */,
 				F2576EDF26C19ED000D3F344 /* PostViewModel.swift in Sources */,
 				F2576EAC26C18A1700D3F344 /* PostsList.swift in Sources */,
+				520B60BA26FBDD6300461F0F /* Loadable+Preview.swift in Sources */,
 				5230FE9426D996D800BC956C /* CommentRow.swift in Sources */,
 				F2576EAA26C18A1700D3F344 /* FirebaseTestProjectApp.swift in Sources */,
 				526AFB3D26FBBF270003DF92 /* PostRowViewModel.swift in Sources */,
+				52EF637327029D90006B6850 /* Models+TestContent.swift in Sources */,
 				52F56A7926EBBC4F00160ED7 /* Storage+UIImage.swift in Sources */,
 				52917CCB26D16AE60061E69F /* AuthService.swift in Sources */,
 				F2576EEA26C1A2FA00D3F344 /* NewPostForm.swift in Sources */,

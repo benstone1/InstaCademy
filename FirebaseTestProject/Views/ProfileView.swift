@@ -111,7 +111,16 @@ private extension ProfileView {
 #if DEBUG
 struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
-        ProfileView(viewModel: ProfileViewModel(user: User.testUser(), authService: AuthService()))
+        ProfilePreview(user: User.testUser(imageURL: nil))
+        ProfilePreview(user: User.testUser())
+    }
+    
+    private struct ProfilePreview: View {
+        let user: User
+        
+        var body: some View {
+            ProfileView(viewModel: ProfileViewModel(user: user, authService: AuthServiceStub(user: user)))
+        }
     }
 }
 #endif

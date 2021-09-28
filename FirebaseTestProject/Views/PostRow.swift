@@ -172,8 +172,10 @@ private extension PostRow {
 #if DEBUG
 struct PostRow_Previews: PreviewProvider {
     static var previews: some View {
-        PostRow(viewModel: PostRowViewModel(post: Post.testPost(), postService: PostService(user: User.testUser())))
-            .previewLayout(.sizeThatFits)
+        ForEach(Post.testPosts) {
+            PostRow(viewModel: PostRowViewModel(post: $0, postService: PostServiceStub()))
+        }
+        .previewLayout(.sizeThatFits)
     }
 }
 #endif

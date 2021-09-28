@@ -38,22 +38,6 @@ struct Post: Identifiable, Hashable, Equatable {
     }
 }
 
-// MARK: - Preview Content
-
-extension Post {
-    static func testPost(
-        title: String = "Lorem ipsum",
-        content: String = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        author: User = User.testUser(),
-        id: String = UUID().uuidString,
-        timestamp: Date = Date(),
-        imageURL: URL? = URL(string: "https://source.unsplash.com/eOpewngf68w/800x800"),
-        isFavorite: Bool = false
-    ) -> Post {
-        Post(title: title, content: content, author: author, id: id, timestamp: timestamp, imageURL: imageURL, isFavorite: isFavorite)
-    }
-}
-
 // MARK: - Codable
 
 extension Post: Codable {

@@ -65,8 +65,20 @@ extension PostsList {
 #if DEBUG
 struct PostsList_Previews: PreviewProvider {
     static var previews: some View {
-        NavigationView {
-            PostsList(viewModel: PostViewModel(postService: PostService(user: User.testUser())))
+        PostsPreview(state: .loaded(Post.testPosts))
+        PostsPreview(state: .empty)
+        PostsPreview(state: .error)
+        PostsPreview(state: .loading)
+    }
+    
+    @MainActor
+    private struct PostsPreview: View {
+        let state: Loadable<[Post]>
+        
+        var body: some View {
+            NavigationView {
+                PostsList(viewModel: PostViewModel(postService: PostServiceStub(state: state)))
+            }
         }
     }
 }

@@ -49,7 +49,26 @@ struct MainTabView: View {
 #if DEBUG
 struct MainTabView_Previews: PreviewProvider {
     static var previews: some View {
-        MainTabView(viewModel: MainTabViewModel(user: User.testUser(), authService: AuthService(), postService: PostService(user: User.testUser())))
+        TabPreview(tab: .posts)
+        TabPreview(tab: .favoritePosts)
+        TabPreview(tab: .newPost)
+        TabPreview(tab: .profile)
+    }
+    
+    @MainActor
+    private struct TabPreview: View {
+        let tab: MainTabViewModel.Tab
+        
+        var body: some View {
+            MainTabView(viewModel: MainTabViewModel(tab: tab))
+        }
+    }
+}
+
+private extension MainTabViewModel {
+    convenience init(tab: Tab) {
+        self.init(user: User.testUser(), authService: AuthServiceStub(), postService: PostServiceStub())
+        self.tab = tab
     }
 }
 #endif

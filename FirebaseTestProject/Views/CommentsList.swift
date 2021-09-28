@@ -53,8 +53,19 @@ struct CommentsList: View {
 #if DEBUG
 struct CommentsList_Previews: PreviewProvider {
     static var previews: some View {
-        NavigationView {
-            CommentsList(viewModel: CommentViewModel(commentService: CommentService(post: Post.testPost(), user: User.testUser())))
+        CommentsPreview(state: .loaded(Comment.testComments))
+        CommentsPreview(state: .empty)
+        CommentsPreview(state: .error)
+        CommentsPreview(state: .loading)
+    }
+    
+    private struct CommentsPreview: View {
+        let state: Loadable<[Comment]>
+        
+        var body: some View {
+            NavigationView {
+                CommentsList(viewModel: CommentViewModel(commentService: CommentServiceStub(state: state)))
+            }
         }
     }
 }

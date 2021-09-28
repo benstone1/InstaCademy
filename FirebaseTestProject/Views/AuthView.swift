@@ -142,11 +142,17 @@ private extension AuthView {
 #if DEBUG
 struct AuthView_Previews: PreviewProvider {
     static var previews: some View {
-        AuthView(viewModel: AuthViewModel())
-            .previewDisplayName("Sign In")
+        AuthView(viewModel: makeAuthViewModel())
+            .previewDisplayName("Unauthenticated - Sign In")
         AuthView.CreateAccountView()
-            .environmentObject(AuthViewModel())
-            .previewDisplayName("Create Account")
+            .environmentObject(makeAuthViewModel())
+            .previewDisplayName("Unauthenticated - Create Account")
+        AuthView(viewModel: makeAuthViewModel(user: User.testUser()))
+            .previewDisplayName("Authenticated")
+    }
+    
+    private static func makeAuthViewModel(user: User? = nil) -> AuthViewModel {
+        AuthViewModel(authService: AuthServiceStub(user: user))
     }
 }
 #endif
