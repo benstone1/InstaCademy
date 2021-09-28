@@ -10,13 +10,15 @@ import SwiftUI
 // MARK: - ProfileView
 
 struct ProfileView: View {
-    @StateObject var viewModel: ProfileViewModel
+    let user: User
+    
+    @EnvironmentObject private var viewModel: AuthViewModel
     
     var body: some View {
         NavigationView {
             VStack {
                 Spacer()
-                UserImageView(viewModel.user, transaction: Transaction(animation: .default))
+                UserImageView(user, transaction: Transaction(animation: .default))
                     .frame(width: 200, height: 200)
                     .padding()
                 UpdateImageButton(updateAction: {
@@ -28,7 +30,7 @@ struct ProfileView: View {
                 Text("Signed in as:")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                Text(viewModel.user.name)
+                Text(user.name)
                     .font(.title2)
                     .bold()
                 Spacer()
@@ -121,11 +123,13 @@ struct ProfileView_Previews: PreviewProvider {
         ProfilePreview(user: User.testUser())
     }
     
+    @MainActor
     private struct ProfilePreview: View {
         let user: User
         
         var body: some View {
-            ProfileView(viewModel: ProfileViewModel(user: user, authService: AuthServiceStub(user: user)))
+            ProfileView(user: user)
+                .environmentObject(AuthViewModel(authService: AuthServiceStub(user: user)))
         }
     }
 }

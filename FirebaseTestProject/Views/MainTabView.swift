@@ -35,7 +35,7 @@ struct MainTabView: View {
                 }
                 .tag(Tab.newPost)
             
-            ProfileView(viewModel: viewModel.makeProfileViewModel())
+            ProfileView(user: viewModel.user)
                 .tabItem {
                     Label("Profile", systemImage: "person")
                 }
@@ -61,6 +61,7 @@ struct MainTabView_Previews: PreviewProvider {
         
         var body: some View {
             MainTabView(viewModel: MainTabViewModel(tab: tab))
+                .environmentObject(AuthViewModel(authService: AuthServiceStub()))
         }
     }
 }

@@ -6,8 +6,7 @@
 //
 
 import Foundation
-import Combine
-import FirebaseFirestore
+import UIKit
 
 @MainActor
 class AuthViewModel: ObservableObject {
@@ -16,13 +15,10 @@ class AuthViewModel: ObservableObject {
     @Published var isLoading = false
     
     private let authService: AuthServiceProtocol
-    private var cancellable: AnyCancellable?
     
     init(authService: AuthServiceProtocol = AuthService()) {
+        self.user = authService.currentUser()
         self.authService = authService
-        
-        cancellable = authService.currentUser()
-            .assign(to: \.user, on: self)
     }
     
     func makeMainTabViewModel(user: User) -> MainTabViewModel {
@@ -30,22 +26,41 @@ class AuthViewModel: ObservableObject {
     }
     
     func createAccount(name: String, email: String, password: String) {
-        Task {
-            isLoading = true
-            do {
-                try await authService.createAccount(name: name, email: email, password: password)
-            } catch {
-                self.error = error
-            }
-            isLoading = false
+        updateUserTask {
+            return try await $0.createAccount(name: name, email: email, password: password)
         }
     }
     
     func signIn(email: String, password: String) {
+        updateUserTask {
+            return try await $0.signIn(email: email, password: password)
+        }
+    }
+    
+    func signOut() {
+        updateUserTask {
+            try await $0.signOut()
+            return nil
+        }
+    }
+    
+    func updateProfileImage(_ image: UIImage) {
+        updateUserTask {
+            return try await $0.updateProfileImage(image)
+        }
+    }
+    
+    func removeProfileImage() {
+        updateUserTask {
+            return try await $0.removeProfileImage()
+        }
+    }
+    
+    private func updateUserTask(with action: @escaping (AuthServiceProtocol) async throws -> User?) {
         Task {
             isLoading = true
             do {
-                try await authService.signIn(email: email, password: password)
+                user = try await action(authService)
             } catch {
                 self.error = error
             }

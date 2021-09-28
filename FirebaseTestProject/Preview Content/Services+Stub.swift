@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Combine
 import UIKit
 
 // MARK: - AuthServiceStub
@@ -14,19 +13,27 @@ import UIKit
 struct AuthServiceStub: AuthServiceProtocol {
     var user: User? = User.testUser()
     
-    func currentUser() -> AnyPublisher<User?, Never> {
-        Just(user).eraseToAnyPublisher()
+    func createAccount(name: String, email: String, password: String) async throws -> User {
+        user!
     }
     
-    func createAccount(name: String, email: String, password: String) async throws {}
+    func currentUser() -> User? {
+        user
+    }
     
-    func signIn(email: String, password: String) async throws {}
+    func signIn(email: String, password: String) async throws -> User {
+        user!
+    }
     
     func signOut() async throws {}
     
-    func updateProfileImage(_ image: UIImage) async throws {}
+    func updateProfileImage(_ image: UIImage) async throws -> User {
+        user!
+    }
     
-    func removeProfileImage() async throws {}
+    func removeProfileImage() async throws -> User {
+        user!
+    }
 }
 
 // MARK: - CommentServiceStub

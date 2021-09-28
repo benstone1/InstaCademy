@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Combine
 
 enum Loadable<Value: Equatable> {
     case loading, loaded(Value), error(Error)

@@ -13,14 +13,16 @@ struct AuthView: View {
     @StateObject var viewModel = AuthViewModel()
     
     var body: some View {
-        if let user = viewModel.user {
-            MainTabView(viewModel: viewModel.makeMainTabViewModel(user: user))
-        } else {
-            NavigationView {
-                SignInView(createAccountView: CreateAccountView())
+        Group {
+            if let user = viewModel.user {
+                MainTabView(viewModel: viewModel.makeMainTabViewModel(user: user))
+            } else {
+                NavigationView {
+                    SignInView(createAccountView: CreateAccountView())
+                }
             }
-            .environmentObject(viewModel)
         }
+        .environmentObject(viewModel)
     }
 }
 

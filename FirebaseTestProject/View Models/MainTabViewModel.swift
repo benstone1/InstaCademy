@@ -14,8 +14,8 @@ class MainTabViewModel: ObservableObject {
     }
     
     @Published var tab = Tab.posts
+    @Published var user: User
     
-    private let user: User
     private let authService: AuthServiceProtocol
     private let postService: PostServiceProtocol
     
@@ -34,9 +34,5 @@ class MainTabViewModel: ObservableObject {
             try await self?.postService.create(editablePost)
             self?.tab = .posts // Display post after creating it
         })
-    }
-    
-    func makeProfileViewModel() -> ProfileViewModel {
-        ProfileViewModel(user: user, authService: authService)
     }
 }

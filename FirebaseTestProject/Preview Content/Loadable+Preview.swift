@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Combine
 
 extension Loadable {
     static var error: Loadable<Value> {
@@ -22,17 +21,6 @@ extension Loadable {
             return value
         case let .error(error):
             throw error
-        }
-    }
-    
-    func preview() -> AnyPublisher<Value, Error> {
-        switch self {
-        case .loading:
-            return PassthroughSubject<Value, Error>().eraseToAnyPublisher()
-        case let .loaded(value):
-            return Just(value).setFailureType(to: Error.self).eraseToAnyPublisher()
-        case let .error(error):
-            return Fail(error: error).eraseToAnyPublisher()
         }
     }
 }
