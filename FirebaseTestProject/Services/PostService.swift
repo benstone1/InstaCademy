@@ -59,8 +59,8 @@ extension PostServiceProtocol {
 
 struct PostService: PostServiceProtocol {
     let user: User
-    var postsReference = Firestore.firestore().collection("posts-dev")
-    var favoritesReference = Firestore.firestore().collection("favorites-dev")
+    var postsReference = Firestore.firestore().collection("posts")
+    var favoritesReference = Firestore.firestore().collection("favorites")
     var imagesReference = Storage.storage().reference().child("images/posts")
 
     func fetchPosts() -> AnyPublisher<[Post], Error> {

@@ -46,14 +46,12 @@ class ProfileViewModel: ObservableObject {
     func updateProfileImage(_ image: UIImage) {
         performTask { [weak self] in
             try await self?.authService.updateProfileImage(image)
-            self?.refreshProfile()
         }
     }
     
     func removeProfileImage() {
         performTask { [weak self] in
             try await self?.authService.removeProfileImage()
-            self?.refreshProfile()
         }
     }
     

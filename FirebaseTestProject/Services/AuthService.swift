@@ -29,23 +29,23 @@ struct AuthService: AuthServiceProtocol {
     
     func currentUser() -> AnyPublisher<User?, Never> {
         let publisher = CurrentValueSubject<FirebaseAuth.User?, Never>(auth.currentUser)
-        let listener = auth.addStateDidChangeListener { _, user in
+        let listener = auth.addIDTokenDidChangeListener { _, user in
             publisher.send(user)
         }
         return publisher
             .map { user in
                 user.map { User(from: $0) }
             }
-            .handleEvents(receiveCancel: { auth.removeStateDidChangeListener(listener) })
+            .handleEvents(receiveCancel: { auth.removeIDTokenDidChangeListener(listener) })
             .eraseToAnyPublisher()
     }
     
     func createAccount(name: String, email: String, password: String) async throws {
         let result = try await auth.createUser(withEmail: email, password: password)
         
-        let changeRequest = result.user.createProfileChangeRequest()
-        changeRequest.displayName = name
-        try await changeRequest.commitChanges()
+        try await result.user.updateProfile {
+            $0.displayName = name
+        }
     }
     
     func signIn(email: String, password: String) async throws {
@@ -64,9 +64,9 @@ struct AuthService: AuthServiceProtocol {
         let imageReference = imagesReference.child("\(user.uid).jpg")
         let imageURL = try await imageReference.uploadImage(image)
         
-        let changeRequest = user.createProfileChangeRequest()
-        changeRequest.photoURL = imageURL
-        try await changeRequest.commitChanges()
+        try await user.updateProfile {
+            $0.photoURL = imageURL
+        }
     }
     
     func removeProfileImage() async throws {
@@ -77,9 +77,20 @@ struct AuthService: AuthServiceProtocol {
         let imageReference = imagesReference.child("\(user.uid).jpg")
         try await imageReference.delete()
         
-        let changeRequest = user.createProfileChangeRequest()
-        changeRequest.photoURL = nil
+        try await user.updateProfile {
+            $0.photoURL = nil
+        }
+    }
+}
+
+private extension FirebaseAuth.User {
+    func updateProfile(_ performChanges: @escaping (UserProfileChangeRequest) -> Void) async throws {
+        let changeRequest = createProfileChangeRequest()
+        performChanges(changeRequest)
         try await changeRequest.commitChanges()
+        
+        // Refresh ID token. This tells the currentUser publisher to refresh, ensuring the user’s profile information is updated globally.
+        try await getIDTokenResult(forcingRefresh: true)
     }
 }
 
