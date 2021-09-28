@@ -1,10 +1,11 @@
 //
 //  AuthService.swift
-//  AuthService
+//  FirebaseTestProject
 //
 //  Created by John Royal on 8/21/21.
 //
 
+import Combine
 import FirebaseAuth
 import FirebaseStorage
 import UIKit
@@ -12,11 +13,11 @@ import UIKit
 // MARK: - AuthServiceProtocol
 
 protocol AuthServiceProtocol {
-    func createAccount(name: String, email: String, password: String) async throws -> User
-    func currentUser() -> User?
-    func signIn(email: String, password: String) async throws -> User
-    func signOut() throws
-    func updateProfileImage(_ image: UIImage) async throws -> User
+    func currentUser() -> AnyPublisher<User?, Never>
+    func createAccount(name: String, email: String, password: String) async throws
+    func signIn(email: String, password: String) async throws
+    func signOut() async throws
+    func updateProfileImage(_ image: UIImage) async throws
 }
 
 // MARK: - AuthService
@@ -25,33 +26,36 @@ struct AuthService: AuthServiceProtocol {
     var auth = Auth.auth()
     var imagesReference = Storage.storage().reference().child("images/users")
     
-    func createAccount(name: String, email: String, password: String) async throws -> User {
+    func currentUser() -> AnyPublisher<User?, Never> {
+        let publisher = CurrentValueSubject<FirebaseAuth.User?, Never>(auth.currentUser)
+        let listener = auth.addStateDidChangeListener { _, user in
+            publisher.send(user)
+        }
+        return publisher
+            .map { user in
+                user.map { User(from: $0) }
+            }
+            .handleEvents(receiveCancel: { auth.removeStateDidChangeListener(listener) })
+            .eraseToAnyPublisher()
+    }
+    
+    func createAccount(name: String, email: String, password: String) async throws {
         let result = try await auth.createUser(withEmail: email, password: password)
         
         let changeRequest = result.user.createProfileChangeRequest()
         changeRequest.displayName = name
         try await changeRequest.commitChanges()
-        
-        return User(from: result.user)
     }
     
-    func currentUser() -> User? {
-        if let user = auth.currentUser {
-            return User(from: user)
-        }
-        return nil
-    }
-    
-    func signIn(email: String, password: String) async throws -> User {
-        let result = try await auth.signIn(withEmail: email, password: password)
-        return User(from: result.user)
+    func signIn(email: String, password: String) async throws {
+        try await auth.signIn(withEmail: email, password: password)
     }
     
     func signOut() throws {
         try auth.signOut()
     }
     
-    func updateProfileImage(_ image: UIImage) async throws -> User {
+    func updateProfileImage(_ image: UIImage) async throws {
         guard let user = auth.currentUser else {
             preconditionFailure("Cannot update image because there is no signed in user")
         }
@@ -62,8 +66,6 @@ struct AuthService: AuthServiceProtocol {
         let changeRequest = user.createProfileChangeRequest()
         changeRequest.photoURL = imageURL
         try await changeRequest.commitChanges()
-        
-        return User(from: user)
     }
 }
 

@@ -1,6 +1,6 @@
 //
 //  NewPostForm.swift
-//  NewPostForm
+//  FirebaseTestProject
 //
 //  Created by Ben Stone on 8/9/21.
 //
@@ -10,49 +10,37 @@ import SwiftUI
 // MARK: - NewPostForm
 
 struct NewPostForm: View {
-    let submitAction: (Post.EditableFields) async throws -> Void
-    
-    @State private var post = Post.EditableFields()
-    @StateObject private var submitTask = TaskViewModel()
-    @FocusState private var isShowingKeyboard: Bool
-    @Environment(\.dismiss) private var dismiss
+    @StateObject var viewModel: PostFormViewModel
     
     var body: some View {
         NavigationView {
             Form {
                 Section("Title") {
-                    TextField("Title", text: $post.title)
+                    TextField("Title", text: $viewModel.editable.title)
                 }
                 Section("Content") {
-                    TextEditor(text: $post.content)
+                    TextEditor(text: $viewModel.editable.content)
                         .multilineTextAlignment(.leading)
                 }
-                ChooseImageSection(selection: $post.image)
-                Button("Submit", action: submitPost)
+                ChooseImageSection(selection: $viewModel.editable.image)
+                SubmitButton(action: handleSubmit)
             }
-            .alert("Cannot Submit Post", isPresented: $submitTask.isError, presenting: submitTask.error) { error in
-                Text(error.localizedDescription)
+            .onSubmit(handleSubmit)
+            .animation(.default, value: viewModel.isLoading)
+            .disabled(viewModel.isLoading)
+            .alert("Cannot Submit Post", isPresented: $viewModel.error.exists, presenting: viewModel.error, actions: { _ in }) {
+                Text($0.localizedDescription)
             }
-            .disabled(submitTask.isInProgress)
-            .focused($isShowingKeyboard)
             .navigationTitle("New Post")
-            .onSubmit(submitPost)
-            .toolbar {
-                CloseButton(action: dismiss.callAsFunction)
-            }
         }
     }
     
-    private func submitPost() {
-        isShowingKeyboard = false
-        submitTask.perform {
-            try await submitAction(post)
-            dismiss()
-        }
+    private func handleSubmit() {
+        viewModel.submit()
     }
 }
 
-// MARK: - Subviews
+// MARK: - ChooseImageSection
 
 private extension NewPostForm {
     struct ChooseImageSection: View {
@@ -96,37 +84,41 @@ private extension NewPostForm {
             }
         }
     }
-    
-    struct CloseButton: View {
+}
+
+// MARK: - SubmitButton
+
+private extension NewPostForm {
+    struct SubmitButton: View {
         let action: () -> Void
+        
+        @Environment(\.isEnabled) private var isEnabled
         
         var body: some View {
             Button(action: action) {
-                Label("Close", systemImage: "xmark.circle.fill")
+                Group {
+                    if isEnabled {
+                        Text("Submit Post")
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                    } else {
+                        ProgressView()
+                    }
+                }
+                .padding()
+                .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.plain)
-            .font(.title2)
-            .foregroundColor(.gray)
+            .listRowBackground(Color.accentColor)
         }
     }
 }
 
-// MARK: - Previews
+// MARK: - Preview
 
+#if DEBUG
 struct NewPostForm_Previews: PreviewProvider {
     static var previews: some View {
-        NewPostForm(previewPost: Post.EditableFields(
-            title: "Lorem ipsum",
-            content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-            image: UIImage(named: "ProfileImagePlaceholder")
-        ))
-        NewPostForm(previewPost: Post.EditableFields())
+        NewPostForm(viewModel: PostFormViewModel(submitAction: { _ in }))
     }
 }
-
-private extension NewPostForm {
-    init(previewPost: Post.EditableFields) {
-        self.submitAction = { _ in await Task.sleep(1_000_000_000) }
-        self.post = previewPost
-    }
-}
+#endif

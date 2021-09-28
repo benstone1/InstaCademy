@@ -1,6 +1,6 @@
 //
 //  PostsList.swift
-//  PostsList
+//  FirebaseTestProject
 //
 //  Created by Ben Stone on 8/9/21.
 //
@@ -13,136 +13,61 @@ struct PostsList: View {
     @StateObject var viewModel: PostViewModel
     
     @State private var searchText = ""
-    @State private var route: Route?
-    
-    enum Route: Equatable {
-        case author(User), comments(Post)
-    }
     
     var body: some View {
         Group {
-            switch viewModel.state {
+            switch viewModel.posts {
             case .loading:
                 ProgressView()
                     .onAppear {
                         viewModel.loadPosts()
                     }
-            case .error:
-                ErrorView(title: "Cannot Load Posts", retryAction: {
-                    viewModel.loadPosts()
-                })
-            case .loaded where viewModel.posts.isEmpty:
+            case let .error(error):
+                EmptyListView(
+                    title: "Cannot Load Posts",
+                    message: error.localizedDescription,
+                    retryAction: { viewModel.loadPosts() }
+                )
+            case .empty:
                 EmptyListView(
                     title: "No Posts",
                     message: "There aren’t any posts here."
                 )
-            case .loaded:
-                List(viewModel.posts) { post in
-                    if searchText.isEmpty || post.contains(searchText) {
-                        PostRow(
-                            post: post,
-                            route: $route,
-                            favoriteAction: viewModel.favoriteAction(for: post),
-                            deleteAction: viewModel.deleteAction(for: post)
-                        )
+            case let .loaded(posts):
+                ScrollView {
+                    ForEach(posts) { post in
+                        if searchText.isEmpty || post.contains(searchText) {
+                            PostRow(viewModel: viewModel.makePostRowViewModel(for: post))
+                            if post != posts.last {
+                                Divider()
+                            }
+                        }
                     }
-                }
-                .refreshable {
-                    await viewModel.refreshPosts()
                 }
                 .searchable(text: $searchText)
             }
         }
-        .background {
-            RouterView(route: $route)
-        }
+        .animation(.default, value: viewModel.posts)
+        .navigationTitle(viewModel.title)
     }
 }
-
-// MARK: - Presenting Views
 
 extension PostsList {
-    struct MainView: View {
-        let viewModel: PostViewModel
-        @State private var showNewPostForm = false
-        
-        var body: some View {
-            NavigationView {
-                PostsList(viewModel: viewModel)
-                    .navigationTitle("Posts")
-                    .toolbar {
-                        Button {
-                            showNewPostForm = true
-                        } label: {
-                            Label("New Post", systemImage: "plus")
-                        }
-                    }
-                    .sheet(isPresented: $showNewPostForm) {
-                        NewPostForm(submitAction: viewModel.submitPost(_:))
-                    }
-            }
-        }
-    }
-    
-    struct FavoritesView: View {
-        let viewModel: PostViewModel
-        
-        var body: some View {
-            NavigationView {
-                PostsList(viewModel: viewModel)
-                    .navigationTitle("Favorites")
-            }
+    static func withNavigationView(viewModel: PostViewModel) -> some View {
+        NavigationView {
+            PostsList(viewModel: viewModel)
         }
     }
 }
 
-// MARK: - RouterView
+// MARK: - Previews
 
-private extension PostsList {
-    @MainActor struct RouterView: View {
-        @Binding var route: PostsList.Route?
-        @State private var isActive = false
-        
-        @Environment(\.user) private var user
-        
-        var body: some View {
-            NavigationLink(isActive: $isActive) {
-                switch route {
-                case .none:
-                    EmptyView()
-                case let .author(author):
-                    PostsList(viewModel: makePostViewModel(for: author))
-                        .navigationTitle("\(author.name)’s Posts")
-                case let .comments(post):
-                    CommentsList(viewModel: makeCommentViewModel(for: post))
-                }
-            } label: {
-                EmptyView()
-            }
-            .onChange(of: route) { route in
-                isActive = route != nil
-            }
-            .onChange(of: isActive) { isActive in
-                route = isActive ? route : nil
-            }
-        }
-        
-        private func makeCommentViewModel(for post: Post) -> CommentViewModel {
-            let commentService = CommentService(post: post, user: user)
-            return CommentViewModel(commentService: commentService)
-        }
-        
-        private func makePostViewModel(for author: User) -> PostViewModel {
-            let postService = PostService(user: user)
-            return PostViewModel(postService: postService, filter: .author(author))
-        }
-    }
-}
-
-// MARK: - Preview
-
+#if DEBUG
 struct PostsList_Previews: PreviewProvider {
     static var previews: some View {
-        PostsList.MainView(viewModel: PostViewModel(postService: PostService(user: .testUser)))
+        NavigationView {
+            PostsList(viewModel: PostViewModel(postService: PostService(user: User.testUser())))
+        }
     }
 }
+#endif

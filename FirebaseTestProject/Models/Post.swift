@@ -1,6 +1,6 @@
 //
 //  Post.swift
-//  Post
+//  FirebaseTestProject
 //
 //  Created by Ben Stone on 8/9/21.
 //
@@ -10,7 +10,7 @@ import UIKit
 
 // MARK: - Post
 
-struct Post: Identifiable, Equatable {
+struct Post: Identifiable, Hashable, Equatable {
     let title: String
     let content: String
     let author: User
@@ -38,25 +38,28 @@ struct Post: Identifiable, Equatable {
     }
 }
 
+// MARK: - Preview Content
+
+extension Post {
+    static func testPost(
+        title: String = "Lorem ipsum",
+        content: String = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        author: User = User.testUser(),
+        id: String = UUID().uuidString,
+        timestamp: Date = Date(),
+        imageURL: URL? = URL(string: "https://source.unsplash.com/eOpewngf68w/800x800"),
+        isFavorite: Bool = false
+    ) -> Post {
+        Post(title: title, content: content, author: author, id: id, timestamp: timestamp, imageURL: imageURL, isFavorite: isFavorite)
+    }
+}
+
 // MARK: - Codable
 
 extension Post: Codable {
     enum CodingKeys: CodingKey {
         case title, content, author, id, timestamp, imageURL
     }
-}
-
-// MARK: - Test
-
-extension Post {
-    static let testPost = Post(
-        title: "Lorem ipsum",
-        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        author: .testUser,
-        id: "00000000000000000000",
-        imageURL: URL(string: "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"),
-        isFavorite: true
-    )
 }
 
 // MARK: - Partial

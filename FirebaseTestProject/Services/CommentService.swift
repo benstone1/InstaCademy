@@ -1,11 +1,12 @@
 //
 //  CommentService.swift
-//  CommentService
+//  FirebaseTestProject
 //
 //  Created by John Royal on 8/30/21.
 //
 
 import Foundation
+import Combine
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 
@@ -15,9 +16,9 @@ protocol CommentServiceProtocol {
     var post: Post { get }
     var user: User { get }
     
-    func fetchComments() async throws -> [Comment]
+    func fetchComments() -> AnyPublisher<[Comment], Error>
     
-    func create(_ editableComment: Comment.EditableFields) async throws -> Comment
+    func create(_ editableComment: Comment.EditableFields) async throws
     func delete(_ comment: Comment) async throws
     
     func canDelete(_ comment: Comment) -> Bool
@@ -36,11 +37,13 @@ struct CommentService: CommentServiceProtocol {
     let user: User
     let commentsReference: CollectionReference
     
-    func fetchComments() async throws -> [Comment] {
-        try await commentsReference.order(by: "timestamp", descending: true).getDocuments(as: Comment.self)
+    func fetchComments() -> AnyPublisher<[Comment], Error> {
+        commentsReference
+            .order(by: "timestamp", descending: true)
+            .publishDocuments(as: Comment.self)
     }
     
-    func create(_ editableComment: Comment.EditableFields) async throws -> Comment {
+    func create(_ editableComment: Comment.EditableFields) async throws {
         let commentReference = commentsReference.document()
         let comment = Comment(
             content: editableComment.content,
@@ -48,7 +51,6 @@ struct CommentService: CommentServiceProtocol {
             id: commentReference.documentID
         )
         try commentReference.setData(from: comment)
-        return comment
     }
     
     func delete(_ comment: Comment) async throws {

@@ -1,82 +1,117 @@
 //
 //  ProfileView.swift
-//  ProfileView
+//  FirebaseTestProject
 //
 //  Created by Tim Miller on 8/12/21.
 //
 
 import SwiftUI
 
+// MARK: - ProfileView
+
 struct ProfileView: View {
-    let user: User
-    let updateImageAction: (UIImage) async throws -> Void
-    let signOutAction: () async throws -> Void
-    
-    @State private var showChooseImageSource = false
-    @State private var imageSourceType: ImagePickerView.SourceType?
-    @State private var newImageCandidate: UIImage?
-    
-    @StateObject private var task = TaskViewModel()
+    @StateObject var viewModel: ProfileViewModel
     
     var body: some View {
-        VStack{
-            Spacer()
-            UserImageView(url: user.imageURL, transaction: Transaction(animation: .default))
-                .frame(width: 300, height: 300)
-                .overlay(Circle().stroke(Color(uiColor: .systemGray5), lineWidth: 2))
-            Button("Change Photo", action: {
-                showChooseImageSource = true
-            })
-                .disabled(task.isInProgress)
-            Spacer()
-            Text("User Name:")
-            Text(user.name)
-                .font(.title2)
-                .bold()
-            Spacer()
-            Button(action: signOut) {
-                Text("Sign Out")
-                    .foregroundColor(Color.white)
-                    .frame(width: 150, height: 50)
-                    .background(Color.blue)
-                    .cornerRadius(15)
+        NavigationView {
+            VStack {
+                Spacer()
+                UserImageView(viewModel.user, transaction: Transaction(animation: .default))
+                    .frame(width: 200, height: 200)
+                    .padding()
+                UpdateImageButton(action: {
+                    viewModel.updateProfileImage($0)
+                })
+                Spacer()
+                Text("Signed in as:")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Text(viewModel.user.name)
+                    .font(.title2)
+                    .bold()
+                Spacer()
             }
-            .disabled(task.isInProgress)
-            Spacer()
-        }
-        .alert(isPresented: $task.isError) {
-            Alert(
-                title: Text("Error"),
-                message: Text(task.error?.localizedDescription ?? "Sorry, something went wrong."),
-                dismissButton: nil
-            )
-        }
-        .confirmationDialog("Choose Profile Photo", isPresented: $showChooseImageSource, titleVisibility: .visible) {
-            Button("Choose from Library", action: {
-                imageSourceType = .photoLibrary
-            })
-            Button("Take Photo", action: {
-                imageSourceType = .camera
-            })
-        }
-        .sheet(item: $imageSourceType, onDismiss: {
-            guard let image = newImageCandidate else { return }
-            task.perform {
-                try await updateImageAction(image)
-                newImageCandidate = nil
+            .disabled(viewModel.isLoading)
+            .padding()
+            .navigationTitle("Profile")
+            .toolbar {
+                SignOutButton(action: {
+                    viewModel.signOut()
+                })
             }
-        }) {
-            ImagePickerView(sourceType: $0, selection: $newImageCandidate)
         }
-    }
-    
-    private func signOut() {
-        task.perform(signOutAction)
+        .alert("Error", isPresented: $viewModel.error.exists, presenting: viewModel.error, actions: { _ in }) { error in
+            Text(error.localizedDescription)
+        }
     }
 }
 
-struct ProfileView_Previews: PreviewProvider {
-    static var previews: some View {
-        ProfileView(user: .testUser, updateImageAction: { _ in }, signOutAction: {})
+// MARK: - SignOutButton
+
+private extension ProfileView {
+    struct SignOutButton: View {
+        let action: () -> Void
+        
+        @State private var isShowingConfirmation = false
+        
+        var body: some View {
+            Button("Sign Out", action: {
+                isShowingConfirmation = true
+            })
+                .confirmationDialog("Sign Out", isPresented: $isShowingConfirmation) {
+                    Button("Sign Out", role: .destructive, action: action)
+                }
+        }
     }
 }
+
+// MARK: - UpdateImageButton
+
+private extension ProfileView {
+    struct UpdateImageButton: View {
+        let action: (UIImage) -> Void
+        
+        @State private var newImageCandidate: UIImage?
+        @State private var showChooseImageSource = false
+        @State private var imageSourceType: ImagePickerView.SourceType?
+        
+        @Environment(\.isEnabled) private var isEnabled
+        
+        var body: some View {
+            Button {
+                showChooseImageSource = true
+            } label: {
+                if isEnabled {
+                    Label("Change Photo", systemImage: "plus")
+                } else {
+                    ProgressView()
+                }
+            }
+            .confirmationDialog("Choose Profile Photo", isPresented: $showChooseImageSource) {
+                Button("Choose from Library", action: {
+                    imageSourceType = .photoLibrary
+                })
+                Button("Take Photo", action: {
+                    imageSourceType = .camera
+                })
+            }
+            .sheet(item: $imageSourceType, onDismiss: {
+                guard let image = newImageCandidate else { return }
+                action(image)
+                newImageCandidate = nil
+            }) {
+                ImagePickerView(sourceType: $0, selection: $newImageCandidate)
+            }
+        }
+    }
+}
+
+// MARK: - Previews
+
+#if DEBUG
+struct ProfileView_Previews: PreviewProvider {
+    static var previews: some View {
+        ProfileView(viewModel: ProfileViewModel(user: User.testUser(), authService: AuthService()))
+    }
+}
+#endif

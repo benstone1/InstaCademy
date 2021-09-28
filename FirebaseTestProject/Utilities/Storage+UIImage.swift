@@ -1,6 +1,6 @@
 //
-//  Storage+Extensions.swift
-//  Storage+Extensions
+//  Storage+UIImage.swift
+//  FirebaseTestProject
 //
 //  Created by John Royal on 9/10/21.
 //

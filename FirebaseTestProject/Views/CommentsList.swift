@@ -1,57 +1,61 @@
 //
 //  CommentsList.swift
-//  CommentsList
+//  FirebaseTestProject
 //
 //  Created by John Royal on 8/21/21.
 //
 
 import SwiftUI
 
+// MARK: - CommentsList
+
 struct CommentsList: View {
     @StateObject var viewModel: CommentViewModel
     
     var body: some View {
         Group {
-            switch viewModel.state {
+            switch viewModel.comments {
             case .loading:
                 ProgressView()
                     .onAppear {
                         viewModel.loadComments()
                     }
-            case .error:
-                ErrorView(title: "Cannot Load Comments", retryAction: {
-                    viewModel.loadComments()
-                })
-            case .loaded where viewModel.comments.isEmpty:
+            case let .error(error):
+                EmptyListView(
+                    title: "Cannot Load Comments",
+                    message: error.localizedDescription,
+                    retryAction: { viewModel.loadComments() }
+                )
+            case .empty:
                 EmptyListView(
                     title: "No Comments",
                     message: "Be the first to leave a comment."
                 )
-            case .loaded:
-                List(viewModel.comments) { comment in
-                    CommentRow(comment: comment, deleteAction: viewModel.deleteAction(for: comment))
-                }
-                .refreshable {
-                    await viewModel.refreshComments()
+            case let .loaded(comments):
+                List(comments) { comment in
+                    CommentRow(viewModel: viewModel.makeCommentRowViewModel(for: comment))
                 }
             }
         }
+        .animation(.default, value: viewModel.comments)
         .navigationTitle("Comments")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .bottomBar) {
-                NewCommentForm(submitAction: viewModel.submitComment(_:))
+                NewCommentForm(viewModel: viewModel.makeCommentFormViewModel())
             }
         }
     }
 }
 
+// MARK: - Previews
+
+#if DEBUG
 struct CommentsList_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            let commentService = CommentService(post: .testPost, user: .testUser)
-            let viewModel = CommentViewModel(commentService: commentService)
-            CommentsList(viewModel: viewModel)
+            CommentsList(viewModel: CommentViewModel(commentService: CommentService(post: Post.testPost(), user: User.testUser())))
         }
     }
 }
+#endif
