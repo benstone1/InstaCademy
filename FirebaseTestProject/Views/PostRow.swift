@@ -28,6 +28,7 @@ struct PostRow: View {
             Text(viewModel.content)
             PostFooterView(viewModel: viewModel)
         }
+        .foregroundColor(.gray9)
         .padding()
         .alert("Something went wrong.", isPresented: $viewModel.error.exists, presenting: viewModel.error, actions: { _ in }) {
             Text($0.localizedDescription)
@@ -61,11 +62,12 @@ private extension PostRow {
                 HStack {
                     UserImageView(author)
                         .frame(width: 40, height: 40)
-                        .accentColor(.gray)
-                        .foregroundColor(.white)
+                        .accentColor(.beige)
+                        .foregroundColor(.gray9)
                     Text(author.name)
                         .font(.subheadline)
                         .fontWeight(.medium)
+                        .foregroundColor(.gray9)
                 }
                 .accessibilityElement(children: .combine)
             }
@@ -126,7 +128,7 @@ private extension PostRow {
                     .font(.caption)
                     .fontWeight(.medium)
             }
-            .foregroundColor(.secondary)
+            .foregroundColor(.gray4)
             .buttonStyle(.plain)
             .labelStyle(.iconOnly)
         }
@@ -140,7 +142,7 @@ private extension PostRow {
             Button(action: action) {
                 if isFavorite {
                     Label("Remove from Favorites", systemImage: "heart.fill")
-                        .foregroundColor(.pink)
+                        .foregroundColor(.appPink)
                 } else {
                     Label("Add to Favorites", systemImage: "heart")
                 }

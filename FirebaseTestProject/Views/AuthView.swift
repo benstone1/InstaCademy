@@ -125,7 +125,7 @@ private extension AuthView {
             }
             .padding()
             .background {
-                Color(uiColor: .secondarySystemBackground)
+                Color.navy
                     .frame(height: UIScreen.main.bounds.height)
                     .ignoresSafeArea()
             }

@@ -35,6 +35,7 @@
 		52CD095D270276D30094D5A4 /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52CD095C270276D30094D5A4 /* AuthView.swift */; };
 		52CD095F270286840094D5A4 /* FormViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52CD095E270286840094D5A4 /* FormViewModel.swift */; };
 		52E308D826DDAA6F0082EC98 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E308D726DDAA6F0082EC98 /* AuthViewModel.swift */; };
+		52EF636D27029497006B6850 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EF636C27029497006B6850 /* Colors.swift */; };
 		52EF637127029515006B6850 /* Services+Stub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EF637027029515006B6850 /* Services+Stub.swift */; };
 		52EF637327029D90006B6850 /* Models+TestContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EF637227029D90006B6850 /* Models+TestContent.swift */; };
 		52F303F72701504000D4E979 /* ProminentButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52F303F62701504000D4E979 /* ProminentButtonStyle.swift */; };
@@ -97,6 +98,7 @@
 		52CD095C270276D30094D5A4 /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		52CD095E270286840094D5A4 /* FormViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormViewModel.swift; sourceTree = "<group>"; };
 		52E308D726DDAA6F0082EC98 /* AuthViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		52EF636C27029497006B6850 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		52EF637027029515006B6850 /* Services+Stub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services+Stub.swift"; sourceTree = "<group>"; };
 		52EF637227029D90006B6850 /* Models+TestContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models+TestContent.swift"; sourceTree = "<group>"; };
 		52F303F62701504000D4E979 /* ProminentButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProminentButtonStyle.swift; sourceTree = "<group>"; };
@@ -171,6 +173,7 @@
 		52F56A7A26EBC6BA00160ED7 /* Supporting Views */ = {
 			isa = PBXGroup;
 			children = (
+				52EF636C27029497006B6850 /* Colors.swift */,
 				5284827F26EBC7C700F3E98D /* EmptyListView.swift */,
 				52B95FFA26EA8A1F0010F906 /* ImagePickerView.swift */,
 				52F303F62701504000D4E979 /* ProminentButtonStyle.swift */,
@@ -430,6 +433,7 @@
 				52EF637127029515006B6850 /* Services+Stub.swift in Sources */,
 				5230FE9326D996D800BC956C /* NewCommentForm.swift in Sources */,
 				F2576EDB26C19A3C00D3F344 /* Post.swift in Sources */,
+				52EF636D27029497006B6850 /* Colors.swift in Sources */,
 				52F303F72701504000D4E979 /* ProminentButtonStyle.swift in Sources */,
 				52B95FFB26EA8A1F0010F906 /* ImagePickerView.swift in Sources */,
 				52917CC226D162B20061E69F /* Firestore+Combine.swift in Sources */,

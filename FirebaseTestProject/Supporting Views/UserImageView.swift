@@ -70,7 +70,8 @@ struct UserImageView_Previews: PreviewProvider {
         
         var body: some View {
             UserImageView(user)
-                .accentColor(.gray.opacity(0.1))
+                .accentColor(.beige)
+                .foregroundColor(.gray9)
                 .frame(width: 300, height: 300)
                 .padding()
                 .previewLayout(.sizeThatFits)
