@@ -35,6 +35,9 @@ struct CommentsList: View {
                 List(comments) { comment in
                     CommentRow(viewModel: viewModel.makeCommentRowViewModel(for: comment))
                 }
+                .refreshable {
+                    await viewModel.refreshComments()
+                }
             }
         }
         .animation(.default, value: viewModel.comments)

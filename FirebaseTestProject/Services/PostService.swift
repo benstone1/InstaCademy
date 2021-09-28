@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Combine
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 import FirebaseStorage
@@ -16,9 +15,9 @@ import FirebaseStorage
 protocol PostServiceProtocol {
     var user: User { get }
     
-    func fetchPosts() -> AnyPublisher<[Post], Error>
-    func fetchPosts(by author: User) -> AnyPublisher<[Post], Error>
-    func fetchFavoritePosts() -> AnyPublisher<[Post], Error>
+    func fetchPosts() async throws -> [Post]
+    func fetchPosts(by author: User) async throws -> [Post]
+    func fetchFavoritePosts() async throws -> [Post]
     
     func create(_ editablePost: Post.EditableFields) async throws
     func delete(_ post: Post) async throws
@@ -43,14 +42,14 @@ enum PostFilter {
 }
 
 extension PostServiceProtocol {
-    func fetchPosts(matching filter: PostFilter?) -> AnyPublisher<[Post], Error> {
+    func fetchPosts(matching filter: PostFilter?) async throws -> [Post] {
         switch filter {
         case .none:
-            return fetchPosts()
+            return try await fetchPosts()
         case let .author(author):
-            return fetchPosts(by: author)
+            return try await fetchPosts(by: author)
         case .favorites:
-            return fetchFavoritePosts()
+            return try await fetchFavoritePosts()
         }
     }
 }
@@ -59,39 +58,34 @@ extension PostServiceProtocol {
 
 struct PostService: PostServiceProtocol {
     let user: User
-    var postsReference = Firestore.firestore().collection("posts")
-    var favoritesReference = Firestore.firestore().collection("favorites")
-    var imagesReference = Storage.storage().reference().child("images/posts")
-
-    func fetchPosts() -> AnyPublisher<[Post], Error> {
+    let postsReference = Firestore.firestore().collection("posts")
+    let favoritesReference = Firestore.firestore().collection("favorites")
+    let imagesReference = Storage.storage().reference().child("images/posts")
+    
+    func fetchPosts() async throws -> [Post] {
         let postsQuery = postsReference.order(by: "timestamp", descending: true)
-        return fetchPostsFromQuery(postsQuery)
+        return try await fetchPostsFromQuery(postsQuery)
     }
-
-    func fetchPosts(by author: User) -> AnyPublisher<[Post], Error> {
+    
+    func fetchPosts(by author: User) async throws -> [Post] {
         let postsQuery = postsReference
             .order(by: "timestamp", descending: true)
             .whereField("author.id", isEqualTo: author.id)
-        return fetchPostsFromQuery(postsQuery)
+        return try await fetchPostsFromQuery(postsQuery)
     }
     
-    func fetchFavoritePosts() -> AnyPublisher<[Post], Error> {
-        return fetchFavorites()
-            .flatMap { favorites -> AnyPublisher<[Post], Error> in
-                if favorites.isEmpty {
-                    return Just([])
-                        .setFailureType(to: Error.self)
-                        .eraseToAnyPublisher()
-                }
-                return postsReference
-                    .order(by: "timestamp", descending: true)
-                    .whereField("id", in: favorites)
-                    .publishDocuments(as: Post.self)
+    func fetchFavoritePosts() async throws -> [Post] {
+        let favorites = try await fetchFavorites()
+        guard !favorites.isEmpty else {
+            return []
+        }
+        return try await postsReference
+            .order(by: "timestamp", descending: true)
+            .whereField("id", in: favorites)
+            .getDocuments(as: Post.self)
+            .map {
+                Post($0, isFavorite: true)
             }
-            .map { posts in
-                posts.map { Post($0, isFavorite: true) }
-            }
-            .eraseToAnyPublisher()
     }
     
     func create(_ editablePost: Post.EditableFields) async throws {
@@ -108,7 +102,7 @@ struct PostService: PostServiceProtocol {
             id: postReference.documentID,
             imageURL: imageURL
         )
-        try postReference.setData(from: post)
+        try await postReference.setData(from: post)
     }
     
     func delete(_ post: Post) async throws {
@@ -123,7 +117,7 @@ struct PostService: PostServiceProtocol {
     
     func favorite(_ post: Post) async throws {
         let favorite = Favorite(postID: post.id, userID: user.id)
-        try favoritesReference.document().setData(from: favorite)
+        try await favoritesReference.document().setData(from: favorite)
     }
     
     func unfavorite(_ post: Post) async throws {
@@ -138,23 +132,19 @@ struct PostService: PostServiceProtocol {
 }
 
 private extension PostService {
-    func fetchPostsFromQuery(_ query: Query) -> AnyPublisher<[Post], Error> {
-        let posts = query.publishDocuments(as: Post.self)
-        let favorites = fetchFavorites()
-        return posts.combineLatest(favorites) { posts, favorites in
-            posts.map {
-                Post($0, isFavorite: favorites.contains($0.id))
-            }
+    func fetchPostsFromQuery(_ query: Query) async throws -> [Post] {
+        async let posts = query.getDocuments(as: Post.self)
+        let favorites = try await fetchFavorites()
+        return try await posts.map {
+            Post($0, isFavorite: favorites.contains($0.id))
         }
-        .eraseToAnyPublisher()
     }
     
-    func fetchFavorites() -> AnyPublisher<[Post.ID], Error> {
-        return favoritesReference
+    func fetchFavorites() async throws -> [Post.ID] {
+        return try await favoritesReference
             .whereField("userID", isEqualTo: user.id)
-            .publishDocuments(as: Favorite.self)
-            .map { $0.map(\.postID) }
-            .eraseToAnyPublisher()
+            .getDocuments(as: Favorite.self)
+            .map(\.postID)
     }
     
     struct Favorite: Codable {

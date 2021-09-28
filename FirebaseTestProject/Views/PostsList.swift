@@ -19,9 +19,6 @@ struct PostsList: View {
             switch viewModel.posts {
             case .loading:
                 ProgressView()
-                    .onAppear {
-                        viewModel.loadPosts()
-                    }
             case let .error(error):
                 EmptyListView(
                     title: "Cannot Load Posts",
@@ -34,21 +31,22 @@ struct PostsList: View {
                     message: "There aren’t any posts here."
                 )
             case let .loaded(posts):
-                ScrollView {
-                    ForEach(posts) { post in
-                        if searchText.isEmpty || post.contains(searchText) {
-                            PostRow(viewModel: viewModel.makePostRowViewModel(for: post))
-                            if post != posts.last {
-                                Divider()
-                            }
-                        }
+                List(posts) { post in
+                    if searchText.isEmpty || post.contains(searchText) {
+                        PostRow(viewModel: viewModel.makePostRowViewModel(for: post))
                     }
                 }
                 .searchable(text: $searchText)
+                .refreshable {
+                    await viewModel.refreshPosts()
+                }
             }
         }
         .animation(.default, value: viewModel.posts)
         .navigationTitle(viewModel.title)
+        .onAppear {
+            viewModel.loadPosts()
+        }
     }
 }
 

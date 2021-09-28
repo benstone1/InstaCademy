@@ -37,11 +37,13 @@ struct CommentServiceStub: CommentServiceProtocol {
     let post = Post.testPost()
     let user = User.testUser()
     
-    func fetchComments() -> AnyPublisher<[Comment], Error> {
-        state.preview()
+    func fetchComments() async throws -> [Comment] {
+        return try await state.preview()
     }
     
-    func create(_ editableComment: Comment.EditableFields) async throws {}
+    func create(_ editableComment: Comment.EditableFields) async throws -> Comment {
+        return Comment.testComment()
+    }
     
     func delete(_ comment: Comment) async throws {}
 }
@@ -53,16 +55,16 @@ struct PostServiceStub: PostServiceProtocol {
     
     let user = User.testUser()
     
-    func fetchPosts() -> AnyPublisher<[Post], Error> {
-        state.preview()
+    func fetchPosts() async throws -> [Post] {
+        return try await state.preview()
     }
     
-    func fetchPosts(by author: User) -> AnyPublisher<[Post], Error> {
-        state.preview()
+    func fetchPosts(by author: User) async throws -> [Post] {
+        return try await state.preview()
     }
     
-    func fetchFavoritePosts() -> AnyPublisher<[Post], Error> {
-        state.preview()
+    func fetchFavoritePosts() async throws -> [Post] {
+        return try await state.preview()
     }
     
     func create(_ editablePost: Post.EditableFields) async throws {}

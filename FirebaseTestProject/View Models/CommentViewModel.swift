@@ -6,14 +6,12 @@
 //
 
 import Foundation
-import Combine
 
 @MainActor
 class CommentViewModel: ObservableObject {
     @Published var comments: Loadable<[Comment]> = .loading
     
     private let commentService: CommentServiceProtocol
-    private var cancellable: AnyCancellable?
     
     init(commentService: CommentServiceProtocol) {
         self.commentService = commentService
@@ -21,23 +19,40 @@ class CommentViewModel: ObservableObject {
     
     func loadComments() {
         comments = .loading
-        cancellable = commentService.fetchComments()
-            .sink { [weak self] result in
-                guard case let .failure(error) = result else { return }
-                print("[CommentViewModel] Cannot load comments: \(error.localizedDescription)")
-                self?.comments = .error(error)
-            } receiveValue: { [weak self] comments in
-                self?.comments = .loaded(comments)
-            }
+        Task {
+            await refreshComments()
+        }
+    }
+    
+    func refreshComments() async {
+        do {
+            comments = .loaded(try await commentService.fetchComments())
+        } catch {
+            print("[CommentViewModel] Cannot load comments: \(error.localizedDescription)")
+            comments = .error(error)
+        }
     }
     
     func makeCommentFormViewModel() -> CommentFormViewModel {
-        CommentFormViewModel(submitAction: { [weak self] editableComment in
-            try await self?.commentService.create(editableComment)
+        return CommentFormViewModel(submitAction: { [weak self] editableComment in
+            guard let self = self else { return }
+            
+            let comment = try await self.commentService.create(editableComment)
+            self.comments.value?.append(comment)
         })
     }
     
     func makeCommentRowViewModel(for comment: Comment) -> CommentRowViewModel {
-        CommentRowViewModel(comment: comment, commentService: commentService)
+        let deleteAction: () async throws -> Void = { [weak self] in
+            guard let self = self else { return }
+            
+            try await self.commentService.delete(comment)
+            self.comments.value?.removeAll { $0.id == comment.id }
+        }
+        
+        return CommentRowViewModel(
+            comment: comment,
+            deleteAction: commentService.canDelete(comment) ? deleteAction : nil
+        )
     }
 }

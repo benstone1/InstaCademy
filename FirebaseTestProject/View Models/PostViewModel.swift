@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Combine
 
 @MainActor
 class PostViewModel: ObservableObject {
@@ -25,7 +24,6 @@ class PostViewModel: ObservableObject {
     
     private let postService: PostServiceProtocol
     private let filter: PostFilter?
-    private var cancellable: AnyCancellable?
     
     init(postService: PostServiceProtocol, filter: PostFilter? = nil) {
         self.postService = postService
@@ -33,18 +31,44 @@ class PostViewModel: ObservableObject {
     }
     
     func loadPosts() {
-        posts = .loading
-        cancellable = postService.fetchPosts(matching: filter)
-            .sink { [weak self] result in
-                guard case let .failure(error) = result else { return }
-                print("[PostViewModel] Cannot load posts: \(error.localizedDescription)")
-                self?.posts = .error(error)
-            } receiveValue: { [weak self] posts in
-                self?.posts = .loaded(posts)
-            }
+        if posts.value == nil {
+            posts = .loading
+        }
+        Task {
+            await refreshPosts()
+        }
+    }
+    
+    func refreshPosts() async {
+        do {
+            posts = .loaded(try await postService.fetchPosts(matching: filter))
+        } catch {
+            print("[PostViewModel] Cannot load posts: \(error.localizedDescription)")
+            posts = .error(error)
+        }
     }
     
     func makePostRowViewModel(for post: Post) -> PostRowViewModel {
-        PostRowViewModel(post: post, postService: postService)
+        typealias Action = () async throws -> Void
+        
+        let favoriteAction: Action = { [weak self] in
+            guard let self = self else { return }
+            
+            try await post.isFavorite ? self.postService.unfavorite(post) : self.postService.favorite(post)
+            
+            guard let i = self.posts.value?.firstIndex(of: post) else { return }
+            self.posts.value?[i].isFavorite = !post.isFavorite
+        }
+        let deleteAction: Action = { [weak self] in
+            try await self?.postService.delete(post)
+            self?.posts.value?.removeAll { $0.id == post.id }
+        }
+        
+        return PostRowViewModel(
+            post: post,
+            postService: postService,
+            favoriteAction: favoriteAction,
+            deleteAction: postService.canDelete(post) ? deleteAction : nil
+        )
     }
 }

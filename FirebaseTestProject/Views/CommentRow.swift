@@ -57,7 +57,8 @@ struct CommentRow: View {
 struct CommentRow_Previews: PreviewProvider {
     static var previews: some View {
         List {
-            CommentRow(viewModel: CommentRowViewModel(comment: Comment.testComment(), commentService: CommentServiceStub()))
+            CommentRow(viewModel: CommentRowViewModel(comment: Comment.testComment(), deleteAction: {}))
+            CommentRow(viewModel: CommentRowViewModel(comment: Comment.testComment(), deleteAction: nil))
         }
     }
 }

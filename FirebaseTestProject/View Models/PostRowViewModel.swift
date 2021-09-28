@@ -10,6 +10,8 @@ import Foundation
 @MainActor
 @dynamicMemberLookup
 class PostRowViewModel: ObservableObject {
+    typealias Action = () async throws -> Void
+    
     subscript<T>(dynamicMember keyPath: KeyPath<Post, T>) -> T {
         post[keyPath: keyPath]
     }
@@ -23,21 +25,25 @@ class PostRowViewModel: ObservableObject {
     @Published private var post: Post
     
     private let postService: PostServiceProtocol
+    private let favoriteAction: Action
+    private let deleteAction: Action?
     
-    init(post: Post, postService: PostServiceProtocol) {
+    init(post: Post, postService: PostServiceProtocol, favoriteAction: @escaping Action, deleteAction: Action?) {
         self.post = post
         self.postService = postService
+        self.favoriteAction = favoriteAction
+        self.deleteAction = deleteAction
     }
     
     func canDelete() -> Bool {
-        postService.canDelete(post)
+        deleteAction != nil
     }
     
     func delete() {
         precondition(canDelete())
         Task {
             do {
-                try await postService.delete(post)
+                try await deleteAction?()
             } catch {
                 self.error = error
             }
@@ -47,8 +53,7 @@ class PostRowViewModel: ObservableObject {
     func toggleFavorite() {
         Task {
             do {
-                post.isFavorite.toggle()
-                try await post.isFavorite ? postService.favorite(post) : postService.unfavorite(post)
+                try await favoriteAction()
             } catch {
                 self.error = error
             }

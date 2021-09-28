@@ -9,6 +9,8 @@ import Foundation
 
 @MainActor
 class CommentRowViewModel: ObservableObject {
+    typealias DeleteAction = () async throws -> Void
+    
     let authorName: String
     let timestamp: Date
     let content: String
@@ -16,26 +18,26 @@ class CommentRowViewModel: ObservableObject {
     @Published var error: Error?
     
     private let comment: Comment
-    private let commentService: CommentServiceProtocol
+    private let deleteAction: DeleteAction?
     
-    init(comment: Comment, commentService: CommentServiceProtocol) {
+    init(comment: Comment, deleteAction: DeleteAction?) {
         self.authorName = comment.author.name
         self.timestamp = comment.timestamp
         self.content = comment.content
         
         self.comment = comment
-        self.commentService = commentService
+        self.deleteAction = deleteAction
     }
     
     func canDelete() -> Bool {
-        commentService.canDelete(comment)
+        deleteAction != nil
     }
     
     func delete() {
         precondition(canDelete())
         Task {
             do {
-                try await commentService.delete(comment)
+                try await deleteAction?()
             } catch {
                 self.error = error
             }

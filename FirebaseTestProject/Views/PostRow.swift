@@ -29,7 +29,6 @@ struct PostRow: View {
             PostFooterView(viewModel: viewModel)
         }
         .foregroundColor(.gray9)
-        .padding()
         .alert("Something went wrong.", isPresented: $viewModel.error.exists, presenting: viewModel.error, actions: { _ in }) {
             Text($0.localizedDescription)
         }
@@ -175,7 +174,7 @@ private extension PostRow {
 struct PostRow_Previews: PreviewProvider {
     static var previews: some View {
         ForEach(Post.testPosts) {
-            PostRow(viewModel: PostRowViewModel(post: $0, postService: PostServiceStub()))
+            PostRow(viewModel: PostRowViewModel(post: $0, postService: PostServiceStub(), favoriteAction: {}, deleteAction: {}))
         }
         .previewLayout(.sizeThatFits)
     }
