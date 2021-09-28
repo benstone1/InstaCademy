@@ -18,6 +18,7 @@ protocol AuthServiceProtocol {
     func signIn(email: String, password: String) async throws
     func signOut() async throws
     func updateProfileImage(_ image: UIImage) async throws
+    func removeProfileImage() async throws
 }
 
 // MARK: - AuthService
@@ -65,6 +66,19 @@ struct AuthService: AuthServiceProtocol {
         
         let changeRequest = user.createProfileChangeRequest()
         changeRequest.photoURL = imageURL
+        try await changeRequest.commitChanges()
+    }
+    
+    func removeProfileImage() async throws {
+        guard let user = auth.currentUser else {
+            preconditionFailure("Cannot update image because there is no signed in user")
+        }
+        
+        let imageReference = imagesReference.child("\(user.uid).jpg")
+        try await imageReference.delete()
+        
+        let changeRequest = user.createProfileChangeRequest()
+        changeRequest.photoURL = nil
         try await changeRequest.commitChanges()
     }
 }

@@ -25,6 +25,8 @@ struct AuthServiceStub: AuthServiceProtocol {
     func signOut() async throws {}
     
     func updateProfileImage(_ image: UIImage) async throws {}
+    
+    func removeProfileImage() async throws {}
 }
 
 // MARK: - CommentServiceStub

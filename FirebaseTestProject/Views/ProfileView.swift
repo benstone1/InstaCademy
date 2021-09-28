@@ -19,8 +19,10 @@ struct ProfileView: View {
                 UserImageView(viewModel.user, transaction: Transaction(animation: .default))
                     .frame(width: 200, height: 200)
                     .padding()
-                UpdateImageButton(action: {
+                UpdateImageButton(updateAction: {
                     viewModel.updateProfileImage($0)
+                }, removeAction: {
+                    viewModel.removeProfileImage()
                 })
                 Spacer()
                 Text("Signed in as:")
@@ -69,7 +71,8 @@ private extension ProfileView {
 
 private extension ProfileView {
     struct UpdateImageButton: View {
-        let action: (UIImage) -> Void
+        let updateAction: (UIImage) -> Void
+        let removeAction: () -> Void
         
         @State private var newImageCandidate: UIImage?
         @State private var showChooseImageSource = false
@@ -94,10 +97,13 @@ private extension ProfileView {
                 Button("Take Photo", action: {
                     imageSourceType = .camera
                 })
+                Button("Remove Photo", role: .destructive, action: {
+                    removeAction()
+                })
             }
             .sheet(item: $imageSourceType, onDismiss: {
                 guard let image = newImageCandidate else { return }
-                action(image)
+                updateAction(image)
                 newImageCandidate = nil
             }) {
                 ImagePickerView(sourceType: $0, selection: $newImageCandidate)

@@ -50,6 +50,13 @@ class ProfileViewModel: ObservableObject {
         }
     }
     
+    func removeProfileImage() {
+        performTask { [weak self] in
+            try await self?.authService.removeProfileImage()
+            self?.refreshProfile()
+        }
+    }
+    
     private func performTask(action: @escaping () async throws -> Void) {
         Task {
             isLoading = true
