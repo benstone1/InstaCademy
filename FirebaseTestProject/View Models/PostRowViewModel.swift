@@ -40,10 +40,13 @@ class PostRowViewModel: ObservableObject {
     }
     
     func delete() {
-        precondition(canDelete())
+        guard let deleteAction = deleteAction else {
+            // To prevent this method from being called erroneously, views should use the canDelete() method to hide the delete button when the delete action is missing.
+            preconditionFailure("Cannot delete post because no delete action was provided")
+        }
         Task {
             do {
-                try await deleteAction?()
+                try await deleteAction()
             } catch {
                 self.error = error
             }
