@@ -29,7 +29,7 @@ struct PostRow: View {
             PostFooterView(viewModel: viewModel)
         }
         .foregroundColor(.gray9)
-        .alert("Something went wrong.", isPresented: $viewModel.error.exists, presenting: viewModel.error, actions: { _ in }) {
+        .alert("Error", isPresented: $viewModel.error.exists, presenting: viewModel.error, actions: { _ in }) {
             Text($0.localizedDescription)
         }
         .background {

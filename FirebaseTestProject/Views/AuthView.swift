@@ -105,7 +105,7 @@ private extension AuthView {
         
         var body: some View {
             VStack(alignment: .center) {
-                Text("SocialCademy")
+                Text("Socialcademy")
                     .bold()
                     .font(.title)
                 Group(content: fields)
