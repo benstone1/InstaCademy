@@ -35,16 +35,12 @@ class PostViewModel: ObservableObject {
             posts = .loading
         }
         Task {
-            await refreshPosts()
-        }
-    }
-    
-    func refreshPosts() async {
-        do {
-            posts = .loaded(try await postService.fetchPosts(matching: filter))
-        } catch {
-            print("[PostViewModel] Cannot load posts: \(error.localizedDescription)")
-            posts = .error(error)
+            do {
+                posts = .loaded(try await postService.fetchPosts(matching: filter))
+            } catch {
+                print("[PostViewModel] Cannot load posts: \(error.localizedDescription)")
+                posts = .error(error)
+            }
         }
     }
     

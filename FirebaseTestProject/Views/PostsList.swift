@@ -31,15 +31,17 @@ struct PostsList: View {
                     message: "There aren’t any posts here."
                 )
             case let .loaded(posts):
-                List(posts) { post in
-                    if searchText.isEmpty || post.contains(searchText) {
-                        PostRow(viewModel: viewModel.makePostRowViewModel(for: post))
+                ScrollView {
+                    ForEach(posts) { post in
+                        if searchText.isEmpty || post.contains(searchText) {
+                            PostRow(viewModel: viewModel.makePostRowViewModel(for: post))
+                            if post != posts.last {
+                                Divider()
+                            }
+                        }
                     }
                 }
                 .searchable(text: $searchText)
-                .refreshable {
-                    await viewModel.refreshPosts()
-                }
             }
         }
         .animation(.default, value: viewModel.posts)
