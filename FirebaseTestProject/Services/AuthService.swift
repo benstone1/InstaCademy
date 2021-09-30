@@ -23,8 +23,8 @@ protocol AuthServiceProtocol {
 // MARK: - AuthService
 
 struct AuthService: AuthServiceProtocol {
-    var auth = Auth.auth()
-    var imagesReference = Storage.storage().reference().child("images/users")
+    let auth = Auth.auth()
+    let imageHelper = ImageStorageAdapter(namespace: "users")
     
     func createAccount(name: String, email: String, password: String) async throws -> User {
         let result = try await auth.createUser(withEmail: email, password: password)
@@ -57,12 +57,13 @@ struct AuthService: AuthServiceProtocol {
             preconditionFailure("Cannot update image because there is no signed in user")
         }
         
-        let imageReference = imagesReference.child("\(user.uid).jpg")
-        let imageURL = try await imageReference.uploadImage(image)
-        
         let changeRequest = user.createProfileChangeRequest()
-        changeRequest.photoURL = imageURL
+        changeRequest.photoURL = try await imageHelper.createImage(image, named: user.uid)
         try await changeRequest.commitChanges()
+        
+        let updatedUser = User(from: user)
+        assert(changeRequest.photoURL != nil)
+        assert(updatedUser.imageURL == changeRequest.photoURL)
         
         return User(from: user)
     }
@@ -72,12 +73,15 @@ struct AuthService: AuthServiceProtocol {
             preconditionFailure("Cannot update image because there is no signed in user")
         }
         
-        let imageReference = imagesReference.child("\(user.uid).jpg")
-        try await imageReference.delete()
+        try await imageHelper.deleteImage(named: user.uid)
         
         let changeRequest = user.createProfileChangeRequest()
         changeRequest.photoURL = nil
         try await changeRequest.commitChanges()
+        
+        let updatedUser = User(from: user)
+        assert(changeRequest.photoURL == nil)
+        assert(updatedUser.imageURL == changeRequest.photoURL)
         
         return User(from: user)
     }

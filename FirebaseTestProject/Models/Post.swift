@@ -16,7 +16,7 @@ struct Post: Identifiable, Hashable, Equatable {
     let author: User
     let id: String
     let timestamp: Date
-    let imageURL: URL?
+    var imageURL: URL?
     var isFavorite = false
     
     init(title: String, content: String, author: User, id: String, timestamp: Date = Date(), imageURL: URL? = nil, isFavorite: Bool = false) {

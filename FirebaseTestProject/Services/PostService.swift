@@ -60,23 +60,25 @@ struct PostService: PostServiceProtocol {
     let user: User
     let postsReference = Firestore.firestore().collection("posts")
     let favoritesReference = Firestore.firestore().collection("favorites")
-    let imagesReference = Storage.storage().reference().child("images/posts")
+    let imageHelper = ImageStorageAdapter(namespace: "posts")
     
     func fetchPosts() async throws -> [Post] {
-        let postsQuery = postsReference.order(by: "timestamp", descending: true)
-        return try await fetchPostsFromQuery(postsQuery)
+        let query = postsReference.order(by: "timestamp", descending: true)
+        return try await fetchPosts(from: query)
     }
     
     func fetchPosts(by author: User) async throws -> [Post] {
-        let postsQuery = postsReference
+        let query = postsReference
             .order(by: "timestamp", descending: true)
             .whereField("author.id", isEqualTo: author.id)
-        return try await fetchPostsFromQuery(postsQuery)
+        return try await fetchPosts(from: query)
     }
     
     func fetchFavoritePosts() async throws -> [Post] {
         let favorites = try await fetchFavorites()
-        guard !favorites.isEmpty else {
+        if favorites.isEmpty {
+            // Skip the Firestore query and return an empty array of posts.
+            // This is a workaround for Firestore crashing when performing a where-in query with no allowed values.
             return []
         }
         return try await postsReference
@@ -90,29 +92,26 @@ struct PostService: PostServiceProtocol {
     
     func create(_ editablePost: Post.EditableFields) async throws {
         let postReference = postsReference.document()
-        let imageURL: URL? = try await {
-            guard let image = editablePost.image else { return nil }
-            let imageReference = imagesReference.child("\(postReference.documentID).jpg")
-            return try await imageReference.uploadImage(image)
-        }()
-        let post = Post(
+        var post = Post(
             title: editablePost.title,
             content: editablePost.content,
             author: user,
-            id: postReference.documentID,
-            imageURL: imageURL
+            id: postReference.documentID
         )
+        if let image = editablePost.image {
+            post.imageURL = try await imageHelper.createImage(image, named: post.id)
+        }
         try await postReference.setData(from: post)
     }
     
     func delete(_ post: Post) async throws {
         precondition(canDelete(post), "User not authorized to delete post")
+        
         let postReference = postsReference.document(post.id)
         try await postReference.delete()
         
         guard post.imageURL != nil else { return }
-        let imageReference = imagesReference.child("\(post.id).jpg")
-        try await imageReference.delete()
+        try await imageHelper.deleteImage(named: post.id)
     }
     
     func favorite(_ post: Post) async throws {
@@ -132,7 +131,7 @@ struct PostService: PostServiceProtocol {
 }
 
 private extension PostService {
-    func fetchPostsFromQuery(_ query: Query) async throws -> [Post] {
+    func fetchPosts(from query: Query) async throws -> [Post] {
         async let posts = query.getDocuments(as: Post.self)
         let favorites = try await fetchFavorites()
         return try await posts.map {
