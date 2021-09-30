@@ -14,11 +14,14 @@ struct ProfileView: View {
     
     @EnvironmentObject private var viewModel: AuthViewModel
     
+    // Workaround to ensure that the UserImageView is updated to reflect profile image changes
+    private var updatedUser: User { viewModel.user ?? user }
+    
     var body: some View {
         NavigationView {
             VStack {
                 Spacer()
-                UserImageView(user, transaction: Transaction(animation: .default))
+                UserImageView(updatedUser, transaction: Transaction(animation: .default))
                     .frame(width: 200, height: 200)
                     .padding()
                 UpdateImageButton(updateAction: {
