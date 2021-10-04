@@ -1,6 +1,6 @@
 //
 //  ImagePickerView.swift
-//  ImagePickerView
+//  FirebaseTestProject
 //
 //  Created by Tim Miller on 8/30/21.
 //

@@ -1,6 +1,6 @@
 //
 //  CommentService.swift
-//  CommentService
+//  FirebaseTestProject
 //
 //  Created by John Royal on 8/30/21.
 //
@@ -37,7 +37,7 @@ struct CommentService: CommentServiceProtocol {
     let commentsReference: CollectionReference
     
     func fetchComments() async throws -> [Comment] {
-        try await commentsReference.order(by: "timestamp", descending: true).getDocuments(as: Comment.self)
+        return try await commentsReference.order(by: "timestamp", descending: true).getDocuments(as: Comment.self)
     }
     
     func create(_ editableComment: Comment.EditableFields) async throws -> Comment {
@@ -47,7 +47,7 @@ struct CommentService: CommentServiceProtocol {
             author: user,
             id: commentReference.documentID
         )
-        try commentReference.setData(from: comment)
+        try await commentReference.setData(from: comment)
         return comment
     }
     

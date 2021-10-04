@@ -16,7 +16,7 @@ struct FirebaseTestProjectApp: App {
     
     var body: some Scene {
         WindowGroup {
-            AppView()
+            AuthView()
         }
     }
 }

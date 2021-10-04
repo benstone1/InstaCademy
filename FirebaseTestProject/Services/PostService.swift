@@ -1,6 +1,6 @@
 //
 //  PostService.swift
-//  PostService
+//  FirebaseTestProject
 //
 //  Created by John Royal on 8/21/21.
 //
@@ -19,7 +19,7 @@ protocol PostServiceProtocol {
     func fetchPosts(by author: User) async throws -> [Post]
     func fetchFavoritePosts() async throws -> [Post]
     
-    func create(_ editablePost: Post.EditableFields) async throws -> Post
+    func create(_ editablePost: Post.EditableFields) async throws
     func delete(_ post: Post) async throws
     
     func favorite(_ post: Post) async throws
@@ -58,25 +58,27 @@ extension PostServiceProtocol {
 
 struct PostService: PostServiceProtocol {
     let user: User
-    var postsReference = Firestore.firestore().collection("posts-dev")
-    var favoritesReference = Firestore.firestore().collection("favorites-dev")
-    var imagesReference = Storage.storage().reference().child("images/posts")
-
+    let postsReference = Firestore.firestore().collection("posts")
+    let favoritesReference = Firestore.firestore().collection("favorites")
+    let imageHelper = ImageStorageAdapter(namespace: "posts")
+    
     func fetchPosts() async throws -> [Post] {
-        let postsQuery = postsReference.order(by: "timestamp", descending: true)
-        return try await fetchPostsFromQuery(postsQuery)
+        let query = postsReference.order(by: "timestamp", descending: true)
+        return try await fetchPosts(from: query)
     }
-
+    
     func fetchPosts(by author: User) async throws -> [Post] {
-        let postsQuery = postsReference
+        let query = postsReference
             .order(by: "timestamp", descending: true)
             .whereField("author.id", isEqualTo: author.id)
-        return try await fetchPostsFromQuery(postsQuery)
+        return try await fetchPosts(from: query)
     }
-
+    
     func fetchFavoritePosts() async throws -> [Post] {
         let favorites = try await fetchFavorites()
-        guard !favorites.isEmpty else {
+        if favorites.isEmpty {
+            // Skip the Firestore query and return an empty array of posts.
+            // This is a workaround for Firestore crashing when performing a where-in query with no allowed values.
             return []
         }
         return try await postsReference
@@ -88,33 +90,33 @@ struct PostService: PostServiceProtocol {
             }
     }
     
-    func create(_ editablePost: Post.EditableFields) async throws -> Post {
+    func create(_ editablePost: Post.EditableFields) async throws {
         let postReference = postsReference.document()
-        let imageURL: URL? = try await {
-            guard let image = editablePost.image else { return nil }
-            let imageReference = imagesReference.child("\(postReference.documentID)/post.jpg")
-            return try await imageReference.uploadImage(image)
-        }()
-        let post = Post(
+        var post = Post(
             title: editablePost.title,
             content: editablePost.content,
             author: user,
-            id: postReference.documentID,
-            imageURL: imageURL
+            id: postReference.documentID
         )
-        try postReference.setData(from: post)
-        return post
+        if let image = editablePost.image {
+            post.imageURL = try await imageHelper.createImage(image, named: post.id)
+        }
+        try await postReference.setData(from: post)
     }
     
     func delete(_ post: Post) async throws {
         precondition(canDelete(post), "User not authorized to delete post")
+        
         let postReference = postsReference.document(post.id)
         try await postReference.delete()
+        
+        guard post.imageURL != nil else { return }
+        try await imageHelper.deleteImage(named: post.id)
     }
     
     func favorite(_ post: Post) async throws {
         let favorite = Favorite(postID: post.id, userID: user.id)
-        try favoritesReference.document().setData(from: favorite)
+        try await favoritesReference.document().setData(from: favorite)
     }
     
     func unfavorite(_ post: Post) async throws {
@@ -129,7 +131,7 @@ struct PostService: PostServiceProtocol {
 }
 
 private extension PostService {
-    func fetchPostsFromQuery(_ query: Query) async throws -> [Post] {
+    func fetchPosts(from query: Query) async throws -> [Post] {
         async let posts = query.getDocuments(as: Post.self)
         let favorites = try await fetchFavorites()
         return try await posts.map {

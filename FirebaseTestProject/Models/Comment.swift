@@ -1,6 +1,6 @@
 //
 //  Comment.swift
-//  Comment
+//  FirebaseTestProject
 //
 //  Created by John Royal on 8/20/21.
 //
@@ -21,16 +21,6 @@ struct Comment: Identifiable, Equatable, Codable {
         self.id = id
         self.timestamp = timestamp
     }
-}
-
-// MARK: - Test
-
-extension Comment {
-    static let testComment = Comment(
-        content: "Great job!",
-        author: .testUser,
-        id: "00000000000000000000"
-    )
 }
 
 // MARK: - Partial
